@@ -1,4 +1,4 @@
-/* DO NOT MODIFY. This file was compiled Wed, 31 Aug 2011 04:54:35 GMT from
+/* DO NOT MODIFY. This file was compiled Wed, 31 Aug 2011 06:15:48 GMT from
  * /users/sam/projects/sinatra/shoebox/public/js/code.coffee
  */
 
@@ -17,12 +17,25 @@
         _(data.photoset.photo.sort(function() {
           return .5 - Math.random();
         })).chain().first(30).each(function(value, key, list) {
-          var thumb;
-          thumb = value.url_s.replace("_m.jpg", "_t.jpg");
-          return $('#canvas').append('<img src="' + thumb + '" />');
+          return $('#canvas').append('<a href="javascript:void(0)"><img src="' + value.url_s + '" /><span>' + value.title + '</span></a>');
         });
-        return $('#canvas img').each(function() {
+        return $('#canvas a').each(function() {
           return $(this).rotate(30 * (.5 - Math.random()));
+        }).click(function() {
+          var that;
+          that = $(this);
+          return that.flip({
+            direction: 'lr',
+            speed: 400,
+            onEnd: function() {
+              return that.toggleClass('backside');
+            }
+          });
+        }).find('img').load(function() {
+          return $(this).parent().css({
+            height: $(this).outerHeight(),
+            width: $(this).outerWidth()
+          });
         });
       }
     }
