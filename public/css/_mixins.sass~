@@ -1,0 +1,40 @@
+//Based on http://www.coffeepowered.net/2010/09/02/pain-free-css3-with-sass-and-csspie/
+
+@mixin pie
+  behavior: url(/css/PIE.htc)
+.pie
+  +pie
+ 
+@mixin shadows($color: #aaa, $x: 1px, $y: 2px, $spread: 2px)
+  @extend .pie
+  -moz-box-shadow: $color $x $y $spread
+  -webkit-box-shadow: $color $x $y $spread
+  box-shadow: $color $x $y $spread
+ 
+@mixin inset-shadows($color: #aaa, $x: 1px, $y: 1px, $spread: 1px)
+  @extend .pie
+  -moz-box-shadow: inset $x $y $spread $color
+  -webkit-box-shadow: inset $x $y $spread $color
+  box-shadow: inset $x $y $spread $color
+ 
+@mixin corners($tl: 5px, $tr: nil, $br: nil, $bl: nil)
+  @extend .pie
+  @if $tr == nil
+    $tr: $tl
+  @if $br == nil
+    $br: $tl
+  @if $bl == nil
+    $bl: $tl
+  -moz-border-radius: $tl $tr $br $bl
+  -webkit-border-top-left-radius: $tl
+  -webkit-border-bottom-left-radius: $bl
+  -webkit-border-top-right-radius: $tr
+  -webkit-border-bottom-right-radius: $br
+  border-radius: $tl $tr $br $bl
+ 
+@mixin vertical-gradient($start: #000, $end: #ccc)
+  @extend .pie
+  background: $end
+  background: -webkit-gradient( linear, left top, left bottom, color-stop(0, $start), color-stop(1, $end) )
+  background: -moz-linear-gradient(center top, $start 0%, $end 100%)
+  -pie-background: linear-gradient(90deg, $start, $end)

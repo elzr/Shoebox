@@ -1,0 +1,9 @@
+@import '_mixins.sass';
+
+body {margin:0; padding:0; font-family:Verdana, sans-serif}
+#shoebox {border:30px inset #ccc; background:#eee; text-align:center; 
+	#canvas {padding:20px;
+		img {border:5px solid #fff; @include shadows(#888, 4px, 4px, 4px)}
+	}
+}
+.ico {width:32px; height:32px; vertical-align:middle}
