@@ -1,16 +1,19 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    activemodel (3.0.10)
-      activesupport (= 3.0.10)
-      builder (~> 2.1.2)
-      i18n (~> 0.5.0)
-    activesupport (3.0.10)
+    activemodel (3.1.0)
+      activesupport (= 3.1.0)
+      bcrypt-ruby (~> 3.0.0)
+      builder (~> 3.0.0)
+      i18n (~> 0.6)
+    activesupport (3.1.0)
+      multi_json (~> 1.0)
     barista (1.2.1)
       coffee-script (~> 2.2)
+    bcrypt-ruby (3.0.0)
     bson (1.3.1)
     bson_ext (1.3.1)
-    builder (2.1.2)
+    builder (3.0.0)
     coffee-script (2.2.0)
       coffee-script-source
       execjs
@@ -19,7 +22,7 @@ GEM
     eventmachine (0.12.10)
     execjs (1.2.4)
       multi_json (~> 1.0)
-    i18n (0.5.0)
+    i18n (0.6.0)
     mongo (1.3.1)
       bson (>= 1.3.1)
     mongo_mapper (0.9.1)
@@ -36,6 +39,7 @@ GEM
       tilt (< 2.0, >= 1.2.2)
     sinatra-flash (0.3.0)
       sinatra (>= 1.0.0)
+    therubyracer-heroku (0.8.1.pre3)
     thin (1.2.11)
       daemons (>= 1.0.9)
       eventmachine (>= 0.12.6)
@@ -52,4 +56,5 @@ DEPENDENCIES
   sass (= 3.1.7)
   sinatra (= 1.2.6)
   sinatra-flash (= 0.3.0)
+  therubyracer-heroku
   thin (= 1.2.11)
