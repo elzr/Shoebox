@@ -2,12 +2,12 @@
 
 body {margin:0; padding:0; font-family:Verdana, sans-serif}
 #shoebox {border:30px inset #ccc; background:#eee; text-align:center; 
-	#canvas {padding:20px;
-		a {display:inline-block; color:#000; text-decoration:none; overflow:hidden; background:#ccc; position:relative; @include shadows(#888, 2px, 2px, 4px);
+	#canvas {padding:20px; height:800px; position:relative;
+		a { position:absolute; display:inline-block; color:#000; text-decoration:none; overflow:hidden; background:#ccc; @include shadows(#888, 2px, 2px, 4px);
 			img {position:absolute; border:5px solid #fff}
 			span {position:absolute; visibility:hidden; display:inline-block; width:100%; text-align:center}
 		}
-		a.backside { z-index:2;
+		a.backside { z-index:2; @include shadows(#888, 2px, 2px, 4px);
 			img {visibility:hidden}
 			span {visibility:visible; padding:10px 5px; font-weight:bold; background:#555; color:#fff}
 		}
