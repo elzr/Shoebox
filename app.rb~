@@ -16,6 +16,11 @@ class Shoebox < Sinatra::Base
 		erb :index
 	end
 
+	get '/data' do
+		@callback = params[:jsoncallback]
+		erb :data, :layout=>false
+	end
+
 	get '/css/style.css' do
 		scss :style, :views=>File.dirname(__FILE__)+'/public/css/'
 	end

@@ -1,7 +1,7 @@
 <%@title = 'Welcome'%>
 
 <div id="shoebox">
-	<p>
+	<p style="margin-top:100px">
 		<img src="/img/ico/loading.gif" class="ico" /> Loading...
 	</p>
 	<div id="canvas">
