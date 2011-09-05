@@ -1,4 +1,7 @@
 (function ($) {
+	// modified to handle flipping of rotated elements as well as to
+	// integrate with https://github.com/heygrady/transform/
+	//
     // rotate3Di v0.9 - 2009.03.11 Zachary Johnson www.zachstronaut.com
     // "3D" isometric rotation and animation using CSS3 transformations
     // currently supported in Safari/Chrome/Webkit, Firefox 3.5+, IE 9+,
@@ -60,11 +63,11 @@
         // with my flipbox demo... I am storing degrees someplace where I know
         // I can get them.
         $(fx.elem).data('rotate3Di.degrees', direction * degrees);
-        $(fx.elem).css(
-            'transform',
-            'skew(0deg, ' + direction * degrees + 'deg)'
-                + ' scale(' + scale + ', 1)'
-        );
+        $(fx.elem).transform( {
+			skewY: direction * degrees + 'deg',
+			rotate: ( $(fx.elem).data('rotation') * Math.abs((degrees-90)/90) )+'deg',
+			scaleX: scale
+		});
     }
     
     // fx.cur() must be monkey patched because otherwise it would always
@@ -72,9 +75,9 @@
     var proxied = $.fx.prototype.cur;
     $.fx.prototype.cur = function () {
         if(this.prop == 'rotate3Di') {
-            var style = $(this.elem).css('transform');
+            var style = $(this.elem).attr('data-transform');
             if (style) {
-                var m = style.match(/, (-?[0-9]+)deg\)/);
+                var m = style.match(/skewY\((-?[0-9]+)deg\)/);
                 if (m && m[1]) {
                     return parseInt(m[1]);
                 } else {
@@ -130,7 +133,7 @@
         }
         
         var d = $(this).data('rotate3Di.degrees') || 0;
-        $(this).data(
+		$(this).data(
             'rotate3Di.prevScale',
             calcRotate3Di.scale(calcRotate3Di.degrees(d))
         );

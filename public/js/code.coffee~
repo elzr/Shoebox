@@ -9,24 +9,24 @@ _(SHOE.images).extend(
         #'http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id='+ set+'&format=json&extras=url_s&jsoncallback=?'
     pile: (i) ->
       this.piles[Math.floor(i/(this.total/3))]
-    place: (img, count, radius=200) ->
+    place: (pic, count, radius=200) ->
       limit = {x:$('#canvas').width(), y:$('#canvas').height()}
       pile = this.pile(count) #pile of relative values
       pile = {x:limit.x*pile.x, y:limit.y*pile.y} # pile of concrete values
-      img.css(
-        left:Math.min(limit.x, Math.max(0, pile.x+(radius*U.rand())-img.outerWidth()/2) )
-        top:Math.min(limit.y, Math.max(0, pile.y+(radius*U.rand())-img.outerHeight()/2) )
+      pic.css(
+        left:Math.min(limit.x, Math.max(0, pile.x+(radius*U.rand())-pic.outerWidth()/2) )
+        top:Math.min(limit.y, Math.max(0, pile.y+(radius*U.rand())-pic.outerHeight()/2) )
       )
     stack:
-      topmost: ()-> _([_($('#canvas a')).chain().map( (a)-> $(a).css('z-index') ).without('auto').max().value(), 0]).max() + 1
-      index: (obj)-> U.log('log ', parseInt($(obj).css('z-index'))||0)
+      topmost: ()-> _([_($('#canvas .pic')).chain().map( (pic)-> ~~$(pic).css('z-index') ).max().value(), 0]).max() + 1
+      index: (obj)-> parseInt($(obj).css('z-index'))||0
       get: (from)->
         stack = SHOE.images.stack
-        $(_($('#canvas a').removeClass('topStack')).select( (img)->
-          U.log('indexes ', stack.index(from) < stack.index(img)) and U.log('intersect ', U.rect.intersect( U.rect.extract(from), U.rect.extract(img) ))
+        $(_($('#canvas .pic').removeClass('topStack')).select( (pic)->
+          stack.index(from) < stack.index(pic) and U.rect.intersect( U.rect.extract(from), U.rect.extract(pic) )
         )).addClass('topStack')
       _clear: (from)->
-        flip = {'-=':'+=', '+=':'-='}; delta = 75
+        flip = {'-=':'+=', '+=':'-='}; delta = '75px'
         $('.topStack').each(()->
           left = if (parseInt($(this).css('left')) < parseInt(from.css('left'))) then '-=' else '+='
           top = if (parseInt($(this).css('top')) < parseInt(from.css('top'))) then '-=' else '+='
@@ -36,30 +36,29 @@ _(SHOE.images).extend(
       clear: (from)->
         this.get(from)
         this._clear(from)
+        _.delay( ( ()-> from.css('z-index', SHOE.images.stack.topmost()) ), 300)
     events:
-      enter: ()->$(this).animate({rotate:0}, 450) if $('.ui-draggable-dragging').length == 0
-      out: ()->$(this).animate({rotate:$(this).data('rotation')}, 450) if $('.ui-draggable-dragging').length == 0
       dblclick: ()->
         that = $(this)
         SHOE.images.stack.clear(that)
-        that.css('z-index', SHOE.images.stack.topmost()).
-          rotate3Di('toggle', 700, sideChange: ()->that.toggleClass('backside'))
+        that.rotate3Di('toggle', 700,
+            sideChange: ()-> that.toggleClass('flipped')
+          )
       load: ()->
-        a = $(this).parents('a')
-        a.css( height:$(this).outerHeight(), width:$(this).outerWidth() ).
-          data('rotation',30*U.rand()).rotate(a.data('rotation')+'deg').
-          scale(1.25).animate(scale:1, 600)
-        SHOE.images.place(a, SHOE.images.count++)
+        pic = $(this).parents('.pic')
+        pic.add(pic.find('.backside')).css( height:$(this).outerHeight(), width:$(this).outerWidth() ).end().
+          data('rotation',30*U.rand()).transform({rotate:pic.data('rotation')+'deg', scale:[1.25, 1.25]}).
+            animate({scale:[[1,1]]}, 600)
+        SHOE.images.place(pic, SHOE.images.count++)
         SHOE.images.events.allLoad()
       allLoad: _.after(SHOE.images.total, ()->
-        $('#canvas a').draggable(
+        $('#canvas .pic').draggable(
           containment:'parent'
           start: ()->
             SHOE.images.stack.clear( $(this) )
-            $(this).animate(scale:1.25, 300).
-              css('z-index', SHOE.images.stack.topmost())
+            $(this).animate({scale:[[1.25,1.25]]}, 300)
           stop: ()->
-            $(this).animate(scale:1, 300)
+            $(this).animate({scale:[[1,1]]}, 300)
         ))
     display: (data)->
       data = data.photoset.photo.sort( ()->U.rand() ).slice(0, SHOE.images.total)
@@ -67,9 +66,9 @@ _(SHOE.images).extend(
       $('#shoebox p').remove()
 
       for item in data
-        $('#canvas').append('<a href="javascript:void(0)"><img src="'+item.url_s+'" /><span>'+item.title+'</span></a>').
-          find('a:last').css('z-index', SHOE.images.stack.topmost())
-      $('#canvas a').hover(e.enter, e.out).dblclick(e.dblclick).click(e.click).
+        $('#canvas').append( $('<div class="pic" />').html('<img src="'+item.url_s+'" /><div class="backside"><span>'+item.title+'</span></div>') ).
+          find('.pic:last').css('z-index', SHOE.images.stack.topmost())
+      $('#canvas .pic').dblclick(e.dblclick).click(e.click).
         find('img').load( e.load )
 )
 

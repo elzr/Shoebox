@@ -2,16 +2,18 @@
 
 body {margin:0; padding:0; font-family:Verdana, sans-serif}
 #shoebox {border:30px inset #ccc; background:#eee; text-align:center; 
-	#canvas {padding:20px; height:800px; position:relative;
-		a { position:absolute; display:inline-block; color:#000; text-decoration:none; overflow:hidden; background:#555; @include shadows(#888, 2px, 2px, 4px);
+	#canvas {padding:20px; width:100%; height:800px; position:relative;
+		div.pic { position:absolute; display:inline-block; color:#000; text-decoration:none; overflow:hidden; background:#555; @include shadows(#888, 2px, 2px, 4px); cursor:pointer;
 			img {position:absolute; border:5px solid #fff; top:0; left:0}
-			span {position:absolute; visibility:hidden; display:inline-block; width:100%; text-align:center}
+			.backside {position:absolute; visibility:hidden; text-align:center; background:#999; color:#fff;
+				span {display:block; font-family:Times New Roman, serif; padding:20px 10px; background:#555; font-weight:bold}
+			}
 		}
-		a.backside { z-index:2; @include shadows(#888, 2px, 2px, 4px);
+		div.flipped { z-index:2; @include shadows(#888, 2px, 2px, 4px);
 			img {visibility:hidden}
-			span {visibility:visible; padding:10px 5px; font-weight:bold; background:#555; color:#fff}
+			.backside {visibility:visible}
 		}
-		a.ui-draggable-dragging {z-index:3; @include shadows(#555, 8px, 8px, 16px)}
+		div.ui-draggable-dragging {z-index:3; @include shadows(#555, 8px, 8px, 16px)}
 	}
 }
 .ico {width:32px; height:32px; vertical-align:middle}
