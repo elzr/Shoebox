@@ -4,7 +4,7 @@ window.PIC = PIC =
 
 _(PIC).extend(
   fetch: (set=false) ->
-    set = set||this.sets['models']
+    set = set||this.sets['family3']
     $.getJSON('http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id='+ set+'&format=json&extras=url_s&jsoncallback=?', PIC.display)
       #'/data?jsoncallback=?'
   place:
@@ -67,7 +67,22 @@ _(PIC).extend(
       {rotate:r+'deg'}
     toss: (pic)->
       vector = this.vector(pic); damp = 2
-      {left:'+='+vector.x/damp, top:'+='+vector.y/damp}
+      $(pic).css(leftToss:0, topToss:0).
+          data(
+            left:{
+              original:U.float($(pic).css('left'))
+              toss:vector.x/damp
+              before:0
+              bounce:1
+            }
+            top:{
+              original:U.float($(pic).css('top'))
+              toss:vector.y/damp
+              before:0
+              bounce:1
+            }
+          )
+      {leftToss:100, topToss:100}
     shuffle: (pic)->
       PIC.stack.get('below', pic).each( ()->
         $(this).data('rotation', $(this).data('rotation')+(PIC.rotation*U.rand())).
@@ -138,17 +153,31 @@ _(PIC).extend(
         ).click(this.restore)
         
     step: (now, fx)->
-      if fx.prop == 'left' or fx.prop == 'top'
+      if fx.prop == 'leftToss' or fx.prop == 'topToss'
+        lt = if fx.prop=='leftToss' then 'left' else 'top'
         pic = $(fx.elem)
-        #U.log('fx', fx)
-        prop = U.float( pic.css(fx.prop) )
-        bound = $('#canvas')[if fx.prop == 'top' then 'height' else 'width']()
-        if prop > bound or prop < 0
-          pic.data('bounce', (pic.data('bounce')||1)*-1)
-          #U.log('bounce', pic.data('bounce') )
-        #U.log('before', pic.css(fx.prop) )
-        pic.css(fx.prop, U.float(pic.css(fx.prop))*(pic.data('bounce')||1) )
-        #U.log('change', pic.css(fx.prop) )
+        param = pic.data(lt)
+        quanta = ((now - (param.before||0))/100) * param.toss
+
+        #console.log('now', now)
+        #console.log('now quanta', now - (param.before||0))
+        #console.log('quanta', quanta)
+
+        param.before = now
+
+        prop = U.float(pic.css(lt)) + ((param.bounce||1)*quanta)
+
+        hw = if fx.prop == 'topToss' then 'height' else 'width'
+        if (prop+pic[hw]() > $('#canvas')[hw]()-60) or prop < 0
+          param.bounce = (param.bounce||1) * -1.5
+          #console.log('BOUNCE', param.bounce )
+
+        pic.css( lt, U.float(pic.css(lt)) + (param.bounce||1)*quanta )
+
+        param = pic.data(lt, param)
+
+        #console.log(lt, pic.css(lt))
+        #console.log('----')
     allLoad: _.after(PIC.total, ()->
       PIC.events.drag.setup()
       PIC.events.trash.setup()
@@ -205,6 +234,7 @@ window.U = U =
 
 $( () ->
   PIC.fetch()
+
   $('#canvas, .background').css('height', U.log('h', $(window).height()-60) )
   $('#shoebox').css('padding-top', $(window).height()-60)
   $('canvas').attr({width:$('#canvas').width(), height:$('#canvas').height()} )

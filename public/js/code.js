@@ -1,4 +1,4 @@
-/* DO NOT MODIFY. This file was compiled Fri, 09 Sep 2011 19:31:46 GMT from
+/* DO NOT MODIFY. This file was compiled Fri, 09 Sep 2011 20:41:26 GMT from
  * /Users/sam/projects/sinatra/shoebox/public/js/code.coffee
  */
 
@@ -30,7 +30,7 @@
       if (set == null) {
         set = false;
       }
-      set = set || this.sets['models'];
+      set = set || this.sets['family3'];
       return $.getJSON('http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id=' + set + '&format=json&extras=url_s&jsoncallback=?', PIC.display);
     },
     place: {
@@ -168,9 +168,26 @@
         var damp, vector;
         vector = this.vector(pic);
         damp = 2;
+        $(pic).css({
+          leftToss: 0,
+          topToss: 0
+        }).data({
+          left: {
+            original: U.float($(pic).css('left')),
+            toss: vector.x / damp,
+            before: 0,
+            bounce: 1
+          },
+          top: {
+            original: U.float($(pic).css('top')),
+            toss: vector.y / damp,
+            before: 0,
+            bounce: 1
+          }
+        });
         return {
-          left: '+=' + vector.x / damp,
-          top: '+=' + vector.y / damp
+          leftToss: 100,
+          topToss: 100
         };
       },
       shuffle: function(pic) {
@@ -273,15 +290,20 @@
         }
       },
       step: function(now, fx) {
-        var bound, pic, prop;
-        if (fx.prop === 'left' || fx.prop === 'top') {
+        var hw, lt, param, pic, prop, quanta;
+        if (fx.prop === 'leftToss' || fx.prop === 'topToss') {
+          lt = fx.prop === 'leftToss' ? 'left' : 'top';
           pic = $(fx.elem);
-          prop = U.float(pic.css(fx.prop));
-          bound = $('#canvas')[fx.prop === 'top' ? 'height' : 'width']();
-          if (prop > bound || prop < 0) {
-            pic.data('bounce', (pic.data('bounce') || 1) * -1);
+          param = pic.data(lt);
+          quanta = ((now - (param.before || 0)) / 100) * param.toss;
+          param.before = now;
+          prop = U.float(pic.css(lt)) + ((param.bounce || 1) * quanta);
+          hw = fx.prop === 'topToss' ? 'height' : 'width';
+          if ((prop + pic[hw]() > $('#canvas')[hw]() - 60) || prop < 0) {
+            param.bounce = (param.bounce || 1) * -1.5;
           }
-          return pic.css(fx.prop, U.float(pic.css(fx.prop)) * (pic.data('bounce') || 1));
+          pic.css(lt, U.float(pic.css(lt)) + (param.bounce || 1) * quanta);
+          return param = pic.data(lt, param);
         }
       },
       allLoad: _.after(PIC.total, function() {
