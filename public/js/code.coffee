@@ -4,7 +4,7 @@ window.PIC = PIC =
 
 _(PIC).extend(
   fetch: (set=false) ->
-    set = set||this.sets['family5']
+    set = set||this.sets['models']
     $.getJSON('http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id='+ set+'&format=json&extras=url_s&jsoncallback=?', PIC.display)
       #'/data?jsoncallback=?'
   place:
@@ -205,5 +205,7 @@ window.U = U =
 
 $( () ->
   PIC.fetch()
-  $('canvas').attr('width', $('#canvas').width() )
+  $('#canvas, .background').css('height', U.log('h', $(window).height()-60) )
+  $('#shoebox').css('padding-top', $(window).height()-60)
+  $('canvas').attr({width:$('#canvas').width(), height:$('#canvas').height()} )
 )

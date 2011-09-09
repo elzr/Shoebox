@@ -1,4 +1,4 @@
-/* DO NOT MODIFY. This file was compiled Fri, 09 Sep 2011 19:13:03 GMT from
+/* DO NOT MODIFY. This file was compiled Fri, 09 Sep 2011 19:31:46 GMT from
  * /Users/sam/projects/sinatra/shoebox/public/js/code.coffee
  */
 
@@ -30,7 +30,7 @@
       if (set == null) {
         set = false;
       }
-      set = set || this.sets['family5'];
+      set = set || this.sets['models'];
       return $.getJSON('http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id=' + set + '&format=json&extras=url_s&jsoncallback=?', PIC.display);
     },
     place: {
@@ -399,6 +399,11 @@
   };
   $(function() {
     PIC.fetch();
-    return $('canvas').attr('width', $('#canvas').width());
+    $('#canvas, .background').css('height', U.log('h', $(window).height() - 60));
+    $('#shoebox').css('padding-top', $(window).height() - 60);
+    return $('canvas').attr({
+      width: $('#canvas').width(),
+      height: $('#canvas').height()
+    });
   });
 }).call(this);

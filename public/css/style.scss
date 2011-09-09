@@ -1,6 +1,6 @@
 @import '_mixins.sass';
 
-body {margin:0; padding:0; font-family:Verdana, sans-serif}
+body {margin:0; padding:0; font-family:Verdana, sans-serif; overflow:hidden}
 #shoebox {border:30px inset #a0754b; border-bottom-color:#bfa290; border-right-color:#a48564; border-top-color:#966e55; background-color:#a0754b; text-align:center; position:relative; padding-top:800px;
 	img.background {position:absolute; z-index:1; top:0; left:0; width:100%; height:800px}
 	.loading {text-align:center; position:absolute; top:250px; left:45%; z-index:2; margin:20px; padding:20px; background:#eee; font-style:italic; @include corners(); }
@@ -17,7 +17,7 @@ body {margin:0; padding:0; font-family:Verdana, sans-serif}
 			.backside {visibility:visible}
 		}
 		div.ui-draggable-dragging {z-index:3; @include shadows(#555, 8px, 8px, 16px)}
-		.trash {position:absolute; padding:10px; top:630px; left:10px; z-index:1000; cursor:pointer}
+		.trash {position:absolute; padding:10px; bottom:50px; left:10px; z-index:1000; cursor:pointer}
 		.trash.hover {background:#fff; padding:10px; @include corners(); @include shadows(#888, 2px, 2px, 4px);}
 	}
 }
