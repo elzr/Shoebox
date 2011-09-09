@@ -1,0 +1,923 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<title>JavaScript Timers with setTimeout and setInterval</title>
+
+<link rel="stylesheet" type="text/css" href="/css-v4/common.min.css" />
+<link rel="stylesheet" type="text/css" href="/css-v4/SyntaxHighlighter/shCore.css" />
+<link rel="stylesheet" type="text/css" href="/css-v4/SyntaxHighlighter/shThemeElatedV4.css" />
+<link rel="shortcut icon" href="/favicon.ico" />
+
+<!--[if lt IE 7]>
+<link rel="stylesheet" type="text/css" href="/css-v4/common_ie6.css" />
+<![endif]-->
+
+<!--[if lt IE 6]>
+<link rel="stylesheet" type="text/css" href="/css-v4/common_ie5.css" />
+<![endif]-->
+
+<!--[if IE 7]>
+<link rel="stylesheet" type="text/css" href="/css-v4/common_ie7.css" />
+<![endif]-->
+
+<!--[if IE 8]>
+<link rel="stylesheet" type="text/css" href="/css-v4/common_ie8.css" />
+<![endif]-->
+
+<!--[if IE]>
+<link rel="stylesheet" type="text/css" href="/css-v4/common_ie.css" />
+<![endif]-->
+
+<meta http-equiv="X-UA-Compatible" content="IE=9" />
+
+<link href="http://feeds.elated.com/ElatedNewStuff" rel="alternate" type="application/rss+xml" title="ELATED New Stuff to Love RSS feed" />
+<link href="http://www.elated.com/forums/feed/" rel="alternate" type="application/rss+xml" title="ELATED.com: All Forums RSS feed" />
+
+<meta name="description" content="In this tutorial we'll look at JavaScript's setTimeout(), clearTimeout(), setInterval() and clearInterval() methods, and show how to use them to set timers and create delayed actions." />
+<meta name="keywords" content="timed events, trigger, triggering, time delays, countdown, regular" />
+
+<script type="text/javascript" src="http://use.typekit.com/asn2oby.js"></script>
+<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+
+<meta name="verify-v1" content="bZxhH3gV6zseypmVBcX82D6vtzG/Nhh4MMFd2sOkO6E=" />
+
+
+<script type="text/javascript" src="/js/SyntaxHighlighter/shCore.js"></script>
+<script type="text/javascript" src="/js/SyntaxHighlighter/shBrushCss.js"></script>
+<script type="text/javascript" src="/js/SyntaxHighlighter/shBrushJScript.js"></script>
+<script type="text/javascript" src="/js/SyntaxHighlighter/shBrushPerl.js"></script>
+<script type="text/javascript" src="/js/SyntaxHighlighter/shBrushPhp.js"></script>
+<script type="text/javascript" src="/js/SyntaxHighlighter/shBrushXml.js"></script>
+
+</head>
+
+<body>
+
+<!-- BuySellAds.com Ad Code -->
+<script type="text/javascript">
+(function(){
+  var bsa = document.createElement('script');
+     bsa.type = 'text/javascript';
+     bsa.async = true;
+     bsa.src = '//s3.buysellads.com/ac/bsa.js';
+  (document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(bsa);
+})();</script>
+<!-- END BuySellAds.com Ad Code -->
+
+<!-- Begin Outer Container -->
+
+
+<div id="container">
+
+  <a name="top"></a>
+
+  <div id="pageHeader">
+    <h3><a href="/"><span>Elated: Helping People Make Websites Since 1997</span></a></h3>
+
+    <form id="globalSearch" method="get" action="/">
+      <div>
+        <input type="hidden" name="action" value="search_content" />
+                        <input type="hidden" name="searchContext" value="articles" />
+
+        <input id="searchQuery" name="searchQuery" type="text" value="Search articles..." class="textField" onfocus="this.select(); if(this.value.slice(-3)=='...') this.value=''" onblur="if(this.value=='') this.value='Search articles...'"/>
+        <div id="searchButton"><input id="searchSubmit" type="image" src="/res/Image/v4/misc/search-button.png" value="search"/></div>
+        <div class="clear">&nbsp;</div>
+      </div>
+    </form>
+
+    
+<ul id="nav">
+  <li id="navArticles" class="highlight"><a href="/articles/">Articles</a>
+    <span class="tri"></span><ul>
+      <li><a href="/articles/cat/graphics/">Web Graphics and Multimedia</a>
+        <span class="tri2"></span><ul>
+            <li><a href="/articles/cat/photoshop/">Photoshop</a></li>
+            <li><a href="/articles/cat/paint-shop-pro/">Paint Shop Pro</a></li>
+          </ul>
+      </li>
+      <li><a href="/articles/cat/authoring/">Website Authoring</a>
+        <span class="tri2"></span><ul>
+            <li><a href="/articles/cat/style/">Web Design and Style</a></li>
+            <li><a href="/articles/cat/html/">HTML</a></li>
+            <li><a href="/articles/cat/xhtml/">XHTML</a></li>
+            <li><a href="/articles/cat/css/">CSS</a></li>
+          </ul>
+      </li>
+      <li><a href="/articles/cat/development/">Web Development</a>
+        <span class="tri2"></span><ul>
+            <li><a href="/articles/cat/javascript/">JavaScript</a></li>
+            <li><a href="/articles/cat/php/">PHP</a></li>
+            <li><a href="/articles/cat/perl-cgi/">Perl and CGI Scripting</a></li>
+            <li><a href="/articles/cat/asp/">ASP</a></li>
+          </ul>
+      </li>
+      <li><a href="/articles/cat/management/">Website Management</a>
+        <span class="tri2"></span><ul>
+            <li><a href="/articles/cat/ftp/">Using FTP</a></li>
+            <li><a href="/articles/cat/apache/">Apache</a></li>
+            <li><a href="/articles/cat/unix/">UNIX and Linux</a></li>
+          </ul>
+      </li>
+      <li><a href="/articles/cat/website-marketing/">Website Marketing</a>
+        <span class="tri2"></span><ul>
+            <li><a href="/articles/cat/ecommerce/">eCommerce</a></li>
+          </ul>
+      </li>
+      <li><a href="/articles/cat/pagekits-help/">PageKits Help</a>
+        <span class="tri2"></span><ul>
+            <li><a href="/articles/cat/getting-started/">Getting Started</a></li>
+            <li><a href="/articles/cat/image-slicing/">How to Slice an Image</a></li>
+            <li><a href="/articles/cat/add-your-own-logo/">How to Add Your Own Logo</a></li>
+            <li><a href="/articles/cat/changing-menu-options/">How to Change the Menu Options</a></li>
+          </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="/pagekits/">Web Templates</a></li>
+  <li><a href="/imagekits/">Stock Images</a></li>
+  <li><a href="/actionkits/">Photoshop Actions</a></li>
+  <li><a href="/forums/">Forums</a></li>
+</ul>
+
+
+  </div>
+
+  <div class="clear" style="width: 960px; height: 10px;"> </div>
+
+  <div id="mainWrap">
+  <div id="main">
+  <div id="mainTop"></div>
+
+
+    <script type="text/javascript" src="/js/bbc.js"></script>
+
+    <div id="mainContent">
+
+    
+
+      <div class="breadcrumbs"><a href="/">Home</a> : <a href="/articles/">Articles</a> : JavaScript Timers with setTimeout and setInterval</div>
+
+      <!-- google_ad_section_start -->
+
+      <h1>JavaScript Timers with setTimeout and setInterval</h1>
+
+      <div style="margin-bottom: 20px;">
+
+<script type="text/javascript"><!--
+google_ad_client = "pub-4361182986188898";
+/* ArtViewTopLgeRecV4OpBelTit */
+google_ad_slot = "2573255850";
+google_ad_width = 336;
+google_ad_height = 280;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+
+      </div>
+
+      <div id="articleMeta">
+      
+        <p class="breadcrumbs" style="margin: 0;">Tutorial by Matt Doyle | Level: Intermediate | Published on 15 January 2007</p>
+        
+        <div style="float: left; margin: 0; padding: 10px 0 0 0; position: relative;" class="breadcrumbs">Categories:</div>
+        <div style="float: left; margin: 0; padding: 10px 0 0 0; position: relative;" class="breadcrumbs"><ul style="list-style: none; margin-left: -1.1em;"><li style="margin-bottom: 0;"><a href="/articles/cat/development/">Web Development</a> &gt; <a href="/articles/cat/javascript/">JavaScript</a></li>
+</ul></div>
+
+      </div>
+
+       <div id="articleShareTop">
+
+        <div class="twitter">
+          <a href="http://twitter.com/share" class="twitter-share-button" data-count="vertical" data-via="ElatedDotCom">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+        </div>
+
+        <div class="facebook">
+          <div id="fb-root"></div><script src="http://connect.facebook.net/en_US/all.js#appId=6740296069&amp;xfbml=1"></script><fb:like href="" send="false" layout="box_count" width="60" show_faces="true" font=""></fb:like>
+        </div>
+
+      </div>
+ 
+      <p id="articleSummary">In this tutorial we'll look at JavaScript's setTimeout(), clearTimeout(), setInterval() and clearInterval() methods, and show how to use them to set timers and create delayed actions.</p>
+
+      <p>JavaScript features a handy couple of methods of the <code>window</code> object: <code>setTimeout()</code> and <code>setInterval()</code>. These let you run a piece of JavaScript code at some point in the future. In this tutorial we'll explain how these two methods work, and give some practical examples.</p>
+
+
+<h2><code>setTimeout()</code></h2>
+
+<p><code>window.setTimeout()</code> allows you to specify that a piece of JavaScript code (called an <dfn>expression</dfn>) will be run a specified number of milliseconds from when the <code>setTimeout()</code> method was called. The general syntax of the method is:</p>
+
+<pre class="code"><code>
+setTimeout ( <var>expression</var>, <var>timeout</var> );
+</code></pre>
+
+<p>where <code><var>expression</var></code> is the JavaScript code to run after <code><var>timeout</var></code> milliseconds have elapsed.</p>
+
+<p class="infoBox"><code>setTimeout()</code> also returns a numeric timeout ID that can be used to track the timeout. This is most commonly used with the <code>clearTimeout()</code> method (see below).</p>
+
+<p>Here's a simple example:</p>
+
+<pre class="code"><code>
+&lt;input type="button" name="clickMe" value="Click me and wait!"
+onclick="setTimeout('alert(\'Surprise!\')', 5000)"/&gt;
+</code></pre>
+
+<p>When a visitor clicks the button, the <code>setTimeout()</code> method is called, passing in the expression that we want to run after the time delay, and the value of the time delay itself - 5,000 milliseconds or 5 seconds.</p>
+
+<p>Try it yourself! Click the button below and wait 5 seconds:</p>
+
+<input type="button" name="clickMe" value="Click me and wait!" onclick="setTimeout('alert(\'Surprise!\')', 5000)"/>
+
+<p class="infoBox">It's worth pointing out that <code>setTimeout()</code> doesn't halt the execution of the script during the timeout period; it merely schedules the specified expression to be run at the specified time. After the call to <code>setTimeout()</code> the script continues normally, with the timer running in the background.</p>
+
+<p>In the above simple example we embedded the entire code for our JavaScript alert box in the <code>setTimeout()</code> call. More usually, you'd call a function instead. In this next example, clicking a button calls a function that changes the button's text colour to red. At the same time, this function also sets up a timed function using <code>setTimeout()</code> that sets the text colour back to black after 2 seconds:</p>
+
+<pre class="code"><code>
+&lt;script type="text/javascript"&gt;
+
+function setToRed ( )
+{
+  document.getElementById("colourButton").style.color = "#FF0000";
+  setTimeout ( "setToBlack()", 2000 );
+}
+
+function setToBlack ( )
+{
+  document.getElementById("colourButton").style.color = "#000000";
+}
+
+&lt;/script&gt;
+
+&lt;input type="button" name="clickMe" id="colourButton" value="Click me and wait!" onclick="setToRed()"/&gt;
+</code></pre>
+
+<p>Click the button below to see it in action:</p>
+
+<script type="text/javascript">
+function setToRed ( )
+{
+  document.getElementById("colourButton").style.color = "#FF0000";
+  setTimeout ( "setToBlack()", 2000 );
+}
+
+function setToBlack ( )
+{
+  document.getElementById("colourButton").style.color = "#000000";
+}
+</script>
+
+<input type="button" name="clickMe" id="colourButton" value="Click me and wait!" onclick="setToRed()"/>
+
+
+<h2><code>clearTimeout()</code></h2>
+
+<p>Sometimes it's useful to be able to cancel a timer before it goes off. The <code>clearTimeout()</code> method lets us do exactly that. Its syntax is:</p>
+
+<pre class="code"><code>
+clearTimeout ( <var>timeoutId</var> );
+</code></pre>
+
+<p>where <code><var>timeoutId</var></code> is the ID of the timeout as returned from the <code>setTimeout()</code> method call.</p>
+
+<p>For example, the following code sets up an alert box to appear after 3 seconds when a button is clicked, but the visitor can click the same button before the alert appears and cancel the timeout:</p>
+
+<pre class="code"><code>
+&lt;script type="text/javascript"&gt;
+
+var alertTimerId = 0;
+
+function alertTimerClickHandler ( )
+{
+  if ( document.getElementById("alertTimerButton").value == "Click me and wait!" )
+  {
+    // Start the timer
+    document.getElementById("alertTimerButton").value = "Click me to stop the timer!";
+    alertTimerId = setTimeout ( "showAlert()", 3000 );
+  }
+  else
+  {
+    document.getElementById("alertTimerButton").value = "Click me and wait!";
+    clearTimeout ( alertTimerId );
+  }
+}
+
+function showAlert ( )
+{
+  alert ( "Too late! You didn't stop the timer." );
+  document.getElementById("alertTimerButton").value = "Click me and wait!";
+}
+
+&lt;/script&gt;
+
+&lt;input type="button" name="clickMe" id="alertTimerButton" value="Click me and wait!" onclick="alertTimerClickHandler()"/&gt;
+</code></pre>
+
+<p>Try it out! Click the button below to start the timer, and click it again within 3 seconds to cancel it.</p>
+
+<script type="text/javascript">
+
+var alertTimerId = 0;
+
+function alertTimerClickHandler ( )
+{
+  if ( document.getElementById("alertTimerButton").value == "Click me and wait!" )
+  {
+    // Start the timer
+    document.getElementById("alertTimerButton").value = "Click me to stop the timer!";
+    alertTimerId = setTimeout ( "showAlert()", 3000 );
+  }
+  else
+  {
+    document.getElementById("alertTimerButton").value = "Click me and wait!";
+    clearTimeout ( alertTimerId );
+  }
+}
+
+function showAlert ( )
+{
+  alert ( "Too late! You didn't stop the timer." );
+  document.getElementById("alertTimerButton").value = "Click me and wait!";
+}
+
+</script>
+
+<input type="button" name="clickMe" id="alertTimerButton" value="Click me and wait!" onclick="alertTimerClickHandler()"/>
+
+
+<h2><code>setInterval()</code></h2>
+
+<p><code>The setInterval()</code> function is very closely related to <code> setTimeout()</code> - they even share similar syntax:</p>
+
+<pre class="code"><code>
+setInterval ( <var>expression</var>, <var>interval</var> );
+</code></pre>
+
+<p>The important difference is that, whereas <code>setTimeout()</code> triggers  <code><var>expression</var></code> only once, <code>setInterval()</code> keeps triggering <code><var>expression</var></code> again and again (unless you tell it to stop).</p>
+
+<p>So when should you use it? Essentially, if you ever find yourself writing code like:</p>
+
+<pre class="code"><code>
+
+setTimeout ( "doSomething()", 5000 );
+
+function doSomething ( )
+{
+  // (do something here)
+  setTimeout ( "doSomething()", 5000 );
+}
+</code></pre>
+
+<p>...then you should probably be using <code>setInterval()</code> instead:</p>
+
+<pre class="code"><code>
+
+setInterval ( "doSomething()", 5000 );
+
+function doSomething ( )
+{
+  // (do something here)
+}
+</code></pre>
+
+<p>Why? Well, for one thing you don't need to keep remembering to call <code>setTimeout()</code> at the end of your timed function. Also, when using <code>setInterval()</code> there's virtually no delay between one triggering of the expression and the next. With <code>setTimeout()</code>, there's a relatively long delay while the expression is evaluated, the function called, and the new <code>setTimeout()</code> being set up. So if you need regular, precise timing - or you need to do something at, well, set intervals - <code>setInterval()</code> is your best bet.</p>
+
+<h2><code>clearInterval()</code></h2>
+
+<p>As you've probably guessed, if you want to cancel a <code>setInterval()</code> then you need to call <code>clearInterval()</code>, passing in the interval ID returned by the call to <code>setInterval()</code>.</p>
+
+<p>Here's a simple example of <code>setInterval()</code> and <code>clearInterval()</code> in action. When you press a button, the following code displays "Woo!" and "Yay!" randomly every second until you tell it to stop. (I said a simple example, not a useful one.) Notice how we've also used a <code>setTimeout()</code> within the <code>wooYay()</code> function to make the "Woo!" or "Yay!" disappear after half a second:</p>
+
+<pre class="code"><code>
+&lt;script type="text/javascript"&gt;
+
+var wooYayIntervalId = 0;
+
+function wooYayClickHandler ( )
+{
+  if ( document.getElementById("wooYayButton").value == "Click me!" )
+  {
+    // Start the timer
+    document.getElementById("wooYayButton").value = "Enough already!";
+    wooYayIntervalId = setInterval ( "wooYay()", 1000 );
+  }
+  else
+  {
+    document.getElementById("wooYayMessage").innerHTML = "";
+    document.getElementById("wooYayButton").value = "Click me!";
+    clearInterval ( wooYayIntervalId );
+  }
+}
+
+function wooYay ( )
+{
+  if ( Math.random ( ) &gt; .5 )
+  {
+    document.getElementById("wooYayMessage").innerHTML = "Woo!";
+  }
+  else
+  {
+    document.getElementById("wooYayMessage").innerHTML = "Yay!";
+  }
+
+  setTimeout ( 'document.getElementById("wooYayMessage").innerHTML = ""', 500 );
+
+}
+
+&lt;/script&gt;
+
+&lt;div id="wooYayMessage" style="height: 1.5em; font-size: 2em; color: red;"&gt;&lt;/div&gt;
+&lt;input type="button" name="clickMe" id="wooYayButton" value="Click me!" onclick="wooYayClickHandler()"/&gt;
+</code></pre>
+
+<p>And here it is in action. Click the button below to kick it off:</p>
+
+<script type="text/javascript">
+
+var wooYayIntervalId = 0;
+
+function wooYayClickHandler ( )
+{
+  if ( document.getElementById("wooYayButton").value == "Click me!" )
+  {
+    // Start the timer
+    document.getElementById("wooYayButton").value = "Enough already!";
+    wooYayIntervalId = setInterval ( "wooYay()", 1000 );
+  }
+  else
+  {
+    document.getElementById("wooYayMessage").innerHTML = "";
+    document.getElementById("wooYayButton").value = "Click me!";
+    clearInterval ( wooYayIntervalId );
+  }
+}
+
+function wooYay ( )
+{
+  if ( Math.random ( ) > .5 )
+  {
+    document.getElementById("wooYayMessage").innerHTML = "Woo!";
+  }
+  else
+  {
+    document.getElementById("wooYayMessage").innerHTML = "Yay!";
+  }
+
+  setTimeout ( 'document.getElementById("wooYayMessage").innerHTML = ""', 500 );
+
+}
+
+</script>
+
+<div id="wooYayMessage" style="height: 1.5em; font-size: 2em; color: red;"></div>
+<input type="button" name="clickMe" id="wooYayButton" value="Click me!" onclick="wooYayClickHandler()"/>
+
+
+<h2>Summary</h2>
+
+<p style="margin-top: 20px;">We've now covered the four methods that you can use to create timed events in JavaScript: <code>setTimeout()</code> and <code>clearTimeout()</code> for controlling one-off events, and <code>setInterval()</code> and <code>clearInterval()</code> for setting up repeating events. Armed with these tools, you should have no problem creating timed events in your own scripts.</p>
+      
+      <!-- google_ad_section_end -->
+      
+            <div id="share" style="float: left; width: 48%; margin-top: 40px;">
+        <h2 style="margin-top: 0;"><span>Share This Page</span></h2>
+        
+        <div class="social">
+
+          <div style="float: left; width: 50%; margin-top: 7px;">
+
+            <div style="float: left; width: 66px;">
+              <a href="http://twitter.com/share" class="twitter-share-button" data-count="vertical" data-via="ElatedDotCom">Tweet</a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+            </div>
+
+            <div style="float: left; width: 66px; margin-top: 2px;">
+              <div id="fb-root"></div><script src="http://connect.facebook.net/en_US/all.js#appId=6740296069&amp;xfbml=1"></script><fb:like href="" send="false" layout="box_count" width="66" show_faces="true" font=""></fb:like>
+            </div>
+
+          </div>
+ 
+          <div style="float: right; width: 42%; margin-right: -7px;">
+
+            <ul>
+              <li><a class="delicious" onclick="pageTracker._trackEvent('Share', 'Delicious', 'http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/');" href="http://del.icio.us/post?url=http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/&amp;title=JavaScript+Timers+with+setTimeout+and+setInterval" title="Add to&nbsp;Del.icio.us"><span>Add to&nbsp;Del.icio.us</span></a></li>
+              
+              <li><a class="digg" onclick="pageTracker._trackEvent('Share', 'Digg', 'http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/');" href="http://digg.com/submit?phase=2&amp;url=http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/&amp;title=JavaScript+Timers+with+setTimeout+and+setInterval" title="Add to&nbsp;Digg"><span>Add to&nbsp;Digg</span></a></li>
+              
+              <li><a class="google-bookmarks" onclick="pageTracker._trackEvent('Share', 'Google Bookmarks', 'http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/');" href="http://www.google.com/bookmarks/mark?op=edit&amp;output=popup&amp;bkmk=http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/&amp;title=JavaScript+Timers+with+setTimeout+and+setInterval" title="Add to&nbsp;Google Bookmarks"><span>Add to&nbsp;Google Bookmarks</span></a></li>
+              
+              <li><a class="reddit" onclick="pageTracker._trackEvent('Share', 'Reddit', 'http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/');" href="http://www.reddit.com/submit" onclick="window.location = 'http://www.reddit.com/submit?url=' + encodeURIComponent(window.location); return false" title="Add to Reddit"><span>Add to Reddit</span></a></li>
+              
+              <li><a class="stumbleupon" onclick="pageTracker._trackEvent('Share', 'StumbleUpon', 'http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/');" href="http://www.stumbleupon.com/submit?url=http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/&amp;title=JavaScript+Timers+with+setTimeout+and+setInterval" title="Add to&nbsp;StumbleUpon"><span>Add to&nbsp;StumbleUpon</span></a></li>
+              
+              <li><a class="yahoo-bookmarks" onclick="pageTracker._trackEvent('Share', 'Yahoo', 'http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/');" href="http://myweb2.search.yahoo.com/myresults/bookmarklet?u=http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/&amp;t=JavaScript+Timers+with+setTimeout+and+setInterval" title="Add to&nbsp;Yahoo! Bookmarks"><span>Add to&nbsp;Yahoo! Bookmarks</span></a></li>
+            </ul>
+
+          </div>
+
+          <div class="clear" style="height: 1px;"> </div>
+          
+          <h3 style="margin-top: 20px; font-size: 1.1em;">Link to this page</h3>
+       
+          <form action="">
+            <div style="padding-top: 4px;">
+              <label class="fullwidthLeft" style="width: 28%; font-weight: normal;" for="linkHTML">Link HTML:</label>
+              <span class="fullwidthRight" style="width: 70%; margin-top: 3px; font-weight: bold;"> 
+                <input type="text" name="linkHTML" id="linkHTML" class="textField wide" style="width: 94%;" value="&lt;a href=&quot;http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/&quot;&gt;JavaScript Timers with setTimeout and setInterval&lt;/a&gt;" onfocus="this.select();" onclick="this.select(); pageTracker._trackEvent('Share', 'Link HTML', 'http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/');" />
+              </span>
+              <br class="clear" />
+              <label class="fullwidthLeft" style="width: 28%; font-weight: normal;" for="urlOnly">URL only:</label>
+              <span class="fullwidthRight" style="width: 70%; margin-top: 3px; font-weight: bold;"> 
+                <input type="text" name="urlOnly" id="urlOnly" class="textField wide" style="width: 94%;" value="http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/" onfocus="this.select();" onclick="this.select(); pageTracker._trackEvent('Share', 'URL only', 'http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/');" />
+              </span>
+              <br class="clear" />
+            </div>
+          </form>          
+          
+        </div>
+      </div>
+
+      <div id="follow" style="float: right; width: 48%; margin-top: 40px; padding: 0 0 4px 11px; border-left: 1px solid #ccc;">
+        <h2 style="margin-top: 0;">Follow Elated</h2>
+        
+        <div class="social">
+          <ul>
+            <li><a class="rss" onclick="pageTracker._trackEvent('Follow', 'RSS', 'http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/');" href="http://feeds.elated.com/ElatedNewStuff" title="Subscribe to our RSS feed"><span>Subscribe to our RSS feed</span></a></li>
+            <li><a class="twitter" onclick="pageTracker._trackEvent('Follow', 'Twitter', 'http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/');" href="http://twitter.com/ElatedDotCom" title="Follow us on Twitter"><span>Follow us on Twitter</span></a></li>
+            <li><a class="facebook" onclick="pageTracker._trackEvent('Follow', 'Facebook', 'http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/');" href="http://www.facebook.com/ElatedDotCom" title="Follow us on Facebook"><span>Follow us on Facebook</span></a></li>
+          </ul>
+          <div class="clear" style="height: 1px;"> </div>
+         
+          <h3 style="margin-top: 57px; font-size: 1.1em;">Subscribe to the Elated Newsletter</h3>
+
+          <p style="font-size: 0.9em; line-height: 1.6em;">Get <a href="/newsletter/">tips, tricks and site updates</a> once a month! Free web template when you sign up! <a href="/privacy/" style="font-size: 0.85em;">Privacy</a></p>
+    
+          <form method="post" action="/cgi-bin/listmailer/subscribe.cgi" onsubmit="return validateEmail(this)">
+            <div>
+              <input type="hidden" name="list_id" value="elated-extra"/>
+              <input type="text" class="textField" style="float: left; margin: 0; width: 209px;" name="email_address" id="email" value="Your Email Address..." onfocus="this.select(); if(this.value=='Your Email Address...') this.value=''"/>
+              <input type="submit" name="OK" value="Send" style="margin-left: 10px;" onclick="pageTracker._trackEvent('Follow', 'Newsletter', 'http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/');" />
+              <div class="clear"> </div>
+    
+            </div>
+          </form>
+        </div>
+      </div>
+       
+      <div class="clear" style="height: 1px;"> </div>
+
+
+      
+      <h2>Related articles</h2>
+
+      <div style="float: right; width: 336px; position: relative; margin: 0 0 0 30px; padding-top: 0;">
+<script type="text/javascript"><!--
+google_ad_client = "pub-4361182986188898";
+/* ArtViewBotRightLgeRecV4Op */
+google_ad_slot = "8098040265";
+google_ad_width = 336;
+google_ad_height = 280;
+//-->
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+      </div>
+
+      <ul id="relatedArticles">
+
+      <li><a href="/articles/5-javascript-libraries-youll-love/" title="Explores 5 excellent JavaScript libraries that can take your JavaScript-powered websites and web apps to the next level.">5 JavaScript Libraries You'll Love</a></li>
+<li><a href="/articles/rotatable-3d-product-boxshot-threejs/" title="Learn how to use the Three.js JavaScript library to create a 3D rotatable product boxshot in the page. No Flash required!">Make a Rotatable 3D Product Boxshot with Three.js</a></li>
+<li><a href="/articles/json-basics/" title="What is JSON, and what can it do? In this tutorial you learn how to use JSON to easily move data around the web. You also look at how to work with JSON using both JavaScript and PHP.">JSON Basics: What You Need to Know</a></li>
+<li><a href="/articles/html5-audio/" title="Learn how to use the HTML audio element to embed sounds in your web pages easily. Lots of code examples are included in the tutorial.">The Joy of HTML5 Audio: Tips &amp; Tricks for Easy Sound Embedding</a></li>
+<li><a href="/articles/snazzy-animated-pie-chart-html5-jquery/" title="Learn how to use the HTML5 canvas element, CSS3 and jQuery to create a gorgeous, interactive animated pie chart. Full code included for your own use.">A Snazzy Animated Pie Chart with HTML5 and jQuery</a></li>
+<li><a href="/articles/adding-wysiwyg-editor-to-your-site/" title="Explores JavaScript WYSIWYG HTML editors, and shows how to integrate the popular CKEditor and TinyMCE editors into your Web forms.">Adding a WYSIWYG HTML Editor to Your Site</a></li>
+<li><a href="/articles/using-javascripts-location-object-to-work-with-urls/" title="Learn how to use the JavaScript Location object to read and change URLs, as well as how to reload (or refresh) the page.">Using Javascript's Location Object to Work with URLs</a></li>
+<li><a href="/articles/creating-a-javascript-clock/" title="Use JavaScript's Date object and Window.setInterval method to make a simple real-time clock that you can place on any Web page. Along the way, you take a look at how to access text nodes in the DOM, and how to set an onLoad event handler.">Creating a JavaScript Clock</a></li>
+<li><a href="/articles/working-with-strings/" title="This handy reference covers strings and the String object in JavaScript. Each property and method of the String object is explained, along with examples.">Working with Strings</a></li>
+
+      </ul>
+
+      <div class="clear"></div>
+
+      
+
+      <h2>Responses to this article</h2>
+
+
+          <h3 style="margin-bottom: 18px;">9 responses <span style="font-style: italic; font-size: 0.85em; color: #333;">(oldest first)</span>:</h3>
+  
+      
+      <div class="articleResponseHeader">
+        <div class="username">
+          <a href="http://www.elated.com/member/profile/5534/">akeane</a>        </div>
+        <div class="date">
+          03-Mar-10          <span>03:54</span>
+        </div>
+        <div class="clear"> </div>
+      </div>
+      <div class="articleResponseBody">
+          Excellent explanation of timers and your examples are great.<br />Thank you.      </div>
+
+      <div class="clear" style="padding-top: 16px;"> </div>
+
+      
+      <div class="articleResponseHeader">
+        <div class="username">
+          <a href="http://www.elated.com/member/profile/1/">matt</a>        </div>
+        <div class="date">
+          03-Mar-10          <span>16:34</span>
+        </div>
+        <div class="clear"> </div>
+      </div>
+      <div class="articleResponseBody">
+          @akeane: Thanks for your kind words. I'm glad you enjoyed the tutorial.<img class="emoticon" src="/res/Image/forums/emot_happy.gif"><br /><br />Cheers,<br />Matt      </div>
+
+      <div class="clear" style="padding-top: 16px;"> </div>
+
+      
+      <div class="articleResponseHeader">
+        <div class="username">
+          <a href="http://www.elated.com/member/profile/5589/">davehardwick</a>        </div>
+        <div class="date">
+          10-Apr-10          <span>14:57</span>
+        </div>
+        <div class="clear"> </div>
+      </div>
+      <div class="articleResponseBody">
+          Another thing to talk about here with setInterval is setting a loop counter and clearing the interval when that loop count is hit.<br /><br /><pre class="code"><code><br /><br />     var counter = 0<br />     intervalId = 0;<br /><br />     function myLoopFunction()<br />     {<br />               intervalId = setInterval(function() {<br />               //make this is the first thing you do in the set interval function<br />               counter++;<br />                <br />              //do you code for setInterval() and clearInterval under normal conditions here...<br />              <br />             //okay, if we have tried for 5 minutes (30 x 10 seconds ), then lets stop trying because we did not reach the clearInterval under number means<br /><br />           //make this the last check in your set interval function<br />            if ( counter &gt; 30 ) {<br />                clearInterval(polliFrameSourceIntervalId);<br />            }<br /> <br />             //end setInterval<br />            } , 10000);<br /><br /><br /><br /></code></pre>      </div>
+
+      <div class="clear" style="padding-top: 16px;"> </div>
+
+      
+      <div class="articleResponseHeader">
+        <div class="username">
+          <a href="http://www.elated.com/member/profile/5949/">anupam</a>        </div>
+        <div class="date">
+          07-Dec-10          <span>00:12</span>
+        </div>
+        <div class="clear"> </div>
+      </div>
+      <div class="articleResponseBody">
+          Very useful post, and the examples are just superb, thanks, it helped a lot!!      </div>
+
+      <div class="clear" style="padding-top: 16px;"> </div>
+
+      
+      <div class="articleResponseHeader">
+        <div class="username">
+          <a href="http://www.elated.com/member/profile/1/">matt</a>        </div>
+        <div class="date">
+          09-Dec-10          <span>19:22</span>
+        </div>
+        <div class="clear"> </div>
+      </div>
+      <div class="articleResponseBody">
+          @anupam: Thanks, glad you found it helpful<img class="emoticon" src="/res/Image/forums/emot_happy.gif">      </div>
+
+      <div class="clear" style="padding-top: 16px;"> </div>
+
+      
+      <div class="articleResponseHeader">
+        <div class="username">
+          <a href="http://www.elated.com/member/profile/6001/">NT_Jester</a>        </div>
+        <div class="date">
+          19-Jan-11          <span>08:27</span>
+        </div>
+        <div class="clear"> </div>
+      </div>
+      <div class="articleResponseBody">
+          I Just want to thank you for such a great and simple to follow tutorial. I have looked at a lot over the past few weeks and I have got to say this is the best one I have seen for ages. Keep up the good work this has helped me heaps.      </div>
+
+      <div class="clear" style="padding-top: 16px;"> </div>
+
+      
+      <div class="articleResponseHeader">
+        <div class="username">
+          <a href="http://www.elated.com/member/profile/1/">matt</a>        </div>
+        <div class="date">
+          20-Jan-11          <span>14:20</span>
+        </div>
+        <div class="clear"> </div>
+      </div>
+      <div class="articleResponseBody">
+          @NT_Jester: You're welcome - thanks for the kind words.<img class="emoticon" src="/res/Image/forums/emot_happy.gif"> Hope life is good up in the NT!      </div>
+
+      <div class="clear" style="padding-top: 16px;"> </div>
+
+      
+      <div class="articleResponseHeader">
+        <div class="username">
+          <a href="http://www.elated.com/member/profile/6457/">ecommy</a>        </div>
+        <div class="date">
+          19-Aug-11          <span>07:47</span>
+        </div>
+        <div class="clear"> </div>
+      </div>
+      <div class="articleResponseBody">
+          Great and detailed explanations, I took the time to create an account just to thank you as it helped debugging a JavaScript issue I had since a while.      </div>
+
+      <div class="clear" style="padding-top: 16px;"> </div>
+
+      
+      <div class="articleResponseHeader">
+        <div class="username">
+          <a href="http://www.elated.com/member/profile/1/">matt</a>        </div>
+        <div class="date">
+          23-Aug-11          <span>22:41</span>
+        </div>
+        <div class="clear"> </div>
+      </div>
+      <div class="articleResponseBody">
+          @ecommy: Great stuff<img class="emoticon" src="/res/Image/forums/emot_happy.gif">      </div>
+
+      <div class="clear" style="padding-top: 16px;"> </div>
+
+      
+      
+
+
+      <h3 id="post-response">Post a response</h3>
+
+      
+      <p>Want to add a comment, or ask a question about this article? <a href="/forums/topic/4682/post/new/">Post a response</a>.</p>
+
+
+      <p>To post responses you need to be a member. Not a member yet? Signing up is free, easy and only takes a minute. <a href="/member/register/?newPostTopic=4682">Sign up now</a>.</p>
+
+
+
+
+
+      <p style="text-align: center; margin-top: 20px;"><a href="#top">Top of Page</a></p>
+      
+
+    </div>
+
+
+  <div id="mainBot"></div>
+  </div> <!-- /main -->
+  </div> <!-- /mainWrap -->
+
+  <div id="sidebarWrap">
+
+    <div id="sidebar">
+
+
+      <div style="overflow: hidden;">
+<!-- BuySellAds.com Zone Code -->
+<div id="bsap_1252044" class="bsarocks bsap_10b1f1363e440baccdafa512ee9c9b28"></div>
+<!-- END BuySellAds.com Zone Code -->
+      </div>
+
+      <div class="adBox" style="margin-top: 10px;">
+<!-- BuySellAds.com Zone Code -->
+<div id="bsap_1246938" class="bsarocks bsap_10b1f1363e440baccdafa512ee9c9b28"></div>
+<!-- END BuySellAds.com Zone Code -->
+      </div>
+
+      <div id="advertise-here-sidebar"><a href="http://buysellads.com/buy/detail/25436" onclick="pageTracker._trackEvent('Advertise Link', 'Sidebar, Below 125x125s', 'http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/');">300,000+ Impressions<br>From Just $100!</a></div>
+
+      <hr class="swirl" />
+
+      <div>
+
+        <h3>Current forum topics</h3>
+        <ul id="currentForumTopics">
+                  <li><a href="/forums/topic/5171/">How to Make a Slick Ajax Contact Form with jQuery and PHP</a></li>
+                  <li><a href="/forums/topic/5280/">5 JavaScript Libraries You'll Love</a></li>
+                  <li><a href="/forums/topic/5272/">MySQL for Absolute Beginners</a></li>
+                  <li><a href="/forums/topic/5279/">Rotating Banner</a></li>
+                  <li><a href="/forums/topic/4786/">Why Do Designers Use Macs?</a></li>
+                </ul>
+
+        <p>Got a question about making a website? <a href="/forums/">Ask it in the forums</a> &mdash; we'd love to help you. All questions answered!</p>
+
+      </div>
+
+      <div style="margin: 50px 0 0 -8px;">
+<!-- BuySellAds.com Zone Code -->
+<!--<div id="bsap_1249683" class="bsarocks bsap_10b1f1363e440baccdafa512ee9c9b28"></div>-->
+<!-- END BuySellAds.com Zone Code -->
+
+      
+                  <a href="http://store.elated.com/?utm_source=http%3A%2F%2Fwww.elated.com%2Farticles%2Fjavascript-timers-with-settimeout-and-setinterval%2F&utm_medium=sidebar&utm_content=jqm-book-out-now&utm_campaign=jqm-book"><img src="/res/Image/advertise/store.elated.com/jqm-book-out-now.png" alt="jQuery Mobile Book Out Now! Detailed 345-page eBook." style="width: 310px; height: 210px; border: none;"></a>
+            
+      </div>
+ 
+      <h3 style="clear: both; padding-top: 30px;">Popular articles</h3>
+
+      <ul>
+        <li><a href="/articles/jquery-mobile-what-can-it-do-for-you/">jQuery Mobile: What Can It Do for You?</a></li>
+        <li><a href="/articles/javascript-tabs/">JavaScript Tabs - Create Tabbed Web Pages Easily</a></li>
+        <li><a href="/articles/slick-ajax-contact-form-jquery-php/">How to Make a Slick Ajax Contact Form with jQuery and PHP</a></li>
+        <li><a href="/articles/css-rollover-buttons/">Making CSS Rollover Buttons</a></li>
+        <li><a href="/articles/object-oriented-php-for-absolute-beginners/">Object-Oriented PHP for Absolute Beginners</a></li>
+
+      </ul>
+
+
+      <h3>Building a site? We're here to help!</h3>
+
+      <p>At Elated you'll find lots of free webmaster resources to improve your sites, including:</p>
+
+      <ul>
+        <li><a href="/articles/">Web design and development articles and tutorials</a></li>
+        <li><a href="/pagekits/">Free website templates</a></li>
+        <li><a href="/imagekits/">Free images</a></li>
+        <li><a href="/actionkits/">Photoshop actions</a></li>
+        <li><a href="/forums/">Helpful experts in our webmaster forums</a></li>
+        <li>A <a href="/newsletter/">free newsletter</a> packed with useful tips and advice</li>
+
+      </ul>
+
+      <p>Yes, this stuff is free! We just ask that you give us a link - find out how to <a href="/linktous/">link to us</a>. (Note: all our content is copyrighted; please read our website's <a href="/usage/">terms of use</a>.)</p>
+
+      <p>Never made a website before? Read <a href="/articles/how-to-make-a-website/">How to Make a Website</a>.</p>
+
+      <div style="text-align: center; margin-top: 30px;">
+        <a href="http://www.smashingmagazine.com/the-smashing-network/"><img src="/res/Image/v4/misc/sn-badge-210px-colour-3.png" alt="Smashing Network"/></a>
+        <p>Elated is part of the Smashing Network</p>
+      </div>
+       
+    </div> <!-- /sidebar -->
+
+  </div> <!-- /sidebarWrap -->
+
+  <div class="clear"> </div>
+
+  <div style="height: 30px;"> </div>
+
+  <div style="width: 728px; height: 90px; margin: 0 auto 30px auto;">
+<!-- BuySellAds.com Zone Code -->
+<div id="bsap_1252045" class="bsarocks bsap_10b1f1363e440baccdafa512ee9c9b28"></div>
+<!-- END BuySellAds.com Zone Code -->
+  </div>
+
+  <div id="pageFooter">
+
+    <ul id="footerNavOther">
+      <li class="first"><a href="/">Home</a></li>
+      <li><a href="/aboutus/">About Elated</a></li>
+      <li><a href="http://buysellads.com/buy/detail/25436" onclick="pageTracker._trackEvent('Advertise Link', 'Footer', 'http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/');">Advertise</a></li>
+      <li><a href="/contact/">Contact Us</a></li>
+      <li><a href="/faq/">FAQ</a></li>
+      <li><a href="/spamwars/">Spamwars</a></li>
+      <li><a href="/linktous/">Link to Us</a></li>
+      <li><a href="http://feeds.elated.com/ElatedNewStuff">RSS</a></li>
+      <li><a href="http://twitter.com/ElatedDotCom">Twitter</a></li>
+      <li><a href="http://www.facebook.com/ElatedDotCom">Facebook</a></li>
+    </ul>
+
+    <ul id="footerNavMain">
+      <li class="first"><a href="/articles/">Articles</a></li>
+      <li><a href="/pagekits/">PageKits</a></li>
+      <li><a href="/imagekits/">ImageKits</a></li>
+      <li><a href="/actionkits/">ActionKits</a></li>
+      <li><a href="/forums/">Forums</a></li>
+      <li><a href="/newsletter/">Newsletter</a></li>
+    </ul>
+
+    <p class="copyright">This site &copy; Elated Communications Ltd 1996-2011. Unauthorised copying or redistribution prohibited.  By using this Website, you are indicating your acceptance of our <a href="/usage/">Terms of Use</a>.</p>
+
+    <img src="/res/Image/v4/misc/elated-love-your-site.png" alt="Elated: Love Your Site" width="240" height="63" style="border: none;" />
+
+    <div class="clear">&nbsp;</div>
+  </div>
+
+  <div class="clear">&nbsp;</div>
+
+
+</div>
+
+<!-- End Outer Container -->
+
+<ul id="followTab">
+  <li><a class="newsletter" href="/newsletter/" title="Subscribe to the Elated Extra newsletter" onclick="pageTracker._trackEvent('Tab Follow', 'Newsletter', 'http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/');"><span>Subscribe to the Elated Extra newsletter</span></a></li>
+  <li><a class="rss" href="http://feeds.elated.com/ElatedNewStuff" title="Subscribe to Elated.com's RSS feed" onclick="pageTracker._trackEvent('Tab Follow', 'RSS', 'http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/');"><span>Subscribe to Elated.com's RSS feed</span></a></li>
+  <li><a class="twitter" href="http://twitter.com/ElatedDotCom" title="Follow Elated.com on Twitter" onclick="pageTracker._trackEvent('Tab Follow', 'Twitter', 'http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/');"><span>Follow Elated.com on Twitter</span></a></li>
+  <li><a class="facebook" href="http://www.facebook.com/ElatedDotCom" title="Follow Elated.com on Facebook" onclick="pageTracker._trackEvent('Tab Follow', 'Facebook', 'http://www.elated.com/articles/javascript-timers-with-settimeout-and-setinterval/');"><span>Follow Elated.com on Facebook</span></a></li>
+</ul>
+
+<script type="text/javascript">
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all();
+</script>
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-92937-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+
+</body>
+
+</html>
+
