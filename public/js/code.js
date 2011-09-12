@@ -1,5 +1,5 @@
-/* DO NOT MODIFY. This file was compiled Fri, 09 Sep 2011 20:41:26 GMT from
- * /Users/sam/projects/sinatra/shoebox/public/js/code.coffee
+/* DO NOT MODIFY. This file was compiled Mon, 12 Sep 2011 04:30:18 GMT from
+ * /users/sam/projects/sinatra/shoebox/public/js/code.coffee
  */
 
 (function() {
@@ -26,11 +26,15 @@
     }
   };
   _(PIC).extend({
-    fetch: function(set) {
+    fetch: function(set, size) {
       if (set == null) {
         set = false;
       }
-      set = set || this.sets['family3'];
+      if (size == null) {
+        size = false;
+      }
+      set = set || this.sets['family2'];
+      PIC.total = size || PIC.total;
       return $.getJSON('http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id=' + set + '&format=json&extras=url_s&jsoncallback=?', PIC.display);
     },
     place: {
@@ -306,7 +310,7 @@
           return param = pic.data(lt, param);
         }
       },
-      allLoad: _.after(PIC.total, function() {
+      allLoad: _.after(1, function() {
         PIC.events.drag.setup();
         return PIC.events.trash.setup();
       })
@@ -420,7 +424,6 @@
     }
   };
   $(function() {
-    PIC.fetch();
     $('#canvas, .background').css('height', U.log('h', $(window).height() - 60));
     $('#shoebox').css('padding-top', $(window).height() - 60);
     return $('canvas').attr({

@@ -10,3 +10,8 @@
 		<img src="/img/ico/trash-empty.png" class="trash" />
 	</div>
 </div>
+<script>
+	$(function() {
+		PIC.fetch('<%=@set%>', <%=@size||false%>)
+	})
+</script>

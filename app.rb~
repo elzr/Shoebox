@@ -13,6 +13,8 @@ class Shoebox < Sinatra::Base
 	before { request.env['PATH_INFO'].gsub!(/\/$/, '') }
 
 	get '/' do
+		@set = params[:set]
+		@size = params[:size]
 		erb :index
 	end
 

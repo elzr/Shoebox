@@ -3,8 +3,9 @@ window.PIC = PIC =
   sets: {abstract:'72157625438391339', obama:'72157626767345322', models:'72157606203394154', sexy:'72157607176703404', family5:'72157626228862861', family4:'72157610172574733', family3:'72157625806894425', family2:'72157594183166324', family1:'72157594172843597', faces:'72157605579131380', inventors:'72157605338975676', bw:'72157607708666180', objects:'72057594050733003', portman:'1476952'}
 
 _(PIC).extend(
-  fetch: (set=false) ->
-    set = set||this.sets['family3']
+  fetch: (set=false, size=false) ->
+    set = set||this.sets['family2']
+    PIC.total = size||PIC.total
     $.getJSON('http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id='+ set+'&format=json&extras=url_s&jsoncallback=?', PIC.display)
       #'/data?jsoncallback=?'
   place:
@@ -178,12 +179,12 @@ _(PIC).extend(
 
         #console.log(lt, pic.css(lt))
         #console.log('----')
-    allLoad: _.after(PIC.total, ()->
-      PIC.events.drag.setup()
-      PIC.events.trash.setup()
-    )
+    allLoad: _.after(1, ->
+        PIC.events.drag.setup()
+        PIC.events.trash.setup()
+      )
   display: (data)->
-    data = data.photoset.photo.sort( ()->U.rand() ).slice(0, PIC.total); e = PIC.events
+    data = data.photoset.photo.sort( ->U.rand() ).slice(0, PIC.total); e = PIC.events
     $('#shoebox').find('.loading').remove()
 
     for item in data
@@ -233,8 +234,6 @@ window.U = U =
       '{'+("#{key}:#{if $.isPlainObject(value) then U.print(value) else value}" for key, value of obj).join(', ')+'}'
 
 $( () ->
-  PIC.fetch()
-
   $('#canvas, .background').css('height', U.log('h', $(window).height()-60) )
   $('#shoebox').css('padding-top', $(window).height()-60)
   $('canvas').attr({width:$('#canvas').width(), height:$('#canvas').height()} )
