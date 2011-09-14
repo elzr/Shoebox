@@ -144,12 +144,12 @@ window.PIC = PIC =
     trash:
       delete: (event, ui)->
         ($ ui.draggable).fadeOut()
-        ($ @).attr src:'/img/ico/trash-full.png'
+        ($ '#trash').addClass('full')
       restore: ->
         ($ '#canvas .pic:hidden').fadeIn()
-        ($ @).attr src:'/img/ico/trash-empty.png'
+        ($ '#trash').removeClass('full')
       setup: ->
-        ($ '.trash').droppable(
+        ($ '#trash').droppable(
           accept: '.pic'
           hoverClass: 'hover'
           tolerance: 'touch'
@@ -183,6 +183,7 @@ window.PIC = PIC =
         #console.log('----')
 
   display: (data)->
+    ($ '#toolbar input').val data.photoset.ownername+"'s Shoebox"
     [data, e] = [data.photoset.photo.sort( -> U.rand() ).slice(0, PIC.total), PIC.events]
     ($ '#shoebox').find('.loading').remove()
 
@@ -201,7 +202,7 @@ window.U = U =
       points = _.union @flatten(l1), @flatten(l2)
       (_ points).max() - (_ points).min() <= @length(l1) + @length(l2)
     draw: (a, b)->
-      c = ($ 'canvas')[0].getContext '2d'
+      c = ($ '#overlay')[0].getContext '2d'
       c.moveTo a.x||a.left, a.y||a.top
       c.lineTo b.x||b.left, b.y||b.top
       c.lineWidth = 5
@@ -234,6 +235,7 @@ window.U = U =
       '{'+("#{key}:#{if $.isPlainObject value then U.print value else value}" for key, value of obj).join(', ')+'}'
 
 $ ->
-  ($ '#canvas, .background').css height: $(window).height()-60
-  ($ '#shoebox').css 'padding-top', ($ window).height()-60
-  ($ 'canvas').attr width:($ '#canvas').width(), height:($ '#canvas').height()
+  ($ '#shoebox img.background').css height: $(window).height()
+  ($ '#canvas').css height: $(window).height() - $('#shoebox #toolbar').height(), top:$('#shoebox #toolbar').height()
+  ($ '#shoebox').css 'padding-top', ($ window).height()
+  ($ '#overlay').attr width:($ '#canvas').width(), height:($ '#canvas').height()

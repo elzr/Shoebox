@@ -1,4 +1,4 @@
-/* DO NOT MODIFY. This file was compiled Wed, 14 Sep 2011 01:14:16 GMT from
+/* DO NOT MODIFY. This file was compiled Wed, 14 Sep 2011 03:49:43 GMT from
  * /Users/sam/projects/sinatra/shoebox/public/js/code.coffee
  */
 
@@ -28,7 +28,7 @@
   };
   (_(PIC)).extend({
     fetch: function(set, size) {
-      set || (set = this.sets['models']);
+      set || (set = this.sets['family2']);
       PIC.total = size || PIC.total;
       return $.getJSON("http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id=" + set + "&format=json&extras=url_s&jsoncallback=?", PIC.display);
     },
@@ -295,18 +295,14 @@
       trash: {
         "delete": function(event, ui) {
           ($(ui.draggable)).fadeOut();
-          return ($(this)).attr({
-            src: '/img/ico/trash-full.png'
-          });
+          return ($('#trash')).addClass('full');
         },
         restore: function() {
           ($('#canvas .pic:hidden')).fadeIn();
-          return ($(this)).attr({
-            src: '/img/ico/trash-empty.png'
-          });
+          return ($('#trash')).removeClass('full');
         },
         setup: function() {
-          return ($('.trash')).droppable({
+          return ($('#trash')).droppable({
             accept: '.pic',
             hoverClass: 'hover',
             tolerance: 'touch',
@@ -334,6 +330,7 @@
     },
     display: function(data) {
       var e, item, _i, _len, _ref;
+      ($('#toolbar input')).val(data.photoset.ownername + "'s Shoebox");
       _ref = [
         data.photoset.photo.sort(function() {
           return U.rand();
@@ -366,7 +363,7 @@
       },
       draw: function(a, b) {
         var c;
-        c = ($('canvas'))[0].getContext('2d');
+        c = ($('#overlay'))[0].getContext('2d');
         c.moveTo(a.x || a.left, a.y || a.top);
         c.lineTo(b.x || b.left, b.y || b.top);
         c.lineWidth = 5;
@@ -440,11 +437,15 @@
     }
   };
   $(function() {
-    ($('#canvas, .background')).css({
-      height: $(window).height() - 60
+    ($('#shoebox img.background')).css({
+      height: $(window).height()
     });
-    ($('#shoebox')).css('padding-top', ($(window)).height() - 60);
-    return ($('canvas')).attr({
+    ($('#canvas')).css({
+      height: $(window).height() - $('#shoebox #toolbar').height(),
+      top: $('#shoebox #toolbar').height()
+    });
+    ($('#shoebox')).css('padding-top', ($(window)).height());
+    return ($('#overlay')).attr({
       width: ($('#canvas')).width(),
       height: ($('#canvas')).height()
     });

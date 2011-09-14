@@ -1,14 +1,29 @@
 <%@title = 'Welcome'%>
 
 <div id="shoebox">
-	<img class="background" src="/img/texture/cardboard_3_2.jpg" />
-	<canvas height="800"></canvas>
+	<canvas id="overlay" height="800"></canvas>
+	<div id="toolbar">
+		<div class="container">
+			<a href="http://1000memories.com/" class="logo-1000"><img src="/img/logo-1000.png" /></a>
+			<div class="title">
+				<input type="text">
+			</div>
+		</div>
+	</div>
 	<div class="loading">
 		<img src="/img/ico/loading.gif" class="ico" /> Loading...
 	</div>
 	<div id="canvas">
-		<img src="/img/ico/trash-empty.png" class="trash" />
+		<div id="trash">
+			<div class="text">
+				<span>Drag a photo here to remove</span><br>
+				<span class="full">(Click here to restore removed photos)</span>
+			</div>
+			<div class="background"></div>
+		</div>
+		<a href="http://momentusmedia.com" class="logo-mom"><img src="/img/logo-mom.png" /></a>
 	</div>
+	<img class="background" src="/img/texture/bkg-mid-res.jpg" />
 </div>
 <script>
 	$(function() {

@@ -38,3 +38,11 @@
   background: -webkit-gradient( linear, left top, left bottom, color-stop(0, $start), color-stop(1, $end) )
   background: -moz-linear-gradient(center top, $start 0%, $end 100%)
   -pie-background: linear-gradient(90deg, $start, $end)
+
+@mixin opacity($alpha:50)
+  @extend .pie
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=$alpha)
+  filter: alpha(opacity=$alpha)
+  -moz-opacity: $alpha/100
+  -khtml-opacity: $alpha/100
+  opacity: $alpha/100
