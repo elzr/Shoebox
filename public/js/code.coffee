@@ -20,7 +20,7 @@ window.PIC = PIC =
 
 (_ PIC).extend(
   fetch: (set, size) ->
-    set or= @sets['models']
+    set or= @sets['family2']
     PIC.total = size || PIC.total
     $.getJSON "http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id=#{set}&format=json&extras=url_s&jsoncallback=?", PIC.display
       #'/data?jsoncallback=?'
