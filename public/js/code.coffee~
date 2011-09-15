@@ -22,8 +22,11 @@ window.PIC = PIC =
   fetch: (set, size) ->
     set or= @sets['family2']
     PIC.total = size || PIC.total
-    $.getJSON "http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id=#{set}&format=json&extras=url_s&jsoncallback=?", PIC.display
-      #'/data?jsoncallback=?'
+    $.getJSON(
+      '/data?jsoncallback=?',
+      #"http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id=#{set}&format=json&extras=url_s&jsoncallback=?",
+      PIC.display
+    )
   place:
     piles: [{x:.25, y:.4}, {x:.75, y:.25}, {x:.6, y:.75}]
     pile: (i) -> @piles[Math.floor i/(PIC.total/3)]
@@ -183,15 +186,17 @@ window.PIC = PIC =
         #console.log('----')
 
   display: (data)->
-    ($ '#toolbar input').val data.photoset.ownername+"'s Shoebox"
+    BOX.title.setup(data)
     [data, e] = [data.photoset.photo.sort( -> U.rand() ).slice(0, PIC.total), PIC.events]
     ($ '#shoebox').find('.loading').remove()
 
+    ###
     for item in data
       ($ '#canvas').append( $('<div class="pic" />').html('<img src="'+item.url_s+'" /><div class="backside"><span>'+item.title+'</span></div>') ).
         find('.pic:last').css('z-index', PIC.stack.topmost())
     ($ '#canvas .pic').dblclick(e.dblclick).click(e.click).
       find('img').load e.load
+    ###
 )
 
 window.U = U =
@@ -234,8 +239,32 @@ window.U = U =
     else
       '{'+("#{key}:#{if $.isPlainObject value then U.print value else value}" for key, value of obj).join(', ')+'}'
 
+window.BOX = BOX =
+  setup: ->
+    ($ '#shoebox img.background').css height: $(window).height()
+    ($ '#canvas').css height: $(window).height() - $('#shoebox #toolbar').height(), top:$('#shoebox #toolbar').height()
+    ($ '#shoebox').css 'padding-top', ($ window).height()
+    ($ '#overlay').attr width:($ '#canvas').width(), height:($ '#canvas').height()
+    ($ '#sorts a').click ->
+      ($ '#sorts a').not(@).removeClass('selected')
+      ($ @).toggleClass 'selected'
+  title:
+    setup:(data)->
+      title = data.photoset.ownername+"'s Shoebox"
+      
+      ($ '#toolbar textarea').val( title ).keydown(@change).keyup(@change)
+      @change.call ($ '#toolbar textarea')
+      ($ '#toolbar .title').data maxWidth: $('#toolbar .container').width() - $('.logo-1000').width() - $('#sorts').width() - 400
+      ($ '#toolbar .shadow').text( title ).css 'max-width', U.log('maxwidth', ($ '#toolbar .title').data('maxWidth'))
+    change:()->
+      U.log('change')
+      shadow = ($ '#toolbar .shadow').text ($ @).val()
+      ($ @).css
+        width: Math.min ($ '#toolbar .title').data('maxWidth') , Math.max( 190, shadow.width()+50)
+        height: Math.min 100, Math.max(40, shadow.height())
+      ($ '#toolbar table.title').css
+        width: ($ @).width() + 60
+        height: ($ @).height() + 60
+
 $ ->
-  ($ '#shoebox img.background').css height: $(window).height()
-  ($ '#canvas').css height: $(window).height() - $('#shoebox #toolbar').height(), top:$('#shoebox #toolbar').height()
-  ($ '#shoebox').css 'padding-top', ($ window).height()
-  ($ '#overlay').attr width:($ '#canvas').width(), height:($ '#canvas').height()
+  BOX.setup()

@@ -5,8 +5,29 @@
 	<div id="toolbar">
 		<div class="container">
 			<a href="http://1000memories.com/" class="logo-1000"><img src="/img/logo-1000.png" /></a>
-			<div class="title">
-				<input type="text">
+			<table cellpadding="0" cellspacing="0" class="title">
+				<tr>
+					<td class="tl">&nbsp;</td>
+					<td class="t">&nbsp;</td>
+					<td class="tr">&nbsp;</td>
+				</tr>
+				<tr>
+					<td class="l">&nbsp;</td>
+					<td class="c"><textarea></textarea></td>
+					<td class="r">&nbsp;</td>
+				</tr>
+				<tr>
+					<td class="bl">&nbsp;</td>
+					<td class="b">&nbsp;</td>
+					<td class="br">&nbsp;</td>
+				</tr>
+			</table>
+			<div class="shadow"></div>
+			<div id="sorts">
+				Sort photos by
+				<a href="javascript:void(0)">Location</a>
+				<a href="javascript:void(0)">Date</a>
+				<a href="javascript:void(0)">Popularity</a>
 			</div>
 		</div>
 	</div>
@@ -22,6 +43,8 @@
 			<div class="background"></div>
 		</div>
 		<a href="http://momentusmedia.com" class="logo-mom"><img src="/img/logo-mom.png" /></a>
+		<a href="javascript:void(0)" class="ear left"><img src="/img/left-arrow.png" />Start Over</a>
+		<a href="javascript:void(0)" class="ear right"><img src="/img/right-arrow.png" />Save & share<br>on Facebook</a>
 	</div>
 	<img class="background" src="/img/texture/bkg-mid-res.jpg" />
 </div>

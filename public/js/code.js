@@ -1,9 +1,9 @@
-/* DO NOT MODIFY. This file was compiled Wed, 14 Sep 2011 03:49:43 GMT from
+/* DO NOT MODIFY. This file was compiled Thu, 15 Sep 2011 06:50:55 GMT from
  * /Users/sam/projects/sinatra/shoebox/public/js/code.coffee
  */
 
 (function() {
-  var PIC, U;
+  var BOX, PIC, U;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   window.PIC = PIC = {
     total: 9,
@@ -30,7 +30,7 @@
     fetch: function(set, size) {
       set || (set = this.sets['family2']);
       PIC.total = size || PIC.total;
-      return $.getJSON("http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id=" + set + "&format=json&extras=url_s&jsoncallback=?", PIC.display);
+      return $.getJSON('/data?jsoncallback=?', PIC.display);
     },
     place: {
       piles: [
@@ -329,19 +329,21 @@
       }
     },
     display: function(data) {
-      var e, item, _i, _len, _ref;
-      ($('#toolbar input')).val(data.photoset.ownername + "'s Shoebox");
+      var e, _ref;
+      BOX.title.setup(data);
       _ref = [
         data.photoset.photo.sort(function() {
           return U.rand();
         }).slice(0, PIC.total), PIC.events
       ], data = _ref[0], e = _ref[1];
-      ($('#shoebox')).find('.loading').remove();
-      for (_i = 0, _len = data.length; _i < _len; _i++) {
-        item = data[_i];
-        ($('#canvas')).append($('<div class="pic" />').html('<img src="' + item.url_s + '" /><div class="backside"><span>' + item.title + '</span></div>')).find('.pic:last').css('z-index', PIC.stack.topmost());
-      }
-      return ($('#canvas .pic')).dblclick(e.dblclick).click(e.click).find('img').load(e.load);
+      return ($('#shoebox')).find('.loading').remove();
+      /*
+          for item in data
+            ($ '#canvas').append( $('<div class="pic" />').html('<img src="'+item.url_s+'" /><div class="backside"><span>'+item.title+'</span></div>') ).
+              find('.pic:last').css('z-index', PIC.stack.topmost())
+          ($ '#canvas .pic').dblclick(e.dblclick).click(e.click).
+            find('img').load e.load
+          */
     }
   });
   window.U = U = {
@@ -436,18 +438,52 @@
       }
     }
   };
+  window.BOX = BOX = {
+    setup: function() {
+      ($('#shoebox img.background')).css({
+        height: $(window).height()
+      });
+      ($('#canvas')).css({
+        height: $(window).height() - $('#shoebox #toolbar').height(),
+        top: $('#shoebox #toolbar').height()
+      });
+      ($('#shoebox')).css('padding-top', ($(window)).height());
+      ($('#overlay')).attr({
+        width: ($('#canvas')).width(),
+        height: ($('#canvas')).height()
+      });
+      return ($('#sorts a')).click(function() {
+        ($('#sorts a')).not(this).removeClass('selected');
+        return ($(this)).toggleClass('selected');
+      });
+    },
+    title: {
+      setup: function(data) {
+        var title;
+        title = data.photoset.ownername + "'s Shoebox";
+        ($('#toolbar textarea')).val(title).keydown(this.change).keyup(this.change);
+        this.change.call($('#toolbar textarea'));
+        ($('#toolbar .title')).data({
+          maxWidth: $('#toolbar .container').width() - $('.logo-1000').width() - $('#sorts').width() - 400
+        });
+        return ($('#toolbar .shadow')).text(title).css('max-width', U.log('maxwidth', ($('#toolbar .title')).data('maxWidth')));
+      },
+      change: function() {
+        var shadow;
+        U.log('change');
+        shadow = ($('#toolbar .shadow')).text(($(this)).val());
+        ($(this)).css({
+          width: Math.min(($('#toolbar .title')).data('maxWidth'), Math.max(190, shadow.width() + 50)),
+          height: Math.min(100, Math.max(40, shadow.height()))
+        });
+        return ($('#toolbar table.title')).css({
+          width: ($(this)).width() + 60,
+          height: ($(this)).height() + 60
+        });
+      }
+    }
+  };
   $(function() {
-    ($('#shoebox img.background')).css({
-      height: $(window).height()
-    });
-    ($('#canvas')).css({
-      height: $(window).height() - $('#shoebox #toolbar').height(),
-      top: $('#shoebox #toolbar').height()
-    });
-    ($('#shoebox')).css('padding-top', ($(window)).height());
-    return ($('#overlay')).attr({
-      width: ($('#canvas')).width(),
-      height: ($('#canvas')).height()
-    });
+    return BOX.setup();
   });
 }).call(this);
