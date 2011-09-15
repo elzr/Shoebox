@@ -23,8 +23,8 @@ window.PIC = PIC =
     set or= @sets['family2']
     PIC.total = size || PIC.total
     $.getJSON(
-      '/data?jsoncallback=?',
-      #"http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id=#{set}&format=json&extras=url_s&jsoncallback=?",
+      #'/data?jsoncallback=?',
+      "http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id=#{set}&format=json&extras=url_s&jsoncallback=?",
       PIC.display
     )
   place:
@@ -190,13 +190,11 @@ window.PIC = PIC =
     [data, e] = [data.photoset.photo.sort( -> U.rand() ).slice(0, PIC.total), PIC.events]
     ($ '#shoebox').find('.loading').remove()
 
-    ###
     for item in data
       ($ '#canvas').append( $('<div class="pic" />').html('<img src="'+item.url_s+'" /><div class="backside"><span>'+item.title+'</span></div>') ).
         find('.pic:last').css('z-index', PIC.stack.topmost())
     ($ '#canvas .pic').dblclick(e.dblclick).click(e.click).
       find('img').load e.load
-    ###
 )
 
 window.U = U =
@@ -241,7 +239,7 @@ window.U = U =
 
 window.BOX = BOX =
   setup: ->
-    ($ '#shoebox img.background').css height: $(window).height()
+    ($ '#shoebox .canvas-background').css height: $(window).height()
     ($ '#canvas').css height: $(window).height() - $('#shoebox #toolbar').height(), top:$('#shoebox #toolbar').height()
     ($ '#shoebox').css 'padding-top', ($ window).height()
     ($ '#overlay').attr width:($ '#canvas').width(), height:($ '#canvas').height()
@@ -251,20 +249,32 @@ window.BOX = BOX =
   title:
     setup:(data)->
       title = data.photoset.ownername+"'s Shoebox"
+      ta = ($ '#toolbar textarea')
       
-      ($ '#toolbar textarea').val( title ).keydown(@change).keyup(@change)
-      @change.call ($ '#toolbar textarea')
-      ($ '#toolbar .title').data maxWidth: $('#toolbar .container').width() - $('.logo-1000').width() - $('#sorts').width() - 400
-      ($ '#toolbar .shadow').text( title ).css 'max-width', U.log('maxwidth', ($ '#toolbar .title').data('maxWidth'))
+      ta.val( title ).keyup(@change).data
+        width:
+          max: $('#toolbar .container').width() - $('.logo-1000').width() - $('#sorts').width() - 400
+          min: ta.width()
+        height:
+          min: ta.height()
+      @change.call ta
+      $('#toolbar .title').css('visibility', 'visible')
+      ($ '#toolbar .shadow').css 'max-width', ta.data('width').max
     change:()->
-      U.log('change')
-      shadow = ($ '#toolbar .shadow').text ($ @).val()
-      ($ @).css
-        width: Math.min ($ '#toolbar .title').data('maxWidth') , Math.max( 190, shadow.width()+50)
-        height: Math.min 100, Math.max(40, shadow.height())
-      ($ '#toolbar table.title').css
-        width: ($ @).width() + 60
-        height: ($ @).height() + 60
+      ta = $ @
+      shadow = ($ '#toolbar .shadow').text ta.val()+' '
+      U.log('shadow again', ($ '#toolbar .shadow').height() )
+      padding = 2*U.float ta.css('padding-top')
+      margin = 2*U.float ta.css('margin-top')
+      ta.css
+        width: Math.min ta.data('width').max , Math.max( U.log('width min', ta.data('width').min), shadow.width()+50)
+        height: Math.min 100, U.log('height max', Math.max( U.log('height min', ta.data('height').min), U.log('shadow', shadow.height())))
+      ($ '#toolbar img.background').css
+        width: ta.width()+padding+2
+        height: ta.height()+padding+2
+      ($ '#toolbar .title').css
+        width: ta.width()+padding+margin+2
+        height: ta.height()+padding+margin+2
 
 $ ->
   BOX.setup()

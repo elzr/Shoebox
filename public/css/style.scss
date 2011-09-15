@@ -4,31 +4,23 @@ body {margin:0; padding:0; font-family:Verdana, sans-serif; overflow:hidden}
 #shoebox {background-color:#a0754b; text-align:center; position:relative; padding-top:800px;
 	#toolbar {position:absolute; top:0; left:0; height:100px; text-align:center; width:100%; z-index:5;
 		.container {padding:10px}
-		.title {display:inline-block; vertical-align:middle; width:250px; height:100px; text-align:center;
-			.tl, .tr, .br, .bl {width:30px; height:30px}
-				.tl {background:url(/img/title-tl.jpg)}
-				.tr {background:url(/img/title-tr.jpg)}
-				.br {background:url(/img/title-br.jpg)}
-				.bl {background:url(/img/title-bl.jpg)}
-			.t, .b {height:30px; width:190px}
-				.t {background:url(/img/title-t.jpg)}
-				.b {background:url(/img/title-b.jpg)}
-			.l, .r {width:30px; height:40px}
-				.l {background:url(/img/title-l.jpg)}
-				.r {background:url(/img/title-r.jpg)}
-			.c {background:url(/img/title-c.jpg)}
-		}
-		textarea, .shadow {border:0; background:transparent; line-height:40px; font-size:25px; text-align:center; font-weight:bold}
-			textarea {width:190px; height:40px; overflow:hidden; outline:none}
-			.shadow {display:none; max-width:500px; max-height:200px; white-space:pre-wrap}
+		.title {display:inline-block; visibility:hidden; vertical-align:middle; width:210px; height:60px; @include vertical-gradient(#eee, #88878d); border-top:1px solid #ddd;  text-align:center; position:relative; @include shadows(#555, 4px, 4px, 8px); }
+			span {color:#007498; position:absolute; font-size:10px; bottom:20px; right:25px; z-index:3}
+			textarea, .shadow, img.background {position:absolute; top:0; left:0; }
+			textarea, img.background {width:190px; height:40px; margin:10px}
+			textarea, .shadow {border:0; background:transparent; line-height:40px; font-size:25px; text-align:center; font-weight:bold}
+				textarea { overflow:hidden; outline:none; z-index:2; @include inset-shadows(#222, 0, 4px, 12px); border:1px solid #000; border-left-color:#676767; border-bottom-color:#fff; border-right-color:#a8a7a5; padding:20px}
+				img.background {z-index:1}
+				.shadow {display:none; max-width:500px; max-height:200px; white-space:pre-wrap; background:red}
 		.logo-1000 img {vertical-align:middle; margin-right:30px}
-		#sorts { color:#fff; display:inline-block; font-size:13px; margin-left:30px; font-weight:bold;
+
+		#sorts { color:#fff; display:inline-block; font-size:13px; margin-left:30px; font-weight:bold; vertical-align:middle;
 			a { color:#000; text-decoration:none; display:inline-block; padding:7px 12px; margin-left:5px; @include corners(7px); @include vertical-gradient(#d9cbb8, #d5bca1); @include shadows(#786a5b, 2px, 2px, 4px); background-color:#D2E0EE; font-weight:normal}
 				a:hover, a.selected {color:#000; @include vertical-gradient(#ede1d1, #bba68c); background-color:#D2E0EE}
 				a.selected {@include inset-shadows(#786a5b, 2px, 2px, 4px); text-decoration:underline}
 		}
 	}
-	img.background {position:absolute; z-index:1; top:0; left:0; width:100%; height:800px}
+	img.canvas-background {position:absolute; z-index:1; top:0; left:0; width:100%; height:800px}
 	.loading {text-align:center; position:absolute; top:250px; left:45%; z-index:2; margin:20px; padding:20px; background:#eee; font-style:italic; }
 	.overlay {position:absolute; top:0; left:0; z-index:3; width:100%; height:800px}
 	#canvas {position:absolute; width:100%; height:800px; z-index:4; top:0; left:0;
@@ -68,4 +60,4 @@ body {margin:0; padding:0; font-family:Verdana, sans-serif; overflow:hidden}
 	}
 }
 .ico {width:32px; height:32px; vertical-align:middle}
-#toolbar textarea {font-family:"Monotype Corsiva", "Apple Chancery", cursive; }
+#toolbar textarea, #toolbar .shadow {font-family:"Monotype Corsiva", "Apple Chancery", cursive; }
