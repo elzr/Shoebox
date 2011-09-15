@@ -257,18 +257,18 @@ window.BOX = BOX =
           min: ta.width()
         height:
           min: ta.height()
-      @change.call ta
-      $('#toolbar .title').css('visibility', 'visible')
       ($ '#toolbar .shadow').css 'max-width', ta.data('width').max
+      $('#toolbar .title').css('visibility', 'visible')
+      @change.call ta
+      @change.call ta #for some reason, initial height needs this double call (?)
     change:()->
       ta = $ @
       shadow = ($ '#toolbar .shadow').text ta.val()+' '
-      U.log('shadow again', ($ '#toolbar .shadow').height() )
       padding = 2*U.float ta.css('padding-top')
       margin = 2*U.float ta.css('margin-top')
       ta.css
-        width: Math.min ta.data('width').max , Math.max( U.log('width min', ta.data('width').min), shadow.width()+50)
-        height: Math.min 100, U.log('height max', Math.max( U.log('height min', ta.data('height').min), U.log('shadow', shadow.height())))
+        width: Math.min ta.data('width').max , Math.max( ta.data('width').min, shadow.width()+50)
+        height: Math.min 100, Math.max( ta.data('height').min, shadow.height() )
       ($ '#toolbar img.background').css
         width: ta.width()+padding+2
         height: ta.height()+padding+2
