@@ -60,16 +60,17 @@ window.PIC = PIC =
       start: (pic)->
         @stop pic
         @_dangle pic
-        ($ pic).data 'dangle', window.setInterval => @_dangle pic, 600
+        _.delay (=> ($ pic).data 'dangle', window.setInterval => @_dangle pic, 500), 500
       stop: (pic) ->
         clearInterval ($ pic).data 'dangle'
       _dangle: (pic)->
-        r = (($ pic).data 'rotation')/1.5 * -1
-        if Math.abs r < 5
+        return unless $('.ui-draggable-dragging').length > 0
+        r = (($ pic).data 'rotation')/(1.5+U.rand()) * -1
+        if Math.abs(r) < 3
           r = 0
           @stop pic
         ($ pic).data 'rotation', r
-        ($ pic).animate rotate:r+'deg', {duration:600, queue:false}
+        ($ pic).animate rotate: r+'deg', {duration:500, queue:false}
     vector: (pic)->
       [before, now] = [($ pic).data('position.before'), ($ pic).position()]
       x: now.left-before.left, y: now.top-before.top
@@ -124,7 +125,7 @@ window.PIC = PIC =
         _.throttle( ->
           if $('.ui-draggable-dragging').length > 0
             ($ @).animate PIC.physics.friction(@), duration:200, queue:false
-            PIC.physics.dangle.start @
+            PIC.physics.dangle.start(@)
         , 250),
         _.throttle( ->
           #U.line.draw(($ @).data('position.before'), ($ @).position())
@@ -133,11 +134,12 @@ window.PIC = PIC =
       ]
       stop: ->
         PIC.physics.dangle.stop @
-        ($ @).animate $.extend(
-            scale: [U.xy ($ @).data 'scale'],
-            PIC.physics.toss(@), PIC.physics.friction(@)
-          ), duration:1000, step:PIC.events.step
-        _.delay PIC.physics.shuffle, 500, @
+        unless ($ @).hasClass 'removed'
+          ($ @).animate $.extend(
+              scale: [U.xy ($ @).data 'scale'],
+              PIC.physics.toss(@), PIC.physics.friction(@)
+            ), duration:1000, step:PIC.events.step
+          _.delay PIC.physics.shuffle, 500, @
       setup: ->
         ($ '#canvas .pic').draggable
           containment: 'parent'
@@ -146,10 +148,10 @@ window.PIC = PIC =
           stop: @stop
     trash:
       delete: (event, ui)->
-        ($ ui.draggable).fadeOut()
+        ($ ui.draggable).addClass('removed').fadeOut()
         ($ '#trash').addClass('full')
       restore: ->
-        ($ '#canvas .pic:hidden').fadeIn()
+        ($ '#canvas .pic:hidden').removeClass('removed').fadeIn()
         ($ '#trash').removeClass('full')
       setup: ->
         ($ '#trash').droppable(

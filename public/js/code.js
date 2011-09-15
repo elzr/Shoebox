@@ -1,4 +1,4 @@
-/* DO NOT MODIFY. This file was compiled Thu, 15 Sep 2011 08:57:18 GMT from
+/* DO NOT MODIFY. This file was compiled Thu, 15 Sep 2011 18:10:41 GMT from
  * /Users/sam/projects/sinatra/shoebox/public/js/code.coffee
  */
 
@@ -136,17 +136,22 @@
         start: function(pic) {
           this.stop(pic);
           this._dangle(pic);
-          return ($(pic)).data('dangle', window.setInterval(__bind(function() {
-            return this._dangle(pic, 600);
-          }, this)));
+          return _.delay((__bind(function() {
+            return ($(pic)).data('dangle', window.setInterval(__bind(function() {
+              return this._dangle(pic, 500);
+            }, this)));
+          }, this)), 500);
         },
         stop: function(pic) {
           return clearInterval(($(pic)).data('dangle'));
         },
         _dangle: function(pic) {
           var r;
-          r = (($(pic)).data('rotation')) / 1.5 * -1;
-          if (Math.abs(r < 5)) {
+          if (!($('.ui-draggable-dragging').length > 0)) {
+            return;
+          }
+          r = (($(pic)).data('rotation')) / (1.5 + U.rand()) * -1;
+          if (Math.abs(r) < 3) {
             r = 0;
             this.stop(pic);
           }
@@ -154,7 +159,7 @@
           return ($(pic)).animate({
             rotate: r + 'deg'
           }, {
-            duration: 600,
+            duration: 500,
             queue: false
           });
         }
@@ -275,13 +280,15 @@
         ],
         stop: function() {
           PIC.physics.dangle.stop(this);
-          ($(this)).animate($.extend({
-            scale: [U.xy(($(this)).data('scale'))]
-          }, PIC.physics.toss(this), PIC.physics.friction(this)), {
-            duration: 1000,
-            step: PIC.events.step
-          });
-          return _.delay(PIC.physics.shuffle, 500, this);
+          if (!($(this)).hasClass('removed')) {
+            ($(this)).animate($.extend({
+              scale: [U.xy(($(this)).data('scale'))]
+            }, PIC.physics.toss(this), PIC.physics.friction(this)), {
+              duration: 1000,
+              step: PIC.events.step
+            });
+            return _.delay(PIC.physics.shuffle, 500, this);
+          }
         },
         setup: function() {
           return ($('#canvas .pic')).draggable({
@@ -294,11 +301,11 @@
       },
       trash: {
         "delete": function(event, ui) {
-          ($(ui.draggable)).fadeOut();
+          ($(ui.draggable)).addClass('removed').fadeOut();
           return ($('#trash')).addClass('full');
         },
         restore: function() {
-          ($('#canvas .pic:hidden')).fadeIn();
+          ($('#canvas .pic:hidden')).removeClass('removed').fadeIn();
           return ($('#trash')).removeClass('full');
         },
         setup: function() {

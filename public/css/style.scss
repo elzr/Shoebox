@@ -5,11 +5,11 @@ body {margin:0; padding:0; font-family:Verdana, sans-serif; overflow:hidden}
 	#toolbar {position:absolute; top:0; left:0; height:100px; text-align:center; width:100%; z-index:5;
 		.container {padding:10px}
 		.title {display:inline-block; visibility:hidden; vertical-align:middle; width:210px; height:60px; @include vertical-gradient(#eee, #88878d); border-top:1px solid #ddd;  text-align:center; position:relative; @include shadows(#555, 4px, 4px, 8px); }
-			span {color:#007498; position:absolute; font-size:10px; bottom:20px; right:25px; z-index:3}
+			span {color:#007498; position:absolute; font-size:10px; bottom:15px; right:20px; z-index:3}
 			textarea, .shadow, img.background {position:absolute; top:0; left:0; }
 			textarea, img.background {width:190px; height:40px; margin:10px}
 			textarea, .shadow {border:0; background:transparent; line-height:40px; font-size:25px; text-align:center; font-weight:bold}
-				textarea { overflow:hidden; outline:none; z-index:2; @include inset-shadows(#222, 0, 4px, 12px); border:1px solid #000; border-left-color:#676767; border-bottom-color:#fff; border-right-color:#a8a7a5; padding:20px}
+				textarea { overflow:hidden; outline:none; z-index:2; @include inset-shadows(#222, 0, 4px, 12px); border:1px solid #000; border-left-color:#676767; border-bottom-color:#fff; border-right-color:#a8a7a5; padding:15px}
 				img.background {z-index:1}
 				.shadow {display:none; max-width:500px; max-height:200px; white-space:pre-wrap; background:red}
 		.logo-1000 img {vertical-align:middle; margin-right:30px}
@@ -37,15 +37,15 @@ body {margin:0; padding:0; font-family:Verdana, sans-serif; overflow:hidden}
 		div.ui-draggable-dragging {z-index:3; @include shadows(#555, 8px, 8px, 16px)}
 
 		/* extras */
-		.logo-mom {position:absolute; bottom:90px; left:20px; z-index:1}
-		.ear {position:absolute; top:30%; background-color:#866d59; @include corners(0, 5px, 5px, 0); @include shadows(#333, 2px, 2px, 4px); color:#fff; text-align:center; width:130px; height:160px; text-decoration:none; font-size:13px}
-			.ear img {display:block; margin:15px 20px; margin-top:30px; margin-left:35px}
+		.logo-mom {position:absolute; bottom:60px; left:20px; z-index:1}
+		.ear {position:absolute; top:30%; background-color:#866d59; @include corners(0, 5px, 5px, 0); @include shadows(#333, 2px, 2px, 4px); color:#fff; text-align:center; width:110px; height:120px; text-decoration:none; font-size:12px}
+			.ear img {display:block; margin:15px 10px 5px 30px}
 			.ear:hover {background-color:#6e4e3e}
 		.ear.left {left:0}
 		.ear.right {right:0; background-color:#3b5997; @include corners(5px, 0, 0, 5px);}
 			.ear.right:hover {background-color:#2b416f}
-		#trash {position:absolute; bottom:0; left:0; width:100%; height:75px; z-index:1000; cursor:pointer; 
-			.text {position:absolute; z-index:2; top:0; left:0; margin-top:20px; color:#fff; font-size:90%; width:100%; height:50px; font-weight:bold}
+		#trash {position:absolute; bottom:0; left:0; width:100%; height:50px; z-index:1000; cursor:pointer; 
+			.text {position:absolute; z-index:2; top:0; left:0; margin-top:10px; color:#fff; font-size:90%; width:100%; height:40px; font-weight:bold}
 				span.full {display:none; color:#ddd; font-size:90%; font-weight:normal}
 			.background {background:#856d59; @include opacity(50); position:absolute; top:0; left:0; width:100%; height:75px; z-index:1}
 		}
