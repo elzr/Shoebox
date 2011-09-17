@@ -1,5 +1,5 @@
 window.PIC = PIC =
-  total:9
+  total:12
   count:0
   rotation:60
   sets:
@@ -19,31 +19,33 @@ window.PIC = PIC =
     portman:'1476952'
 
 (_ PIC).extend(
-  fetch: (set, size) ->
-    set or= @sets['family2']
-    PIC.total = size || PIC.total
-    $.getJSON(
-      #'/data?jsoncallback=?',
-      "http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id=#{set}&format=json&extras=url_s&jsoncallback=?",
-      PIC.display
-    )
-  place:
-    piles: [{x:.25, y:.4}, {x:.75, y:.25}, {x:.6, y:.75}]
-    pile: (i) -> @piles[Math.floor i/(PIC.total/3)]
-    arrange: (pic, count, radius=200) ->
+  pile:
+    size:1
+    positions:[
+      [ {x:.5, y:.5} ]
+      [ {x:.25, y:.4}, {x:.75, y:.4} ]
+      [ {x:.25, y:.4}, {x:.75, y:.25}, {x:.6, y:.75} ]
+      [ {x:.25, y:.25}, {x:.25, y:.75}, {x:.75, y:.25}, {x:.75, y:.75} ]
+      [ {x:.2, y:.2}, {x:.2, y:.75}, {x:.5, y:.5} , {x:.75, y:.2}, {x:.75, y:.75} ]
+    ]
+    position: (i)->
+      pile = PIC.pile
+      pile.positions[ pile.size - 1 ][  Math.floor i/(PIC.total/pile.size) ]
+    place: (pic, count, radius=200) ->
       limit = x:($ '#canvas').width(), y:($ '#canvas').height()
-      pile = @pile count #pile of relative values
+      pile = PIC.pile.position count # pile of relative values
       pile = x:limit.x*pile.x, y:limit.y*pile.y # pile of concrete values
-      pic.css
-        left: Math.min limit.x, Math.max(0, pile.x+(radius*U.rand())-pic.outerWidth()/2)
-        top: Math.min limit.y, Math.max(0, pile.y+(radius*U.rand())-pic.outerHeight()/2)
+      spread = if PIC.pile.size < 3 then 2 else 1
+
+      left: Math.min limit.x, Math.max(0, pile.x+(radius*U.rand())*spread - pic.outerWidth()/2)
+      top: Math.min limit.y, Math.max(0, pile.y+(radius*U.rand())*spread - pic.outerHeight()/2)
 
   stack:
-    topmost: -> _( ~~($ pic).css('z-index') for pic in ($ '#canvas .pic') ).max() + 1
+    topmost: -> _( ~~($ pic).css('z-index') for pic in ($ '.pics .pic') ).max() + 1
     index: (obj)-> $(obj).css('z-index')||0
     get: (atopBelow, from)->
       flip = {atop:1, below:-1}[atopBelow]
-      pic for pic in ($ '#canvas .pic').removeClass('topStack') when flip*@index(from) < flip*@index(pic) and U.rect.intersect from, pic
+      pic for pic in ($ '.pics .pic').removeClass('topStack') when flip*@index(from) < flip*@index(pic) and U.rect.intersect from, pic
     _clear: (stack, from)->
       [flip, delta, from] = [{'-=':'+=', '+=':'-='}, '75px', ($ from)]
       for pic in stack
@@ -64,13 +66,15 @@ window.PIC = PIC =
       stop: (pic) ->
         clearInterval ($ pic).data 'dangle'
       _dangle: (pic)->
-        return unless $('.ui-draggable-dragging').length > 0
-        r = (($ pic).data 'rotation')/(1.5+U.rand()) * -1
-        if Math.abs(r) < 3
-          r = 0
+        if $('.ui-draggable-dragging').length > 0
+          r = (($ pic).data 'rotation')/(1.5+U.rand()) * -1
+          if Math.abs(r) < 3
+            r = 0
+            @stop pic
+          ($ pic).data 'rotation', r
+          ($ pic).animate rotate: r+'deg', {duration:500, queue:false}
+        else
           @stop pic
-        ($ pic).data 'rotation', r
-        ($ pic).animate rotate: r+'deg', {duration:500, queue:false}
     vector: (pic)->
       [before, now] = [($ pic).data('position.before'), ($ pic).position()]
       x: now.left-before.left, y: now.top-before.top
@@ -109,10 +113,9 @@ window.PIC = PIC =
       pic.add( pic.find '.backside' ).css( height: ($ @).outerHeight(), width:($ @).outerWidth() ).end().
         data( rotation:PIC.rotation*U.rand(), scale: 1+.5*U.rand() ).
         transform(rotate:pic.data('rotation')+'deg', scale:U.xy 1.35).
-        animate scale:[U.xy pic.data 'scale'], 600
-      PIC.place.arrange pic, PIC.count++
+        animate(scale:[U.xy pic.data 'scale'], 600).
+        css( PIC.pile.place pic, PIC.count++ )
       PIC.events.drag.setup()
-      PIC.events.trash.setup()
     drag:
       start: ->
         PIC.stack.clear @
@@ -141,7 +144,7 @@ window.PIC = PIC =
             ), duration:1000, step:PIC.events.step
           _.delay PIC.physics.shuffle, 500, @
       setup: ->
-        ($ '#canvas .pic').draggable
+        ($ '.pics .pic').draggable
           containment: 'parent'
           start: @start
           drag: @while
@@ -151,7 +154,7 @@ window.PIC = PIC =
         ($ ui.draggable).addClass('removed').fadeOut()
         ($ '#trash').addClass('full')
       restore: ->
-        ($ '#canvas .pic:hidden').removeClass('removed').fadeIn()
+        ($ '.pics .pic:hidden').removeClass('removed').fadeIn()
         ($ '#trash').removeClass('full')
       setup: ->
         ($ '#trash').droppable(
@@ -159,7 +162,8 @@ window.PIC = PIC =
           hoverClass: 'hover'
           tolerance: 'touch'
           drop: @delete
-        ).click @restore
+        ).click(@restore).hover( (->($ @).addClass 'nondrag-hover'), (->($ @).removeClass 'nondrag-hover') )
+        
     step: (now, fx)->
       if fx.prop in ['leftToss', 'topToss']
         lt = if fx.prop is 'leftToss' then 'left' else 'top'
@@ -187,16 +191,20 @@ window.PIC = PIC =
         #console.log(lt, pic.css(lt))
         #console.log('----')
 
-  display: (data)->
-    BOX.title.setup(data)
-    [data, e] = [data.photoset.photo.sort( -> U.rand() ).slice(0, PIC.total), PIC.events]
-    ($ '#shoebox').find('.loading').remove()
+  setup: (options={sort:false})->
+    e = PIC.events
+    ($ '.pics .pic').dblclick(e.dblclick).click(e.click).find('img').load(e.load)
+    if options.sort
+      PIC.events.drag.setup()
 
-    for item in data
-      ($ '#canvas').append( $('<div class="pic" />').html('<img src="'+item.url_s+'" /><div class="backside"><span>'+item.title+'</span></div>') ).
+  display: (pics)->
+    ($ '#shoebox').find('.loading').remove()
+    PIC.events.trash.setup()
+
+    for pic in pics
+      ($ '.pics').append( $('<div class="pic" data-id="'+pic.data_id+'" />').html('<img src="'+pic.url_s+'" /><div class="backside"><span>'+pic.title+'</span></div>') ).
         find('.pic:last').css('z-index', PIC.stack.topmost())
-    ($ '#canvas .pic').dblclick(e.dblclick).click(e.click).
-      find('img').load e.load
+    PIC.setup()
 )
 
 window.U = U =
@@ -224,6 +232,7 @@ window.U = U =
       U.line.intersect([rect1.a, rect1.b], [rect2.a, rect2.b]) and
         U.line.intersect([rect1.a, rect1.c], [rect2.a, rect2.c])
   rand: -> .5-Math.random()
+  shuffle: (ary) -> (ary.sort -> U.rand() )
   xy: (n)->[n,n]
   float: (str)-> parseFloat str
   log: (text, o) ->
@@ -242,25 +251,74 @@ window.U = U =
 window.BOX = BOX =
   setup: ->
     ($ '#shoebox .canvas-background').css height: $(window).height()
-    ($ '#canvas').css height: $(window).height() - $('#shoebox #toolbar').height(), top:$('#shoebox #toolbar').height()
+    ($ '#canvas' ).css height: $(window).height() - $('#shoebox #toolbar').height(), top:$('#shoebox #toolbar').height()
     ($ '#shoebox').css 'padding-top', ($ window).height()
     ($ '#overlay').attr width:($ '#canvas').width(), height:($ '#canvas').height()
-    ($ '#sorts a').click ->
+    ($ '.pics').css width:($ '#canvas').width(), height:($ '#canvas').height()
+    @sort.setup()
+  data:
+    fetch: (set, size) ->
+      PIC.total = size || PIC.total
+      BOX.data.flickr.fetch set
+    render: (data) ->
+      BOX.title.setup(data)
+      pics = U.shuffle( data.photoset.photo ).slice(0, PIC.total)
+      comments = U.shuffle( DATA.comments )
+      pics = _(pics).map (pic, i)->
+        c = U.shuffle([1,2,3,4])[0]
+        pics[i] = _(pic).extend
+          data_id: i
+          comments: _(comments).first(c)
+          date: U.shuffle(DATA.dates)[0]
+          popularity: 5 + (5*U.rand())
+          location: U.shuffle(DATA.locations)[0]
+        DATA.comments = _(comments).first(c)
+        pics[i]
+      DATA.pics = pics
+      PIC.display pics
+    flickr:
+      fetch:(set) ->
+        set or= PIC.sets['family2']
+        $.getJSON(
+          #'/data?jsoncallback=?',
+          "http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id=#{set}&format=json&extras=url_s&jsoncallback=?",
+          BOX.data.render
+        )
+            
+  sort:
+    setup: ->
+      ($ '#sorts a').click(@click).each(-> ($ @).css 'width', ($ @).width())
+    click: ->
       ($ '#sorts a').not(@).removeClass('selected')
-      ($ @).toggleClass 'selected'
+      sort = ($ @).toggleClass('selected').text().toLowerCase()
+      BOX.sort[ if ($ @).hasClass 'selected' then sort else 'reset' ]()
+    reset: ->
+      _pics = $('.pics').clone()
+      PIC.pile.size = 1
+      _( _pics.find('.pic') ).each( (pic, i) -> $(pic).css( PIC.pile.place($(pic), i) ) )
+      $('.pics').quicksand _pics.find('.pic').get(), (-> PIC.setup(sort:true))
+    location: ->
+      pics = $('.pics .pic')
+      grouped = (_ DATA.pics).groupBy (pic) -> pic.location
+
+      _pics = $('.pics').clone()
+      PIC.pile.size = 4
+      _( _pics.find('.pic') ).each( (pic, i) -> $(pic).css( PIC.pile.place($(pic), i) ) )
+      $('.pics').quicksand _pics.find('.pic').get(), {adjustHeight:false}, (-> PIC.setup(sort:true))
   title:
     setup:(data)->
       title = data.photoset.ownername+"'s Shoebox"
       ta = ($ '#toolbar textarea')
       
-      ta.val( title ).keyup(@change).data
-        width:
-          max: $('#toolbar .container').width() - $('.logo-1000').width() - $('#sorts').width() - 400
-          min: ta.width()
-        height:
-          min: ta.height()
+      ta.val( title ).focus(-> ta.addClass 'focus').blur(-> ta.removeClass 'focus').
+        keyup(@change).data
+          width:
+            max: $('#toolbar .container').width() - $('.logo-1000').width() - $('#sorts').width() - 400
+            min: ta.width()
+          height:
+            min: ta.height()
       ($ '#toolbar .shadow').css 'max-width', ta.data('width').max
-      $('#toolbar .title').css('visibility', 'visible')
+      $('#toolbar .title').css('visibility', 'visible').hover( (->($ @).addClass 'hover'), {adjustHeight:false}, ->(($ @).removeClass 'hover'))
       @change.call ta
       @change.call ta #for some reason, initial height needs this double call (?)
     change:()->

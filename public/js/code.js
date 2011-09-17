@@ -1,4 +1,4 @@
-/* DO NOT MODIFY. This file was compiled Thu, 15 Sep 2011 18:10:41 GMT from
+/* DO NOT MODIFY. This file was compiled Sat, 17 Sep 2011 00:17:19 GMT from
  * /Users/sam/projects/sinatra/shoebox/public/js/code.coffee
  */
 
@@ -6,7 +6,7 @@
   var BOX, PIC, U;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   window.PIC = PIC = {
-    total: 9,
+    total: 12,
     count: 0,
     rotation: 60,
     sets: {
@@ -27,29 +27,73 @@
     }
   };
   (_(PIC)).extend({
-    fetch: function(set, size) {
-      set || (set = this.sets['family2']);
-      PIC.total = size || PIC.total;
-      return $.getJSON("http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id=" + set + "&format=json&extras=url_s&jsoncallback=?", PIC.display);
-    },
-    place: {
-      piles: [
-        {
-          x: .25,
-          y: .4
-        }, {
-          x: .75,
-          y: .25
-        }, {
-          x: .6,
-          y: .75
-        }
+    pile: {
+      size: 1,
+      positions: [
+        [
+          {
+            x: .5,
+            y: .5
+          }
+        ], [
+          {
+            x: .25,
+            y: .4
+          }, {
+            x: .75,
+            y: .4
+          }
+        ], [
+          {
+            x: .25,
+            y: .4
+          }, {
+            x: .75,
+            y: .25
+          }, {
+            x: .6,
+            y: .75
+          }
+        ], [
+          {
+            x: .25,
+            y: .25
+          }, {
+            x: .25,
+            y: .75
+          }, {
+            x: .75,
+            y: .25
+          }, {
+            x: .75,
+            y: .75
+          }
+        ], [
+          {
+            x: .2,
+            y: .2
+          }, {
+            x: .2,
+            y: .75
+          }, {
+            x: .5,
+            y: .5
+          }, {
+            x: .75,
+            y: .2
+          }, {
+            x: .75,
+            y: .75
+          }
+        ]
       ],
-      pile: function(i) {
-        return this.piles[Math.floor(i / (PIC.total / 3))];
+      position: function(i) {
+        var pile;
+        pile = PIC.pile;
+        return pile.positions[pile.size - 1][Math.floor(i / (PIC.total / pile.size))];
       },
-      arrange: function(pic, count, radius) {
-        var limit, pile;
+      place: function(pic, count, radius) {
+        var limit, pile, spread;
         if (radius == null) {
           radius = 200;
         }
@@ -57,15 +101,16 @@
           x: ($('#canvas')).width(),
           y: ($('#canvas')).height()
         };
-        pile = this.pile(count);
+        pile = PIC.pile.position(count);
         pile = {
           x: limit.x * pile.x,
           y: limit.y * pile.y
         };
-        return pic.css({
-          left: Math.min(limit.x, Math.max(0, pile.x + (radius * U.rand()) - pic.outerWidth() / 2)),
-          top: Math.min(limit.y, Math.max(0, pile.y + (radius * U.rand()) - pic.outerHeight() / 2))
-        });
+        spread = PIC.pile.size < 3 ? 2 : 1;
+        return {
+          left: Math.min(limit.x, Math.max(0, pile.x + (radius * U.rand()) * spread - pic.outerWidth() / 2)),
+          top: Math.min(limit.y, Math.max(0, pile.y + (radius * U.rand()) * spread - pic.outerHeight() / 2))
+        };
       }
     },
     stack: {
@@ -73,7 +118,7 @@
         var pic;
         return _((function() {
           var _i, _len, _ref, _results;
-          _ref = $('#canvas .pic');
+          _ref = $('.pics .pic');
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             pic = _ref[_i];
@@ -91,7 +136,7 @@
           atop: 1,
           below: -1
         }[atopBelow];
-        _ref = ($('#canvas .pic')).removeClass('topStack');
+        _ref = ($('.pics .pic')).removeClass('topStack');
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           pic = _ref[_i];
@@ -147,21 +192,22 @@
         },
         _dangle: function(pic) {
           var r;
-          if (!($('.ui-draggable-dragging').length > 0)) {
-            return;
+          if ($('.ui-draggable-dragging').length > 0) {
+            r = (($(pic)).data('rotation')) / (1.5 + U.rand()) * -1;
+            if (Math.abs(r) < 3) {
+              r = 0;
+              this.stop(pic);
+            }
+            ($(pic)).data('rotation', r);
+            return ($(pic)).animate({
+              rotate: r + 'deg'
+            }, {
+              duration: 500,
+              queue: false
+            });
+          } else {
+            return this.stop(pic);
           }
-          r = (($(pic)).data('rotation')) / (1.5 + U.rand()) * -1;
-          if (Math.abs(r) < 3) {
-            r = 0;
-            this.stop(pic);
-          }
-          ($(pic)).data('rotation', r);
-          return ($(pic)).animate({
-            rotate: r + 'deg'
-          }, {
-            duration: 500,
-            queue: false
-          });
         }
       },
       vector: function(pic) {
@@ -249,10 +295,8 @@
           scale: U.xy(1.35)
         }).animate({
           scale: [U.xy(pic.data('scale'))]
-        }, 600);
-        PIC.place.arrange(pic, PIC.count++);
-        PIC.events.drag.setup();
-        return PIC.events.trash.setup();
+        }, 600).css(PIC.pile.place(pic, PIC.count++));
+        return PIC.events.drag.setup();
       },
       drag: {
         start: function() {
@@ -291,7 +335,7 @@
           }
         },
         setup: function() {
-          return ($('#canvas .pic')).draggable({
+          return ($('.pics .pic')).draggable({
             containment: 'parent',
             start: this.start,
             drag: this["while"],
@@ -305,7 +349,7 @@
           return ($('#trash')).addClass('full');
         },
         restore: function() {
-          ($('#canvas .pic:hidden')).removeClass('removed').fadeIn();
+          ($('.pics .pic:hidden')).removeClass('removed').fadeIn();
           return ($('#trash')).removeClass('full');
         },
         setup: function() {
@@ -314,7 +358,11 @@
             hoverClass: 'hover',
             tolerance: 'touch',
             drop: this["delete"]
-          }).click(this.restore);
+          }).click(this.restore).hover((function() {
+            return ($(this)).addClass('nondrag-hover');
+          }), (function() {
+            return ($(this)).removeClass('nondrag-hover');
+          }));
         }
       },
       step: function(now, fx) {
@@ -335,20 +383,28 @@
         }
       }
     },
-    display: function(data) {
-      var e, item, _i, _len, _ref;
-      BOX.title.setup(data);
-      _ref = [
-        data.photoset.photo.sort(function() {
-          return U.rand();
-        }).slice(0, PIC.total), PIC.events
-      ], data = _ref[0], e = _ref[1];
-      ($('#shoebox')).find('.loading').remove();
-      for (_i = 0, _len = data.length; _i < _len; _i++) {
-        item = data[_i];
-        ($('#canvas')).append($('<div class="pic" />').html('<img src="' + item.url_s + '" /><div class="backside"><span>' + item.title + '</span></div>')).find('.pic:last').css('z-index', PIC.stack.topmost());
+    setup: function(options) {
+      var e;
+      if (options == null) {
+        options = {
+          sort: false
+        };
       }
-      return ($('#canvas .pic')).dblclick(e.dblclick).click(e.click).find('img').load(e.load);
+      e = PIC.events;
+      ($('.pics .pic')).dblclick(e.dblclick).click(e.click).find('img').load(e.load);
+      if (options.sort) {
+        return PIC.events.drag.setup();
+      }
+    },
+    display: function(pics) {
+      var pic, _i, _len;
+      ($('#shoebox')).find('.loading').remove();
+      PIC.events.trash.setup();
+      for (_i = 0, _len = pics.length; _i < _len; _i++) {
+        pic = pics[_i];
+        ($('.pics')).append($('<div class="pic" data-id="' + pic.data_id + '" />').html('<img src="' + pic.url_s + '" /><div class="backside"><span>' + pic.title + '</span></div>')).find('.pic:last').css('z-index', PIC.stack.topmost());
+      }
+      return PIC.setup();
     }
   });
   window.U = U = {
@@ -411,6 +467,11 @@
     rand: function() {
       return .5 - Math.random();
     },
+    shuffle: function(ary) {
+      return ary.sort(function() {
+        return U.rand();
+      });
+    },
     xy: function(n) {
       return [n, n];
     },
@@ -457,17 +518,100 @@
         width: ($('#canvas')).width(),
         height: ($('#canvas')).height()
       });
-      return ($('#sorts a')).click(function() {
-        ($('#sorts a')).not(this).removeClass('selected');
-        return ($(this)).toggleClass('selected');
+      ($('.pics')).css({
+        width: ($('#canvas')).width(),
+        height: ($('#canvas')).height()
       });
+      return this.sort.setup();
+    },
+    data: {
+      fetch: function(set, size) {
+        PIC.total = size || PIC.total;
+        return BOX.data.flickr.fetch(set);
+      },
+      render: function(data) {
+        var comments, pics;
+        BOX.title.setup(data);
+        pics = U.shuffle(data.photoset.photo).slice(0, PIC.total);
+        comments = U.shuffle(DATA.comments);
+        pics = _(pics).map(function(pic, i) {
+          var c;
+          c = U.shuffle([1, 2, 3, 4])[0];
+          pics[i] = _(pic).extend({
+            data_id: i,
+            comments: _(comments).first(c),
+            date: U.shuffle(DATA.dates)[0],
+            popularity: 5 + (5 * U.rand()),
+            location: U.shuffle(DATA.locations)[0]
+          });
+          DATA.comments = _(comments).first(c);
+          return pics[i];
+        });
+        DATA.pics = pics;
+        return PIC.display(pics);
+      },
+      flickr: {
+        fetch: function(set) {
+          set || (set = PIC.sets['family2']);
+          return $.getJSON("http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id=" + set + "&format=json&extras=url_s&jsoncallback=?", BOX.data.render);
+        }
+      }
+    },
+    sort: {
+      setup: function() {
+        return ($('#sorts a')).click(this.click).each(function() {
+          return ($(this)).css('width', ($(this)).width());
+        });
+      },
+      click: function() {
+        var sort;
+        ($('#sorts a')).not(this).removeClass('selected');
+        sort = ($(this)).toggleClass('selected').text().toLowerCase();
+        return BOX.sort[($(this)).hasClass('selected') ? sort : 'reset']();
+      },
+      reset: function() {
+        var _pics;
+        _pics = $('.pics').clone();
+        PIC.pile.size = 1;
+        _(_pics.find('.pic')).each(function(pic, i) {
+          return $(pic).css(PIC.pile.place($(pic), i));
+        });
+        return $('.pics').quicksand(_pics.find('.pic').get(), (function() {
+          return PIC.setup({
+            sort: true
+          });
+        }));
+      },
+      location: function() {
+        var grouped, pics, _pics;
+        pics = $('.pics .pic');
+        grouped = (_(DATA.pics)).groupBy(function(pic) {
+          return pic.location;
+        });
+        _pics = $('.pics').clone();
+        PIC.pile.size = 4;
+        _(_pics.find('.pic')).each(function(pic, i) {
+          return $(pic).css(PIC.pile.place($(pic), i));
+        });
+        return $('.pics').quicksand(_pics.find('.pic').get(), {
+          adjustHeight: false
+        }, (function() {
+          return PIC.setup({
+            sort: true
+          });
+        }));
+      }
     },
     title: {
       setup: function(data) {
         var ta, title;
         title = data.photoset.ownername + "'s Shoebox";
         ta = $('#toolbar textarea');
-        ta.val(title).keyup(this.change).data({
+        ta.val(title).focus(function() {
+          return ta.addClass('focus');
+        }).blur(function() {
+          return ta.removeClass('focus');
+        }).keyup(this.change).data({
           width: {
             max: $('#toolbar .container').width() - $('.logo-1000').width() - $('#sorts').width() - 400,
             min: ta.width()
@@ -477,7 +621,13 @@
           }
         });
         ($('#toolbar .shadow')).css('max-width', ta.data('width').max);
-        $('#toolbar .title').css('visibility', 'visible');
+        $('#toolbar .title').css('visibility', 'visible').hover((function() {
+          return ($(this)).addClass('hover');
+        }), {
+          adjustHeight: false
+        }, function() {
+          return ($(this)).removeClass('hover');
+        });
         this.change.call(ta);
         return this.change.call(ta);
       },

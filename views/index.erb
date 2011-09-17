@@ -12,7 +12,7 @@
 				<div class="shadow"></div>
 			</div>
 			<div id="sorts">
-				Sort photos by<br><br>
+				Sort photos by<br>
 				<a href="javascript:void(0)">Location</a>
 				<a href="javascript:void(0)">Date</a>
 				<a href="javascript:void(0)">Popularity</a>
@@ -33,11 +33,12 @@
 		<a href="http://momentusmedia.com" class="logo-mom"><img src="/img/logo-mom.png" /></a>
 		<a href="javascript:void(0)" class="ear left"><img src="/img/left-arrow.png" />Start Over</a>
 		<a href="javascript:void(0)" class="ear right"><img src="/img/right-arrow.png" />Save & share<br>on Facebook</a>
+		<div class="pics"></div>
 	</div>
 	<img class="canvas-background" src="/img/texture/bkg-mid-res.jpg" />
 </div>
 <script>
 	$(function() {
-		PIC.fetch('<%=@set%>', <%=@size||false%>)
+		BOX.data.fetch('<%=@set%>', <%=@size||false%>)
 	})
 </script>
