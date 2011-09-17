@@ -1,4 +1,4 @@
-/* DO NOT MODIFY. This file was compiled Sat, 17 Sep 2011 00:17:19 GMT from
+/* DO NOT MODIFY. This file was compiled Sat, 17 Sep 2011 00:17:32 GMT from
  * /Users/sam/projects/sinatra/shoebox/public/js/code.coffee
  */
 
