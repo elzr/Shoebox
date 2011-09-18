@@ -249,8 +249,8 @@ window.BOX = BOX =
       fetch:(set) ->
         set or= PIC.sets['family2']
         $.getJSON(
-          '/data?jsoncallback=?',
-          #"http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id=#{set}&format=json&extras=url_s&jsoncallback=?",
+          #'/data?jsoncallback=?',
+          "http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id=#{set}&format=json&extras=url_s&jsoncallback=?",
           BOX.data.render
         )
             
