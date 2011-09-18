@@ -1,4 +1,4 @@
-/* DO NOT MODIFY. This file was compiled Sun, 18 Sep 2011 03:18:43 GMT from
+/* DO NOT MODIFY. This file was compiled Sun, 18 Sep 2011 03:25:40 GMT from
  * /Users/sam/projects/sinatra/shoebox/public/js/code.coffee
  */
 
@@ -478,7 +478,7 @@
       flickr: {
         fetch: function(set) {
           set || (set = PIC.sets['family2']);
-          return $.getJSON('/data?jsoncallback=?', BOX.data.render);
+          return $.getJSON("http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id=" + set + "&format=json&extras=url_s&jsoncallback=?", BOX.data.render);
         }
       }
     },
