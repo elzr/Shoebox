@@ -3,6 +3,9 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<link rel="stylesheet" type="text/css" href="/css/style.css" /> 
+	<!--
+	<link rel="stylesheet" type="text/css" href="/css/jquery.jscrollpane.css" /> 
+	-->
 
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
 	<script  type="text/javascript" src="/js/underscore-min.js"></script>
@@ -21,7 +24,13 @@
 	-->
 	<script  type="text/javascript" src="/js/jquery.transform-0.9.3.min.js"></script>
 	<script  type="text/javascript" src="/js/rotate3Di.js"></script>
+	<!--
 	<script  type="text/javascript" src="/js/jquery.quicksand.js"></script>
+	-->
+	<!--
+	<script  type="text/javascript" src="/js/jquery.mousewheel.js"></script>
+	<script  type="text/javascript" src="/js/jquery.jscrollpane.min.js"></script>
+	-->
 	<!--
 	<script  type="text/javascript" src="/js/jquery-animate-css-rotate-scale.js"></script>
 	-->

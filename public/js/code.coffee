@@ -1,5 +1,5 @@
 window.PIC = PIC =
-  total:12
+  total:8
   count:0
   rotation:60
   sets:
@@ -23,29 +23,39 @@ window.PIC = PIC =
     size:1
     positions:[
       [ {x:.5, y:.5} ]
-      [ {x:.25, y:.4}, {x:.75, y:.4} ]
+      [ {x:.2, y:.4}, {x:.8, y:.4} ]
       [ {x:.25, y:.4}, {x:.75, y:.25}, {x:.6, y:.75} ]
       [ {x:.25, y:.25}, {x:.25, y:.75}, {x:.75, y:.25}, {x:.75, y:.75} ]
       [ {x:.2, y:.2}, {x:.2, y:.75}, {x:.5, y:.5} , {x:.75, y:.2}, {x:.75, y:.75} ]
     ]
-    position: (i)->
-      pile = PIC.pile
-      pile.positions[ pile.size - 1 ][  Math.floor i/(PIC.total/pile.size) ]
-    place: (pic, count, radius=200) ->
-      limit = x:($ '#canvas').width(), y:($ '#canvas').height()
-      pile = PIC.pile.position count # pile of relative values
-      pile = x:limit.x*pile.x, y:limit.y*pile.y # pile of concrete values
-      spread = if PIC.pile.size < 3 then 2 else 1
-
-      left: Math.min limit.x, Math.max(0, pile.x+(radius*U.rand())*spread - pic.outerWidth()/2)
-      top: Math.min limit.y, Math.max(0, pile.y+(radius*U.rand())*spread - pic.outerHeight()/2)
+    position:
+      relative: (i)->
+        index = if PIC.pile.size == 1
+              0
+          else
+            if (_ i).isString()
+              (_ DATA.locations.present).indexOf i
+            else
+              Math.floor i/(PIC.total/PIC.pile.size)
+        PIC.pile.positions[ PIC.pile.size - 1 ][ index ]
+      concrete: (count) ->
+        relative = @relative count
+        cage = x:($ '#canvas').width(), y:($ '#canvas').height()
+        concrete = U.point.multiply cage, relative
+        [ cage, concrete ]
+    place: (pic, count) ->
+      [cage, concrete] = PIC.pile.position.concrete count
+      [radius, spread] = [200, if PIC.pile.size is 1 then 2 else 1]
+      offset = {x:(radius*U.rand())*spread, y:(radius*U.rand())*spread}
+      # U.log('offsetting', (offset.y = Math.abs offset.y)) if PIC.pile.size isnt 1
+      { left: Math.min(cage.x, Math.max(0, concrete.x + offset.x - $(pic).outerWidth()/2)), top: Math.min(cage.y, Math.max(0, concrete.y + offset.y - $(pic).outerHeight()/2)) }
 
   stack:
-    topmost: -> _( ~~($ pic).css('z-index') for pic in ($ '.pics .pic') ).max() + 1
+    topmost: -> _( ~~($ pic).css('z-index') for pic in ($ '#pics .pic') ).max() + 1
     index: (obj)-> $(obj).css('z-index')||0
     get: (atopBelow, from)->
       flip = {atop:1, below:-1}[atopBelow]
-      pic for pic in ($ '.pics .pic').removeClass('topStack') when flip*@index(from) < flip*@index(pic) and U.rect.intersect from, pic
+      pic for pic in ($ '#pics .pic').removeClass('topStack') when flip*@index(from) < flip*@index(pic) and U.rect.intersect from, pic
     _clear: (stack, from)->
       [flip, delta, from] = [{'-=':'+=', '+=':'-='}, '75px', ($ from)]
       for pic in stack
@@ -107,7 +117,10 @@ window.PIC = PIC =
   events: # EVENTS ---------------------------------------------------
     dblclick: ->
       PIC.stack.clear @
-      ($ @).rotate3Di 'toggle', 700, sideChange: => ($ @).toggleClass 'flipped'
+      ($ @).rotate3Di 'toggle', 700, sideChange: =>
+        ($ @).toggleClass('flipped')
+        if ($ @).hasClass 'flipped'
+          ($ @).animate(scale:[U.xy 1.35], 300)
     load: ->
       pic = ($ @).parents '.pic'
       pic.add( pic.find '.backside' ).css( height: ($ @).outerHeight(), width:($ @).outerWidth() ).end().
@@ -144,7 +157,7 @@ window.PIC = PIC =
             ), duration:1000, step:PIC.events.step
           _.delay PIC.physics.shuffle, 500, @
       setup: ->
-        ($ '.pics .pic').draggable
+        ($ '#pics .pic').draggable
           containment: 'parent'
           start: @start
           drag: @while
@@ -154,7 +167,7 @@ window.PIC = PIC =
         ($ ui.draggable).addClass('removed').fadeOut()
         ($ '#trash').addClass('full')
       restore: ->
-        ($ '.pics .pic:hidden').removeClass('removed').fadeIn()
+        ($ '#pics .pic:hidden').removeClass('removed').fadeIn()
         ($ '#trash').removeClass('full')
       setup: ->
         ($ '#trash').droppable(
@@ -171,49 +184,199 @@ window.PIC = PIC =
         param = pic.data(lt)
         quanta = ((now - (param.before||0))/100) * param.toss
 
-        #console.log('now', now)
-        #console.log('now quanta', now - (param.before||0))
-        #console.log('quanta', quanta)
-
         param.before = now
-
         prop = U.float(pic.css(lt)) + ((param.bounce||1)*quanta)
 
         hw = if fx.prop is 'topToss' then 'height' else 'width'
         if (prop+pic[hw]() > $('#canvas')[hw]()-60) or prop < 0
           param.bounce = (param.bounce||1) * -1.5
-          #console.log('BOUNCE', param.bounce )
 
         pic.css( lt, U.float(pic.css(lt)) + (param.bounce||1)*quanta )
-
         param = pic.data(lt, param)
-
-        #console.log(lt, pic.css(lt))
-        #console.log('----')
 
   setup: (options={sort:false})->
     e = PIC.events
-    ($ '.pics .pic').dblclick(e.dblclick).click(e.click).find('img').load(e.load)
-    if options.sort
-      PIC.events.drag.setup()
+    ($ '#pics .pic').dblclick(e.dblclick).click(e.click).find('img').load(e.load)
 
   display: (pics)->
     ($ '#shoebox').find('.loading').remove()
     PIC.events.trash.setup()
 
-    for pic in pics
-      ($ '.pics').append( $('<div class="pic" data-id="'+pic.data_id+'" />').html('<img src="'+pic.url_s+'" /><div class="backside"><span>'+pic.title+'</span></div>') ).
-        find('.pic:last').css('z-index', PIC.stack.topmost())
+    comment = (c)-> "<div class=\"comment\">#{c.comment}</div><div class=\"author\">#{c.author}</div>"
+    (_ pics).each (pic, i)->
+      ($ '#pics').append( DATA.pics[i].$html = $('<div class="pic" />').
+        html('<img src="'+pic.url_s+'" /><div class="backside"><div class="text"></div></div>') ).
+        find('.pic:last').css('z-index', PIC.stack.topmost()).find('.text').append( _(pic.comments).map(comment)...  )
     PIC.setup()
 )
 
+window.BOX = BOX =
+  setup: ->
+    ($ '#shoebox .canvas-background').css height: $(window).height()
+    ($ '#canvas' ).css height: $(window).height() - $('#shoebox #toolbar').height(), top:$('#shoebox #toolbar').height()
+    ($ '#shoebox').css 'padding-top': ($ window).height()
+    ($ '#overlay').attr width:($ '#canvas').width(), height:($ '#canvas').height()
+    ($ '#pics').css width:($ '#canvas').width(), height:($ '#canvas').height()
+    ($ '#chart').css
+      width: ($ '#canvas').width()*.80
+      height: ($ '#canvas').height()*.80
+      top: ($ '#canvas').height()*.10
+      left: ($ '#canvas').width()*.10
+    @sort.setup()
+  data:
+    fetch: (set, size) ->
+      PIC.total = size || PIC.total
+      BOX.data.flickr.fetch set
+    render: (flickr) ->
+      BOX.title.setup flickr
+      pics = BOX.data.mix flickr
+      PIC.display pics
+    mix: (data) ->
+      pics = U.shuffle( data.photoset.photo ).slice(0, PIC.total)
+      comments = U.shuffle( DATA.comments )
+      pics = _(pics).map (pic, i)->
+        c = U.shuffle([1,2,3,4])[0]
+        pics[i] = _(pic).extend
+          order: i
+          comments: _(comments).first(c)
+          date: U.shuffle(DATA.dates.all)[0]
+          popularity: 5 + (5*U.rand())
+          location: U.shuffle(DATA.locations.all)[0]
+        comments = _(comments).rest(c)
+        pics[i]
+      DATA.pics = pics
+    flickr:
+      fetch:(set) ->
+        set or= PIC.sets['family2']
+        $.getJSON(
+          '/data?jsoncallback=?',
+          #"http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id=#{set}&format=json&extras=url_s&jsoncallback=?",
+          BOX.data.render
+        )
+            
+  sort:
+    setup: ->
+      ($ '#sorts a').click(@click).each(-> ($ @).css 'width', ($ @).width())
+    click: ->
+      ($ '#sorts a').not(@).removeClass('selected')
+      sort = ($ @).toggleClass('selected').text().toLowerCase()
+      BOX.sort[ if ($ @).hasClass 'selected' then sort else 'reset' ]()
+    reset: ->
+      BOX.sort.reposition size:1, sort:'reset'
+      $('#canvas .location').remove()
+      $('#chart').fadeOut('slow')
+    location: ->
+      grouped = (_ DATA.pics).groupBy (pic) -> pic.location
+      DATA.locations.present = locations = (_ grouped).keys()
+      BOX.sort.reposition size:locations.length, sort:'location'
+      _.delay (-> (BOX.labels.place grouped, locations)), 600
+    popularity: ->
+      cage = BOX.tools.cage()
+      pops = BOX.tools.popularity()
+
+      (_ BOX.tools.visible DATA.pics ).map (pic)->
+        pop = (pic.popularity - pops.min) / (pops.max - pops.min)
+        relative = x: pop, y: pop
+        concrete = U.point.multiply cage, relative
+        pic.position =
+          left: cage.left + Math.min(cage.x, Math.max(0, concrete.x - pic.$html.outerWidth()))
+          top: (cage.height - Math.min(cage.height, Math.max(0, concrete.y - pic.$html.outerHeight()/2)))/1.25
+
+      BOX.sort.reposition()
+      $('#axis').html('').append(
+        '<span>- LEAST Popular</span>',
+        '<span style="left:auto; right:0">+ MOST Popular</span>')
+    date: ->
+      grouped = (_ DATA.pics).groupBy (pic) -> pic.date
+      DATA.dates.present = dates = (_ grouped).keys().sort()
+      $('#chart').fadeIn('slow')
+
+      length = U.float(($ '#axis').width()) / U.float(dates.length)
+      spans= (_ dates ).map (date, i)-> "<span style=\"left:#{length*(i+.3)}px\">#{date}</span>"
+      $('#axis').html('').append( spans... )
+
+      cage = BOX.tools.cage()
+      (_ BOX.tools.visible DATA.pics ).map (pic, i, list)->
+        group = grouped[pic.date]
+        y = ( ((_ group).indexOf pic) + 1)/group.length
+        relative = x: _(dates).indexOf(pic.date+'')/dates.length, y: y-.25
+        concrete = U.point.multiply cage, relative
+        pic.position =
+          left: cage.left + Math.min(cage.x, Math.max(0, concrete.x))
+          top: cage.height - Math.min(cage.height, Math.max(0, concrete.y - pic.$html.outerHeight()/2))
+
+      BOX.sort.reposition()
+
+    reposition: (options = {})->
+      PIC.pile.size = options.size if options.size
+      (_ BOX.tools.visible DATA.pics).each (pic)->
+        position = if options.sort in ['location', 'reset'] then PIC.pile.place(pic.$html, pic.location) else pic.position
+        pic.$html.animate position, 600
+
+  tools:
+    visible: (pics) ->
+      _(pics).filter (pic)-> pic.$html.is(':visible')
+    cage: ->
+      (chart = $('#chart')).fadeIn('slow')
+      x:chart.width(), y:chart.height(), left:chart.position().left, top:chart.position().top, height:chart.height()-$('#axis').height()-150
+    popularity: ->
+      all = (_ BOX.tools.visible DATA.pics ).chain().map( (pic)-> pic.popularity)
+      all:all, max:all.max().value(), min:all.min().value()
+  labels:
+    findTop: (group)->
+      _(group).chain().map((pic)-> pic.$html.position().top).
+        reduce( ((memo, top)-> Math.min memo, top)).value()
+    place: (grouped, locations)->
+      (_ locations).each (location)->
+        [limit, concrete] = PIC.pile.position.concrete location
+        $html = $ '<div class="location">'+location+'</div>'
+        $('#canvas').append $html
+        top = BOX.labels.findTop grouped[location]
+        $html.css
+          left: Math.min limit.x, Math.max(0, concrete.x - $html.outerWidth()/2)
+          top: Math.min limit.y, Math.max(0, top - 25 - $html.outerHeight()/2)
+
+  title:
+    setup:(data)->
+      title = data.photoset.ownername+"'s Shoebox"
+      ta = ($ '#toolbar textarea')
+      
+      ta.val( title ).focus(-> ta.addClass 'focus').blur(-> ta.removeClass 'focus').
+        keyup(@change).data
+          width:
+            max: $('#toolbar .container').width() - $('.logo-1000').width() - $('#sorts').width() - 400
+            min: ta.width()
+          height:
+            min: ta.height()
+      ($ '#toolbar .shadow').css 'max-width', ta.data('width').max
+      $('#toolbar .title').css('visibility', 'visible').hover( (->($ @).addClass 'hover'), ->(($ @).removeClass 'hover'))
+      @change.call ta
+      @change.call ta #for some reason, initial height needs this double call (?)
+    change:()->
+      ta = $ @
+      shadow = ($ '#toolbar .shadow').text ta.val()+' '
+      padding = 2*U.float ta.css('padding-top')
+      margin = 2*U.float ta.css('margin-top')
+      ta.css
+        width: Math.min ta.data('width').max , Math.max( ta.data('width').min, shadow.width()+50)
+        height: Math.min 100, Math.max( ta.data('height').min, shadow.height() )
+      ($ '#toolbar img.background').css
+        width: ta.width()+padding+2
+        height: ta.height()+padding+2
+      ($ '#toolbar .title').css
+        width: ta.width()+padding+margin+2
+        height: ta.height()+padding+margin+2
+
 window.U = U =
+  point:
+    multiply: (a, b)-> x: a.x*b.x, y: a.y*b.y
+  xy: (n)->[n,n]
   line:
     length: (l)-> Math.sqrt Math.pow(l[0].x-l[1].x,2) + Math.pow(l[0].y-l[1].y, 2)
     flatten: (l)-> if l[0].x is l[1].x then [l[0].y, l[1].y] else [l[0].x, l[1].x]
-    intersect: (l1, l2)->
-      points = _.union @flatten(l1), @flatten(l2)
-      (_ points).max() - (_ points).min() <= @length(l1) + @length(l2)
+    intersect: (a, b)->
+      points = _.union @flatten(a), @flatten(b)
+      (_ points).max() - (_ points).min() <= @length(a) + @length(b)
     draw: (a, b)->
       c = ($ '#overlay')[0].getContext '2d'
       c.moveTo a.x||a.left, a.y||a.top
@@ -232,109 +395,26 @@ window.U = U =
       U.line.intersect([rect1.a, rect1.b], [rect2.a, rect2.b]) and
         U.line.intersect([rect1.a, rect1.c], [rect2.a, rect2.c])
   rand: -> .5-Math.random()
-  shuffle: (ary) -> (ary.sort -> U.rand() )
-  xy: (n)->[n,n]
+  shuffle: (array) -> (array.sort -> U.rand() )
   float: (str)-> parseFloat str
-  log: (text, o) ->
-    if o
-      console.log text, if o then U.print o
+  log: (text, o='') ->
+    if o?
+      console.log text+': ', U.print o
       o
     else
       console.log U.print text
       text
   print: (obj)->
     if not $.isPlainObject obj
-      obj
+      if (_ obj).isString() or (_ obj).isNumber() or (_ obj).isBoolean() or (_ obj).isDate() or (_ obj).isRegExp()
+        obj+''
+      else
+        if (_ obj).isArray()
+          '[ '+ (U.print el for el in obj).join(', ') + ' ]'
+        else
+          obj
     else
-      '{'+("#{key}:#{if $.isPlainObject value then U.print value else value}" for key, value of obj).join(', ')+'}'
-
-window.BOX = BOX =
-  setup: ->
-    ($ '#shoebox .canvas-background').css height: $(window).height()
-    ($ '#canvas' ).css height: $(window).height() - $('#shoebox #toolbar').height(), top:$('#shoebox #toolbar').height()
-    ($ '#shoebox').css 'padding-top', ($ window).height()
-    ($ '#overlay').attr width:($ '#canvas').width(), height:($ '#canvas').height()
-    ($ '.pics').css width:($ '#canvas').width(), height:($ '#canvas').height()
-    @sort.setup()
-  data:
-    fetch: (set, size) ->
-      PIC.total = size || PIC.total
-      BOX.data.flickr.fetch set
-    render: (data) ->
-      BOX.title.setup(data)
-      pics = U.shuffle( data.photoset.photo ).slice(0, PIC.total)
-      comments = U.shuffle( DATA.comments )
-      pics = _(pics).map (pic, i)->
-        c = U.shuffle([1,2,3,4])[0]
-        pics[i] = _(pic).extend
-          data_id: i
-          comments: _(comments).first(c)
-          date: U.shuffle(DATA.dates)[0]
-          popularity: 5 + (5*U.rand())
-          location: U.shuffle(DATA.locations)[0]
-        DATA.comments = _(comments).first(c)
-        pics[i]
-      DATA.pics = pics
-      PIC.display pics
-    flickr:
-      fetch:(set) ->
-        set or= PIC.sets['family2']
-        $.getJSON(
-          #'/data?jsoncallback=?',
-          "http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id=#{set}&format=json&extras=url_s&jsoncallback=?",
-          BOX.data.render
-        )
-            
-  sort:
-    setup: ->
-      ($ '#sorts a').click(@click).each(-> ($ @).css 'width', ($ @).width())
-    click: ->
-      ($ '#sorts a').not(@).removeClass('selected')
-      sort = ($ @).toggleClass('selected').text().toLowerCase()
-      BOX.sort[ if ($ @).hasClass 'selected' then sort else 'reset' ]()
-    reset: ->
-      _pics = $('.pics').clone()
-      PIC.pile.size = 1
-      _( _pics.find('.pic') ).each( (pic, i) -> $(pic).css( PIC.pile.place($(pic), i) ) )
-      $('.pics').quicksand _pics.find('.pic').get(), (-> PIC.setup(sort:true))
-    location: ->
-      pics = $('.pics .pic')
-      grouped = (_ DATA.pics).groupBy (pic) -> pic.location
-
-      _pics = $('.pics').clone()
-      PIC.pile.size = 4
-      _( _pics.find('.pic') ).each( (pic, i) -> $(pic).css( PIC.pile.place($(pic), i) ) )
-      $('.pics').quicksand _pics.find('.pic').get(), {adjustHeight:false}, (-> PIC.setup(sort:true))
-  title:
-    setup:(data)->
-      title = data.photoset.ownername+"'s Shoebox"
-      ta = ($ '#toolbar textarea')
-      
-      ta.val( title ).focus(-> ta.addClass 'focus').blur(-> ta.removeClass 'focus').
-        keyup(@change).data
-          width:
-            max: $('#toolbar .container').width() - $('.logo-1000').width() - $('#sorts').width() - 400
-            min: ta.width()
-          height:
-            min: ta.height()
-      ($ '#toolbar .shadow').css 'max-width', ta.data('width').max
-      $('#toolbar .title').css('visibility', 'visible').hover( (->($ @).addClass 'hover'), {adjustHeight:false}, ->(($ @).removeClass 'hover'))
-      @change.call ta
-      @change.call ta #for some reason, initial height needs this double call (?)
-    change:()->
-      ta = $ @
-      shadow = ($ '#toolbar .shadow').text ta.val()+' '
-      padding = 2*U.float ta.css('padding-top')
-      margin = 2*U.float ta.css('margin-top')
-      ta.css
-        width: Math.min ta.data('width').max , Math.max( ta.data('width').min, shadow.width()+50)
-        height: Math.min 100, Math.max( ta.data('height').min, shadow.height() )
-      ($ '#toolbar img.background').css
-        width: ta.width()+padding+2
-        height: ta.height()+padding+2
-      ($ '#toolbar .title').css
-        width: ta.width()+padding+margin+2
-        height: ta.height()+padding+margin+2
+      '{ '+("#{key}:#{if $.isPlainObject value then U.print value else value}" for key, value of obj).join(', ')+' }'
 
 $ ->
   BOX.setup()

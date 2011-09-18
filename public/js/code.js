@@ -1,4 +1,4 @@
-/* DO NOT MODIFY. This file was compiled Sat, 17 Sep 2011 00:17:32 GMT from
+/* DO NOT MODIFY. This file was compiled Sun, 18 Sep 2011 03:18:43 GMT from
  * /Users/sam/projects/sinatra/shoebox/public/js/code.coffee
  */
 
@@ -6,7 +6,7 @@
   var BOX, PIC, U;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   window.PIC = PIC = {
-    total: 12,
+    total: 8,
     count: 0,
     rotation: 60,
     sets: {
@@ -37,10 +37,10 @@
           }
         ], [
           {
-            x: .25,
+            x: .2,
             y: .4
           }, {
-            x: .75,
+            x: .8,
             y: .4
           }
         ], [
@@ -87,29 +87,34 @@
           }
         ]
       ],
-      position: function(i) {
-        var pile;
-        pile = PIC.pile;
-        return pile.positions[pile.size - 1][Math.floor(i / (PIC.total / pile.size))];
-      },
-      place: function(pic, count, radius) {
-        var limit, pile, spread;
-        if (radius == null) {
-          radius = 200;
+      position: {
+        relative: function(i) {
+          var index;
+          index = PIC.pile.size === 1 ? 0 : (_(i)).isString() ? (_(DATA.locations.present)).indexOf(i) : Math.floor(i / (PIC.total / PIC.pile.size));
+          return PIC.pile.positions[PIC.pile.size - 1][index];
+        },
+        concrete: function(count) {
+          var cage, concrete, relative;
+          relative = this.relative(count);
+          cage = {
+            x: ($('#canvas')).width(),
+            y: ($('#canvas')).height()
+          };
+          concrete = U.point.multiply(cage, relative);
+          return [cage, concrete];
         }
-        limit = {
-          x: ($('#canvas')).width(),
-          y: ($('#canvas')).height()
+      },
+      place: function(pic, count) {
+        var cage, concrete, offset, radius, spread, _ref, _ref2;
+        _ref = PIC.pile.position.concrete(count), cage = _ref[0], concrete = _ref[1];
+        _ref2 = [200, PIC.pile.size === 1 ? 2 : 1], radius = _ref2[0], spread = _ref2[1];
+        offset = {
+          x: (radius * U.rand()) * spread,
+          y: (radius * U.rand()) * spread
         };
-        pile = PIC.pile.position(count);
-        pile = {
-          x: limit.x * pile.x,
-          y: limit.y * pile.y
-        };
-        spread = PIC.pile.size < 3 ? 2 : 1;
         return {
-          left: Math.min(limit.x, Math.max(0, pile.x + (radius * U.rand()) * spread - pic.outerWidth() / 2)),
-          top: Math.min(limit.y, Math.max(0, pile.y + (radius * U.rand()) * spread - pic.outerHeight() / 2))
+          left: Math.min(cage.x, Math.max(0, concrete.x + offset.x - $(pic).outerWidth() / 2)),
+          top: Math.min(cage.y, Math.max(0, concrete.y + offset.y - $(pic).outerHeight() / 2))
         };
       }
     },
@@ -118,7 +123,7 @@
         var pic;
         return _((function() {
           var _i, _len, _ref, _results;
-          _ref = $('.pics .pic');
+          _ref = $('#pics .pic');
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             pic = _ref[_i];
@@ -136,7 +141,7 @@
           atop: 1,
           below: -1
         }[atopBelow];
-        _ref = ($('.pics .pic')).removeClass('topStack');
+        _ref = ($('#pics .pic')).removeClass('topStack');
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           pic = _ref[_i];
@@ -277,7 +282,12 @@
         PIC.stack.clear(this);
         return ($(this)).rotate3Di('toggle', 700, {
           sideChange: __bind(function() {
-            return ($(this)).toggleClass('flipped');
+            ($(this)).toggleClass('flipped');
+            if (($(this)).hasClass('flipped')) {
+              return ($(this)).animate({
+                scale: [U.xy(1.35)]
+              }, 300);
+            }
           }, this)
         });
       },
@@ -335,7 +345,7 @@
           }
         },
         setup: function() {
-          return ($('.pics .pic')).draggable({
+          return ($('#pics .pic')).draggable({
             containment: 'parent',
             start: this.start,
             drag: this["while"],
@@ -349,7 +359,7 @@
           return ($('#trash')).addClass('full');
         },
         restore: function() {
-          ($('.pics .pic:hidden')).removeClass('removed').fadeIn();
+          ($('#pics .pic:hidden')).removeClass('removed').fadeIn();
           return ($('#trash')).removeClass('full');
         },
         setup: function() {
@@ -391,23 +401,295 @@
         };
       }
       e = PIC.events;
-      ($('.pics .pic')).dblclick(e.dblclick).click(e.click).find('img').load(e.load);
-      if (options.sort) {
-        return PIC.events.drag.setup();
-      }
+      return ($('#pics .pic')).dblclick(e.dblclick).click(e.click).find('img').load(e.load);
     },
     display: function(pics) {
-      var pic, _i, _len;
+      var comment;
       ($('#shoebox')).find('.loading').remove();
       PIC.events.trash.setup();
-      for (_i = 0, _len = pics.length; _i < _len; _i++) {
-        pic = pics[_i];
-        ($('.pics')).append($('<div class="pic" data-id="' + pic.data_id + '" />').html('<img src="' + pic.url_s + '" /><div class="backside"><span>' + pic.title + '</span></div>')).find('.pic:last').css('z-index', PIC.stack.topmost());
-      }
+      comment = function(c) {
+        return "<div class=\"comment\">" + c.comment + "</div><div class=\"author\">" + c.author + "</div>";
+      };
+      (_(pics)).each(function(pic, i) {
+        var _ref;
+        return (_ref = ($('#pics')).append(DATA.pics[i].$html = $('<div class="pic" />').html('<img src="' + pic.url_s + '" /><div class="backside"><div class="text"></div></div>')).find('.pic:last').css('z-index', PIC.stack.topmost()).find('.text')).append.apply(_ref, _(pic.comments).map(comment));
+      });
       return PIC.setup();
     }
   });
+  window.BOX = BOX = {
+    setup: function() {
+      ($('#shoebox .canvas-background')).css({
+        height: $(window).height()
+      });
+      ($('#canvas')).css({
+        height: $(window).height() - $('#shoebox #toolbar').height(),
+        top: $('#shoebox #toolbar').height()
+      });
+      ($('#shoebox')).css({
+        'padding-top': ($(window)).height()
+      });
+      ($('#overlay')).attr({
+        width: ($('#canvas')).width(),
+        height: ($('#canvas')).height()
+      });
+      ($('#pics')).css({
+        width: ($('#canvas')).width(),
+        height: ($('#canvas')).height()
+      });
+      ($('#chart')).css({
+        width: ($('#canvas')).width() * .80,
+        height: ($('#canvas')).height() * .80,
+        top: ($('#canvas')).height() * .10,
+        left: ($('#canvas')).width() * .10
+      });
+      return this.sort.setup();
+    },
+    data: {
+      fetch: function(set, size) {
+        PIC.total = size || PIC.total;
+        return BOX.data.flickr.fetch(set);
+      },
+      render: function(flickr) {
+        var pics;
+        BOX.title.setup(flickr);
+        pics = BOX.data.mix(flickr);
+        return PIC.display(pics);
+      },
+      mix: function(data) {
+        var comments, pics;
+        pics = U.shuffle(data.photoset.photo).slice(0, PIC.total);
+        comments = U.shuffle(DATA.comments);
+        pics = _(pics).map(function(pic, i) {
+          var c;
+          c = U.shuffle([1, 2, 3, 4])[0];
+          pics[i] = _(pic).extend({
+            order: i,
+            comments: _(comments).first(c),
+            date: U.shuffle(DATA.dates.all)[0],
+            popularity: 5 + (5 * U.rand()),
+            location: U.shuffle(DATA.locations.all)[0]
+          });
+          comments = _(comments).rest(c);
+          return pics[i];
+        });
+        return DATA.pics = pics;
+      },
+      flickr: {
+        fetch: function(set) {
+          set || (set = PIC.sets['family2']);
+          return $.getJSON('/data?jsoncallback=?', BOX.data.render);
+        }
+      }
+    },
+    sort: {
+      setup: function() {
+        return ($('#sorts a')).click(this.click).each(function() {
+          return ($(this)).css('width', ($(this)).width());
+        });
+      },
+      click: function() {
+        var sort;
+        ($('#sorts a')).not(this).removeClass('selected');
+        sort = ($(this)).toggleClass('selected').text().toLowerCase();
+        return BOX.sort[($(this)).hasClass('selected') ? sort : 'reset']();
+      },
+      reset: function() {
+        BOX.sort.reposition({
+          size: 1,
+          sort: 'reset'
+        });
+        $('#canvas .location').remove();
+        return $('#chart').fadeOut('slow');
+      },
+      location: function() {
+        var grouped, locations;
+        grouped = (_(DATA.pics)).groupBy(function(pic) {
+          return pic.location;
+        });
+        DATA.locations.present = locations = (_(grouped)).keys();
+        BOX.sort.reposition({
+          size: locations.length,
+          sort: 'location'
+        });
+        return _.delay((function() {
+          return BOX.labels.place(grouped, locations);
+        }), 600);
+      },
+      popularity: function() {
+        var cage, pops;
+        cage = BOX.tools.cage();
+        pops = BOX.tools.popularity();
+        (_(BOX.tools.visible(DATA.pics))).map(function(pic) {
+          var concrete, pop, relative;
+          pop = (pic.popularity - pops.min) / (pops.max - pops.min);
+          relative = {
+            x: pop,
+            y: pop
+          };
+          concrete = U.point.multiply(cage, relative);
+          return pic.position = {
+            left: cage.left + Math.min(cage.x, Math.max(0, concrete.x - pic.$html.outerWidth())),
+            top: (cage.height - Math.min(cage.height, Math.max(0, concrete.y - pic.$html.outerHeight() / 2))) / 1.25
+          };
+        });
+        BOX.sort.reposition();
+        return $('#axis').html('').append('<span>- LEAST Popular</span>', '<span style="left:auto; right:0">+ MOST Popular</span>');
+      },
+      date: function() {
+        var cage, dates, grouped, length, spans, _ref;
+        grouped = (_(DATA.pics)).groupBy(function(pic) {
+          return pic.date;
+        });
+        DATA.dates.present = dates = (_(grouped)).keys().sort();
+        $('#chart').fadeIn('slow');
+        length = U.float(($('#axis')).width()) / U.float(dates.length);
+        spans = (_(dates)).map(function(date, i) {
+          return "<span style=\"left:" + (length * (i + .3)) + "px\">" + date + "</span>";
+        });
+        (_ref = $('#axis').html('')).append.apply(_ref, spans);
+        cage = BOX.tools.cage();
+        (_(BOX.tools.visible(DATA.pics))).map(function(pic, i, list) {
+          var concrete, group, relative, y;
+          group = grouped[pic.date];
+          y = (((_(group)).indexOf(pic)) + 1) / group.length;
+          relative = {
+            x: _(dates).indexOf(pic.date + '') / dates.length,
+            y: y - .25
+          };
+          concrete = U.point.multiply(cage, relative);
+          return pic.position = {
+            left: cage.left + Math.min(cage.x, Math.max(0, concrete.x)),
+            top: cage.height - Math.min(cage.height, Math.max(0, concrete.y - pic.$html.outerHeight() / 2))
+          };
+        });
+        return BOX.sort.reposition();
+      },
+      reposition: function(options) {
+        if (options == null) {
+          options = {};
+        }
+        if (options.size) {
+          PIC.pile.size = options.size;
+        }
+        return (_(BOX.tools.visible(DATA.pics))).each(function(pic) {
+          var position, _ref;
+          position = (_ref = options.sort) === 'location' || _ref === 'reset' ? PIC.pile.place(pic.$html, pic.location) : pic.position;
+          return pic.$html.animate(position, 600);
+        });
+      }
+    },
+    tools: {
+      visible: function(pics) {
+        return _(pics).filter(function(pic) {
+          return pic.$html.is(':visible');
+        });
+      },
+      cage: function() {
+        var chart;
+        (chart = $('#chart')).fadeIn('slow');
+        return {
+          x: chart.width(),
+          y: chart.height(),
+          left: chart.position().left,
+          top: chart.position().top,
+          height: chart.height() - $('#axis').height() - 150
+        };
+      },
+      popularity: function() {
+        var all;
+        all = (_(BOX.tools.visible(DATA.pics))).chain().map(function(pic) {
+          return pic.popularity;
+        });
+        return {
+          all: all,
+          max: all.max().value(),
+          min: all.min().value()
+        };
+      }
+    },
+    labels: {
+      findTop: function(group) {
+        return _(group).chain().map(function(pic) {
+          return pic.$html.position().top;
+        }).reduce((function(memo, top) {
+          return Math.min(memo, top);
+        })).value();
+      },
+      place: function(grouped, locations) {
+        return (_(locations)).each(function(location) {
+          var $html, concrete, limit, top, _ref;
+          _ref = PIC.pile.position.concrete(location), limit = _ref[0], concrete = _ref[1];
+          $html = $('<div class="location">' + location + '</div>');
+          $('#canvas').append($html);
+          top = BOX.labels.findTop(grouped[location]);
+          return $html.css({
+            left: Math.min(limit.x, Math.max(0, concrete.x - $html.outerWidth() / 2)),
+            top: Math.min(limit.y, Math.max(0, top - 25 - $html.outerHeight() / 2))
+          });
+        });
+      }
+    },
+    title: {
+      setup: function(data) {
+        var ta, title;
+        title = data.photoset.ownername + "'s Shoebox";
+        ta = $('#toolbar textarea');
+        ta.val(title).focus(function() {
+          return ta.addClass('focus');
+        }).blur(function() {
+          return ta.removeClass('focus');
+        }).keyup(this.change).data({
+          width: {
+            max: $('#toolbar .container').width() - $('.logo-1000').width() - $('#sorts').width() - 400,
+            min: ta.width()
+          },
+          height: {
+            min: ta.height()
+          }
+        });
+        ($('#toolbar .shadow')).css('max-width', ta.data('width').max);
+        $('#toolbar .title').css('visibility', 'visible').hover((function() {
+          return ($(this)).addClass('hover');
+        }), function() {
+          return ($(this)).removeClass('hover');
+        });
+        this.change.call(ta);
+        return this.change.call(ta);
+      },
+      change: function() {
+        var margin, padding, shadow, ta;
+        ta = $(this);
+        shadow = ($('#toolbar .shadow')).text(ta.val() + ' ');
+        padding = 2 * U.float(ta.css('padding-top'));
+        margin = 2 * U.float(ta.css('margin-top'));
+        ta.css({
+          width: Math.min(ta.data('width').max, Math.max(ta.data('width').min, shadow.width() + 50)),
+          height: Math.min(100, Math.max(ta.data('height').min, shadow.height()))
+        });
+        ($('#toolbar img.background')).css({
+          width: ta.width() + padding + 2,
+          height: ta.height() + padding + 2
+        });
+        return ($('#toolbar .title')).css({
+          width: ta.width() + padding + margin + 2,
+          height: ta.height() + padding + margin + 2
+        });
+      }
+    }
+  };
   window.U = U = {
+    point: {
+      multiply: function(a, b) {
+        return {
+          x: a.x * b.x,
+          y: a.y * b.y
+        };
+      }
+    },
+    xy: function(n) {
+      return [n, n];
+    },
     line: {
       length: function(l) {
         return Math.sqrt(Math.pow(l[0].x - l[1].x, 2) + Math.pow(l[0].y - l[1].y, 2));
@@ -419,10 +701,10 @@
           return [l[0].x, l[1].x];
         }
       },
-      intersect: function(l1, l2) {
+      intersect: function(a, b) {
         var points;
-        points = _.union(this.flatten(l1), this.flatten(l2));
-        return (_(points)).max() - (_(points)).min() <= this.length(l1) + this.length(l2);
+        points = _.union(this.flatten(a), this.flatten(b));
+        return (_(points)).max() - (_(points)).min() <= this.length(a) + this.length(b);
       },
       draw: function(a, b) {
         var c;
@@ -467,20 +749,20 @@
     rand: function() {
       return .5 - Math.random();
     },
-    shuffle: function(ary) {
-      return ary.sort(function() {
+    shuffle: function(array) {
+      return array.sort(function() {
         return U.rand();
       });
-    },
-    xy: function(n) {
-      return [n, n];
     },
     float: function(str) {
       return parseFloat(str);
     },
     log: function(text, o) {
-      if (o) {
-        console.log(text, o ? U.print(o) : void 0);
+      if (o == null) {
+        o = '';
+      }
+      if (o != null) {
+        console.log(text + ': ', U.print(o));
         return o;
       } else {
         console.log(U.print(text));
@@ -488,11 +770,27 @@
       }
     },
     print: function(obj) {
-      var key, value;
+      var el, key, value;
       if (!$.isPlainObject(obj)) {
-        return obj;
+        if ((_(obj)).isString() || (_(obj)).isNumber() || (_(obj)).isBoolean() || (_(obj)).isDate() || (_(obj)).isRegExp()) {
+          return obj + '';
+        } else {
+          if ((_(obj)).isArray()) {
+            return '[ ' + ((function() {
+              var _i, _len, _results;
+              _results = [];
+              for (_i = 0, _len = obj.length; _i < _len; _i++) {
+                el = obj[_i];
+                _results.push(U.print(el));
+              }
+              return _results;
+            })()).join(', ') + ' ]';
+          } else {
+            return obj;
+          }
+        }
       } else {
-        return '{' + ((function() {
+        return '{ ' + ((function() {
           var _results;
           _results = [];
           for (key in obj) {
@@ -500,155 +798,7 @@
             _results.push("" + key + ":" + ($.isPlainObject(value) ? U.print(value) : value));
           }
           return _results;
-        })()).join(', ') + '}';
-      }
-    }
-  };
-  window.BOX = BOX = {
-    setup: function() {
-      ($('#shoebox .canvas-background')).css({
-        height: $(window).height()
-      });
-      ($('#canvas')).css({
-        height: $(window).height() - $('#shoebox #toolbar').height(),
-        top: $('#shoebox #toolbar').height()
-      });
-      ($('#shoebox')).css('padding-top', ($(window)).height());
-      ($('#overlay')).attr({
-        width: ($('#canvas')).width(),
-        height: ($('#canvas')).height()
-      });
-      ($('.pics')).css({
-        width: ($('#canvas')).width(),
-        height: ($('#canvas')).height()
-      });
-      return this.sort.setup();
-    },
-    data: {
-      fetch: function(set, size) {
-        PIC.total = size || PIC.total;
-        return BOX.data.flickr.fetch(set);
-      },
-      render: function(data) {
-        var comments, pics;
-        BOX.title.setup(data);
-        pics = U.shuffle(data.photoset.photo).slice(0, PIC.total);
-        comments = U.shuffle(DATA.comments);
-        pics = _(pics).map(function(pic, i) {
-          var c;
-          c = U.shuffle([1, 2, 3, 4])[0];
-          pics[i] = _(pic).extend({
-            data_id: i,
-            comments: _(comments).first(c),
-            date: U.shuffle(DATA.dates)[0],
-            popularity: 5 + (5 * U.rand()),
-            location: U.shuffle(DATA.locations)[0]
-          });
-          DATA.comments = _(comments).first(c);
-          return pics[i];
-        });
-        DATA.pics = pics;
-        return PIC.display(pics);
-      },
-      flickr: {
-        fetch: function(set) {
-          set || (set = PIC.sets['family2']);
-          return $.getJSON("http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key=a948a36e48c16afbf95a03c85418f417&photoset_id=" + set + "&format=json&extras=url_s&jsoncallback=?", BOX.data.render);
-        }
-      }
-    },
-    sort: {
-      setup: function() {
-        return ($('#sorts a')).click(this.click).each(function() {
-          return ($(this)).css('width', ($(this)).width());
-        });
-      },
-      click: function() {
-        var sort;
-        ($('#sorts a')).not(this).removeClass('selected');
-        sort = ($(this)).toggleClass('selected').text().toLowerCase();
-        return BOX.sort[($(this)).hasClass('selected') ? sort : 'reset']();
-      },
-      reset: function() {
-        var _pics;
-        _pics = $('.pics').clone();
-        PIC.pile.size = 1;
-        _(_pics.find('.pic')).each(function(pic, i) {
-          return $(pic).css(PIC.pile.place($(pic), i));
-        });
-        return $('.pics').quicksand(_pics.find('.pic').get(), (function() {
-          return PIC.setup({
-            sort: true
-          });
-        }));
-      },
-      location: function() {
-        var grouped, pics, _pics;
-        pics = $('.pics .pic');
-        grouped = (_(DATA.pics)).groupBy(function(pic) {
-          return pic.location;
-        });
-        _pics = $('.pics').clone();
-        PIC.pile.size = 4;
-        _(_pics.find('.pic')).each(function(pic, i) {
-          return $(pic).css(PIC.pile.place($(pic), i));
-        });
-        return $('.pics').quicksand(_pics.find('.pic').get(), {
-          adjustHeight: false
-        }, (function() {
-          return PIC.setup({
-            sort: true
-          });
-        }));
-      }
-    },
-    title: {
-      setup: function(data) {
-        var ta, title;
-        title = data.photoset.ownername + "'s Shoebox";
-        ta = $('#toolbar textarea');
-        ta.val(title).focus(function() {
-          return ta.addClass('focus');
-        }).blur(function() {
-          return ta.removeClass('focus');
-        }).keyup(this.change).data({
-          width: {
-            max: $('#toolbar .container').width() - $('.logo-1000').width() - $('#sorts').width() - 400,
-            min: ta.width()
-          },
-          height: {
-            min: ta.height()
-          }
-        });
-        ($('#toolbar .shadow')).css('max-width', ta.data('width').max);
-        $('#toolbar .title').css('visibility', 'visible').hover((function() {
-          return ($(this)).addClass('hover');
-        }), {
-          adjustHeight: false
-        }, function() {
-          return ($(this)).removeClass('hover');
-        });
-        this.change.call(ta);
-        return this.change.call(ta);
-      },
-      change: function() {
-        var margin, padding, shadow, ta;
-        ta = $(this);
-        shadow = ($('#toolbar .shadow')).text(ta.val() + ' ');
-        padding = 2 * U.float(ta.css('padding-top'));
-        margin = 2 * U.float(ta.css('margin-top'));
-        ta.css({
-          width: Math.min(ta.data('width').max, Math.max(ta.data('width').min, shadow.width() + 50)),
-          height: Math.min(100, Math.max(ta.data('height').min, shadow.height()))
-        });
-        ($('#toolbar img.background')).css({
-          width: ta.width() + padding + 2,
-          height: ta.height() + padding + 2
-        });
-        return ($('#toolbar .title')).css({
-          width: ta.width() + padding + margin + 2,
-          height: ta.height() + padding + margin + 2
-        });
+        })()).join(', ') + ' }';
       }
     }
   };
