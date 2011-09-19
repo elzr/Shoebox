@@ -1,10 +1,10 @@
-/* DO NOT MODIFY. This file was compiled Sun, 18 Sep 2011 03:25:40 GMT from
+/* DO NOT MODIFY. This file was compiled Mon, 19 Sep 2011 05:34:07 GMT from
  * /Users/sam/projects/sinatra/shoebox/public/js/code.coffee
  */
 
 (function() {
   var BOX, PIC, U;
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
   window.PIC = PIC = {
     total: 8,
     count: 0,
@@ -107,14 +107,25 @@
       place: function(pic, count) {
         var cage, concrete, offset, radius, spread, _ref, _ref2;
         _ref = PIC.pile.position.concrete(count), cage = _ref[0], concrete = _ref[1];
-        _ref2 = [200, PIC.pile.size === 1 ? 2 : 1], radius = _ref2[0], spread = _ref2[1];
-        offset = {
-          x: (radius * U.rand()) * spread,
-          y: (radius * U.rand()) * spread
-        };
+        _ref2 = [
+          {
+            x: 200,
+            y: 200
+          }, PIC.pile.size === 1 ? {
+            x: 2,
+            y: 2
+          } : {
+            x: 1,
+            y: 0
+          }
+        ], radius = _ref2[0], spread = _ref2[1];
+        offset = U.point.multiply(radius, {
+          x: U.rand(),
+          y: U.rand()
+        }, spread);
         return {
-          left: Math.min(cage.x, Math.max(0, concrete.x + offset.x - $(pic).outerWidth() / 2)),
-          top: Math.min(cage.y, Math.max(0, concrete.y + offset.y - $(pic).outerHeight() / 2))
+          left: U.line.constrain(0, concrete.x + offset.x - $(pic).outerWidth() / 2, cage.x),
+          top: U.line.constrain(0, concrete.y + offset.y - $(pic).outerHeight() / 2, cage.y)
         };
       }
     },
@@ -227,7 +238,7 @@
         var damp, r, vector, _ref;
         _ref = [this.vector(pic), 500], vector = _ref[0], damp = _ref[1];
         r = ($(pic)).data('rotation') + (30 * vector.x / damp) + (15 * vector.y / damp);
-        r = r > 0 ? Math.min(r, PIC.rotation) : Math.max(r, -PIC.rotation);
+        r = U.line.constrain(-PIC.rotation, r, PIC.rotation);
         ($(pic)).data('rotation', r);
         return {
           rotate: r + 'deg'
@@ -299,10 +310,10 @@
           width: ($(this)).outerWidth()
         }).end().data({
           rotation: PIC.rotation * U.rand(),
-          scale: 1 + .5 * U.rand()
+          scale: .75 + 0.25 * U.rand()
         }).transform({
           rotate: pic.data('rotation') + 'deg',
-          scale: U.xy(1.35)
+          scale: U.xy(1.15)
         }).animate({
           scale: [U.xy(pic.data('scale'))]
         }, 600).css(PIC.pile.place(pic, PIC.count++));
@@ -491,16 +502,19 @@
       click: function() {
         var sort;
         ($('#sorts a')).not(this).removeClass('selected');
+        BOX.sort.clear();
         sort = ($(this)).toggleClass('selected').text().toLowerCase();
         return BOX.sort[($(this)).hasClass('selected') ? sort : 'reset']();
       },
       reset: function() {
-        BOX.sort.reposition({
+        return BOX.sort.reposition({
           size: 1,
           sort: 'reset'
         });
+      },
+      clear: function() {
         $('#canvas .location').remove();
-        return $('#chart').fadeOut('slow');
+        return $('#chart').hide();
       },
       location: function() {
         var grouped, locations;
@@ -529,8 +543,8 @@
           };
           concrete = U.point.multiply(cage, relative);
           return pic.position = {
-            left: cage.left + Math.min(cage.x, Math.max(0, concrete.x - pic.$html.outerWidth())),
-            top: (cage.height - Math.min(cage.height, Math.max(0, concrete.y - pic.$html.outerHeight() / 2))) / 1.25
+            left: cage.left + U.line.constrain(0, concrete.x - pic.$html.outerWidth(), cage.x),
+            top: (cage.height - U.line.constrain(0, concrete.y - pic.$html.outerHeight() / 2, cage.height)) / 1.25
           };
         });
         BOX.sort.reposition();
@@ -555,12 +569,13 @@
           y = (((_(group)).indexOf(pic)) + 1) / group.length;
           relative = {
             x: _(dates).indexOf(pic.date + '') / dates.length,
-            y: y - .25
+            y: group.length === 1 ? y - .5 : y - .25
           };
+          U.log('relative', relative);
           concrete = U.point.multiply(cage, relative);
           return pic.position = {
-            left: cage.left + Math.min(cage.x, Math.max(0, concrete.x)),
-            top: cage.height - Math.min(cage.height, Math.max(0, concrete.y - pic.$html.outerHeight() / 2))
+            left: cage.left + U.line.constrain(0, concrete.x, cage.x),
+            top: cage.height - (U.line.constrain(0, concrete.y - pic.$html.outerHeight() / 2, cage.height))
           };
         });
         return BOX.sort.reposition();
@@ -624,8 +639,8 @@
           $('#canvas').append($html);
           top = BOX.labels.findTop(grouped[location]);
           return $html.css({
-            left: Math.min(limit.x, Math.max(0, concrete.x - $html.outerWidth() / 2)),
-            top: Math.min(limit.y, Math.max(0, top - 25 - $html.outerHeight() / 2))
+            left: U.line.constrain(0, concrete.x - $html.outerWidth() / 2, limit.x),
+            top: U.line.constrain(0, top - 25 - $html.outerHeight() / 2, limit.y)
           });
         });
       }
@@ -664,8 +679,8 @@
         padding = 2 * U.float(ta.css('padding-top'));
         margin = 2 * U.float(ta.css('margin-top'));
         ta.css({
-          width: Math.min(ta.data('width').max, Math.max(ta.data('width').min, shadow.width() + 50)),
-          height: Math.min(100, Math.max(ta.data('height').min, shadow.height()))
+          width: U.line.constrain(ta.data('width').min, shadow.width() + 50, ta.data('width').max),
+          height: U.line.constrain(ta.data('height').min, shadow.height(), 100)
         });
         ($('#toolbar img.background')).css({
           width: ta.width() + padding + 2,
@@ -680,11 +695,19 @@
   };
   window.U = U = {
     point: {
-      multiply: function(a, b) {
-        return {
+      multiply: function() {
+        var a, b, out, rest, _ref, _ref2;
+        a = arguments[0], b = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+        _ref = [b[0], _(b).rest()], b = _ref[0], rest = _ref[1];
+        out = {
           x: a.x * b.x,
           y: a.y * b.y
         };
+        if (!_(rest).isEmpty()) {
+          return (_ref2 = U.point).multiply.apply(_ref2, [out].concat(__slice.call(rest)));
+        } else {
+          return out;
+        }
       }
     },
     xy: function(n) {
@@ -714,6 +737,9 @@
         c.lineWidth = 5;
         c.strokeStyle = 'red';
         return c.stroke();
+      },
+      constrain: function(min, a, max) {
+        return Math.min(max, Math.max(min, a));
       }
     },
     rect: {

@@ -45,10 +45,10 @@ window.PIC = PIC =
         [ cage, concrete ]
     place: (pic, count) ->
       [cage, concrete] = PIC.pile.position.concrete count
-      [radius, spread] = [200, if PIC.pile.size is 1 then 2 else 1]
-      offset = {x:(radius*U.rand())*spread, y:(radius*U.rand())*spread}
-      # U.log('offsetting', (offset.y = Math.abs offset.y)) if PIC.pile.size isnt 1
-      { left: Math.min(cage.x, Math.max(0, concrete.x + offset.x - $(pic).outerWidth()/2)), top: Math.min(cage.y, Math.max(0, concrete.y + offset.y - $(pic).outerHeight()/2)) }
+      [radius, spread] = [{x:200, y:200}, if PIC.pile.size is 1 then {x:2, y:2} else {x:1, y:0}]
+      offset = U.point.multiply( radius, {x:U.rand(), y:U.rand()}, spread )
+      left: U.line.constrain( 0, concrete.x + offset.x - $(pic).outerWidth()/2, cage.x )
+      top: U.line.constrain( 0, concrete.y + offset.y - $(pic).outerHeight()/2, cage.y )
 
   stack:
     topmost: -> _( ~~($ pic).css('z-index') for pic in ($ '#pics .pic') ).max() + 1
@@ -91,7 +91,7 @@ window.PIC = PIC =
     friction: (pic)->
       [vector, damp] = [(@vector pic), 500]
       r = ($ pic).data('rotation')+(30*vector.x/damp)+(15*vector.y/damp)
-      r = if r > 0 then Math.min r, PIC.rotation else Math.max r, -PIC.rotation
+      r = U.line.constrain -PIC.rotation, r, PIC.rotation
       ($ pic).data 'rotation', r
       rotate: r+'deg'
     toss: (pic)->
@@ -124,8 +124,8 @@ window.PIC = PIC =
     load: ->
       pic = ($ @).parents '.pic'
       pic.add( pic.find '.backside' ).css( height: ($ @).outerHeight(), width:($ @).outerWidth() ).end().
-        data( rotation:PIC.rotation*U.rand(), scale: 1+.5*U.rand() ).
-        transform(rotate:pic.data('rotation')+'deg', scale:U.xy 1.35).
+        data( rotation:PIC.rotation*U.rand(), scale: .75+0.25*U.rand() ).
+        transform(rotate:pic.data('rotation')+'deg', scale:U.xy 1.15).
         animate(scale:[U.xy pic.data 'scale'], 600).
         css( PIC.pile.place pic, PIC.count++ )
       PIC.events.drag.setup()
@@ -259,12 +259,14 @@ window.BOX = BOX =
       ($ '#sorts a').click(@click).each(-> ($ @).css 'width', ($ @).width())
     click: ->
       ($ '#sorts a').not(@).removeClass('selected')
+      BOX.sort.clear()
       sort = ($ @).toggleClass('selected').text().toLowerCase()
       BOX.sort[ if ($ @).hasClass 'selected' then sort else 'reset' ]()
     reset: ->
       BOX.sort.reposition size:1, sort:'reset'
+    clear: ->
       $('#canvas .location').remove()
-      $('#chart').fadeOut('slow')
+      $('#chart').hide()
     location: ->
       grouped = (_ DATA.pics).groupBy (pic) -> pic.location
       DATA.locations.present = locations = (_ grouped).keys()
@@ -279,8 +281,8 @@ window.BOX = BOX =
         relative = x: pop, y: pop
         concrete = U.point.multiply cage, relative
         pic.position =
-          left: cage.left + Math.min(cage.x, Math.max(0, concrete.x - pic.$html.outerWidth()))
-          top: (cage.height - Math.min(cage.height, Math.max(0, concrete.y - pic.$html.outerHeight()/2)))/1.25
+          left: cage.left + U.line.constrain 0, concrete.x - pic.$html.outerWidth(), cage.x
+          top: (cage.height - U.line.constrain 0, concrete.y - pic.$html.outerHeight()/2, cage.height )/1.25
 
       BOX.sort.reposition()
       $('#axis').html('').append(
@@ -299,11 +301,11 @@ window.BOX = BOX =
       (_ BOX.tools.visible DATA.pics ).map (pic, i, list)->
         group = grouped[pic.date]
         y = ( ((_ group).indexOf pic) + 1)/group.length
-        relative = x: _(dates).indexOf(pic.date+'')/dates.length, y: y-.25
+        relative = x: _(dates).indexOf(pic.date+'')/dates.length, y: if group.length is 1 then y-.5 else y-.25
         concrete = U.point.multiply cage, relative
         pic.position =
-          left: cage.left + Math.min(cage.x, Math.max(0, concrete.x))
-          top: cage.height - Math.min(cage.height, Math.max(0, concrete.y - pic.$html.outerHeight()/2))
+          left: cage.left + U.line.constrain 0, concrete.x, cage.x
+          top: cage.height - (U.line.constrain 0, concrete.y - pic.$html.outerHeight()/2, cage.height)
 
       BOX.sort.reposition()
 
@@ -333,8 +335,8 @@ window.BOX = BOX =
         $('#canvas').append $html
         top = BOX.labels.findTop grouped[location]
         $html.css
-          left: Math.min limit.x, Math.max(0, concrete.x - $html.outerWidth()/2)
-          top: Math.min limit.y, Math.max(0, top - 25 - $html.outerHeight()/2)
+          left: U.line.constrain 0, concrete.x - $html.outerWidth()/2, limit.x
+          top: U.line.constrain 0, top - 25 - $html.outerHeight()/2, limit.y
 
   title:
     setup:(data)->
@@ -358,8 +360,8 @@ window.BOX = BOX =
       padding = 2*U.float ta.css('padding-top')
       margin = 2*U.float ta.css('margin-top')
       ta.css
-        width: Math.min ta.data('width').max , Math.max( ta.data('width').min, shadow.width()+50)
-        height: Math.min 100, Math.max( ta.data('height').min, shadow.height() )
+        width: U.line.constrain ta.data('width').min, shadow.width()+50, ta.data('width').max
+        height: U.line.constrain ta.data('height').min, shadow.height(), 100
       ($ '#toolbar img.background').css
         width: ta.width()+padding+2
         height: ta.height()+padding+2
@@ -369,7 +371,13 @@ window.BOX = BOX =
 
 window.U = U =
   point:
-    multiply: (a, b)-> x: a.x*b.x, y: a.y*b.y
+    multiply: (a, b...)->
+      [b, rest] = [b[0], _(b).rest()]
+      out = x: a.x*b.x, y: a.y*b.y
+      if not _(rest).isEmpty()
+        U.point.multiply out, rest...
+      else
+        out
   xy: (n)->[n,n]
   line:
     length: (l)-> Math.sqrt Math.pow(l[0].x-l[1].x,2) + Math.pow(l[0].y-l[1].y, 2)
@@ -384,6 +392,8 @@ window.U = U =
       c.lineWidth = 5
       c.strokeStyle = 'red'
       c.stroke()
+    constrain: (min, a, max)->
+      Math.min max, Math.max min, a
   rect:
     extract: (o)->
       o = $ o
