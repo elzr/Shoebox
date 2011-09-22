@@ -1,6 +1,7 @@
 window.PIC = PIC =
   total:8
   count:0
+  size:1
   rotation:60
   sets:
     abstract:'72157625438391339'
@@ -120,7 +121,7 @@ window.PIC = PIC =
       ($ @).rotate3Di 'toggle', 700, sideChange: =>
         ($ @).toggleClass('flipped')
         if ($ @).hasClass 'flipped'
-          ($ @).animate(scale:[U.xy 1.35], 300)
+          ($ @).animate(scale:[U.xy 1.25], 300)
     load: ->
       pic = ($ @).parents '.pic'
       pic.add( pic.find '.backside' ).css( height: ($ @).outerHeight(), width:($ @).outerWidth() ).end().
@@ -212,6 +213,11 @@ window.PIC = PIC =
 
 window.BOX = BOX =
   setup: ->
+    @sort.setup()
+    BOX.resize()
+    ($ window).resize( BOX.resize ).
+      scroll -> ($ window).scrollTop 0
+  size: ->
     ($ '#shoebox .canvas-background').css height: $(window).height()
     ($ '#canvas' ).css height: $(window).height() - $('#shoebox #toolbar').height(), top:$('#shoebox #toolbar').height()
     ($ '#shoebox').css 'padding-top': ($ window).height()
@@ -222,7 +228,10 @@ window.BOX = BOX =
       height: ($ '#canvas').height()*.80
       top: ($ '#canvas').height()*.10
       left: ($ '#canvas').width()*.10
-    @sort.setup()
+  resize: ->
+    BOX.size()
+    BOX.factor = $(window).width()*$(window).height() / 1e6
+
   data:
     fetch: (set, size) ->
       PIC.total = size || PIC.total
@@ -261,6 +270,7 @@ window.BOX = BOX =
       ($ '#sorts a').not(@).removeClass('selected')
       BOX.sort.clear()
       sort = ($ @).toggleClass('selected').text().toLowerCase()
+      ($ '.pic.flipped:visible').dblclick()
       BOX.sort[ if ($ @).hasClass 'selected' then sort else 'reset' ]()
     reset: ->
       BOX.sort.reposition size:1, sort:'reset'

@@ -1,4 +1,4 @@
-/* DO NOT MODIFY. This file was compiled Mon, 19 Sep 2011 05:34:07 GMT from
+/* DO NOT MODIFY. This file was compiled Thu, 22 Sep 2011 04:50:53 GMT from
  * /Users/sam/projects/sinatra/shoebox/public/js/code.coffee
  */
 
@@ -8,6 +8,7 @@
   window.PIC = PIC = {
     total: 8,
     count: 0,
+    size: 1,
     rotation: 60,
     sets: {
       abstract: '72157625438391339',
@@ -296,7 +297,7 @@
             ($(this)).toggleClass('flipped');
             if (($(this)).hasClass('flipped')) {
               return ($(this)).animate({
-                scale: [U.xy(1.35)]
+                scale: [U.xy(1.25)]
               }, 300);
             }
           }, this)
@@ -430,6 +431,13 @@
   });
   window.BOX = BOX = {
     setup: function() {
+      this.sort.setup();
+      BOX.resize();
+      return ($(window)).resize(BOX.resize).scroll(function() {
+        return ($(window)).scrollTop(0);
+      });
+    },
+    size: function() {
       ($('#shoebox .canvas-background')).css({
         height: $(window).height()
       });
@@ -448,13 +456,16 @@
         width: ($('#canvas')).width(),
         height: ($('#canvas')).height()
       });
-      ($('#chart')).css({
+      return ($('#chart')).css({
         width: ($('#canvas')).width() * .80,
         height: ($('#canvas')).height() * .80,
         top: ($('#canvas')).height() * .10,
         left: ($('#canvas')).width() * .10
       });
-      return this.sort.setup();
+    },
+    resize: function() {
+      BOX.size();
+      return BOX.factor = $(window).width() * $(window).height() / 1e6;
     },
     data: {
       fetch: function(set, size) {
@@ -504,6 +515,7 @@
         ($('#sorts a')).not(this).removeClass('selected');
         BOX.sort.clear();
         sort = ($(this)).toggleClass('selected').text().toLowerCase();
+        ($('.pic.flipped:visible')).dblclick();
         return BOX.sort[($(this)).hasClass('selected') ? sort : 'reset']();
       },
       reset: function() {
@@ -571,7 +583,6 @@
             x: _(dates).indexOf(pic.date + '') / dates.length,
             y: group.length === 1 ? y - .5 : y - .25
           };
-          U.log('relative', relative);
           concrete = U.point.multiply(cage, relative);
           return pic.position = {
             left: cage.left + U.line.constrain(0, concrete.x, cage.x),
