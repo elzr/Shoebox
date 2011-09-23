@@ -1,4 +1,4 @@
-/* DO NOT MODIFY. This file was compiled Thu, 22 Sep 2011 04:50:53 GMT from
+/* DO NOT MODIFY. This file was compiled Fri, 23 Sep 2011 05:35:11 GMT from
  * /Users/sam/projects/sinatra/shoebox/public/js/code.coffee
  */
 
@@ -9,7 +9,10 @@
     total: 8,
     count: 0,
     size: 1,
-    rotation: 60,
+    css: {
+      rotation: 45,
+      scale: .75
+    },
     sets: {
       abstract: '72157625438391339',
       obama: '72157626767345322',
@@ -125,8 +128,8 @@
           y: U.rand()
         }, spread);
         return {
-          left: U.line.constrain(0, concrete.x + offset.x - $(pic).outerWidth() / 2, cage.x),
-          top: U.line.constrain(0, concrete.y + offset.y - $(pic).outerHeight() / 2, cage.y)
+          left: U.fit(0, concrete.x + offset.x - $(pic).outerWidth() / 2, cage.x),
+          top: U.fit(0, concrete.y + offset.y - $(pic).outerHeight() / 2, cage.y)
         };
       }
     },
@@ -210,13 +213,12 @@
         _dangle: function(pic) {
           var r;
           if ($('.ui-draggable-dragging').length > 0) {
-            r = (($(pic)).data('rotation')) / (1.5 + U.rand()) * -1;
+            r = ($(pic)).data('rotation') / (1.5 + U.rand()) * -1;
             if (Math.abs(r) < 3) {
               r = 0;
               this.stop(pic);
             }
-            ($(pic)).data('rotation', r);
-            return ($(pic)).animate({
+            return ($(pic)).data('rotation', r).imgAnimate({
               rotate: r + 'deg'
             }, {
               duration: 500,
@@ -239,7 +241,7 @@
         var damp, r, vector, _ref;
         _ref = [this.vector(pic), 500], vector = _ref[0], damp = _ref[1];
         r = ($(pic)).data('rotation') + (30 * vector.x / damp) + (15 * vector.y / damp);
-        r = U.line.constrain(-PIC.rotation, r, PIC.rotation);
+        r = U.fit(-PIC.css.rotation, r, PIC.css.rotation);
         ($(pic)).data('rotation', r);
         return {
           rotate: r + 'deg'
@@ -278,8 +280,8 @@
           below = _ref[_i];
           below = $(below);
           _results.push(below.data({
-            rotation: below.data('rotation') + (PIC.rotation * U.rand())
-          }).animate({
+            rotation: below.data('rotation') + (PIC.css.rotation * U.rand())
+          }).imgAnimate({
             rotate: below.data('rotation')
           }, {
             duration: 500,
@@ -296,8 +298,8 @@
           sideChange: __bind(function() {
             ($(this)).toggleClass('flipped');
             if (($(this)).hasClass('flipped')) {
-              return ($(this)).animate({
-                scale: [U.xy(1.25)]
+              return ($(this)).find('.backside').animate({
+                scale: [U.xy(BOX.scale() * ($(this)).data('scale'))]
               }, 300);
             }
           }, this)
@@ -306,25 +308,29 @@
       load: function() {
         var pic;
         pic = ($(this)).parents('.pic');
-        pic.add(pic.find('.backside')).css({
+        pic.css({
+          visibility: 'visible'
+        }).add(pic.find('.backside')).css({
           height: ($(this)).outerHeight(),
           width: ($(this)).outerWidth()
         }).end().data({
-          rotation: PIC.rotation * U.rand(),
-          scale: .75 + 0.25 * U.rand()
-        }).transform({
+          rotation: PIC.css.rotation * U.rand(),
+          scale: PIC.css.scale + 0.25 * U.rand()
+        }).imgAnimate({
+          scale: [U.xy(BOX.scale() * pic.data('scale') * 1.2)]
+        }, 600);
+        pic.find('img').transform({
           rotate: pic.data('rotation') + 'deg',
-          scale: U.xy(1.15)
-        }).animate({
-          scale: [U.xy(pic.data('scale'))]
-        }, 600).css(PIC.pile.place(pic, PIC.count++));
+          scale: U.xy(BOX.scale() * pic.data('scale'))
+        });
+        pic.css(PIC.pile.place(pic, PIC.count++));
         return PIC.events.drag.setup();
       },
       drag: {
         start: function() {
           PIC.stack.clear(this);
-          return ($(this)).animate({
-            scale: [U.xy(1.5)]
+          return ($(this)).imgAnimate({
+            scale: [U.xy(BOX.scale() * ($(this)).data('scale') * 1.2)]
           }, 300).data('position.before', ($(this)).position());
         },
         "while": function() {
@@ -334,7 +340,7 @@
         whiles: [
           _.throttle(function() {
             if ($('.ui-draggable-dragging').length > 0) {
-              ($(this)).animate(PIC.physics.friction(this), {
+              ($(this)).imgAnimate(PIC.physics.friction(this), {
                 duration: 200,
                 queue: false
               });
@@ -347,11 +353,14 @@
         stop: function() {
           PIC.physics.dangle.stop(this);
           if (!($(this)).hasClass('removed')) {
-            ($(this)).animate($.extend({
-              scale: [U.xy(($(this)).data('scale'))]
-            }, PIC.physics.toss(this), PIC.physics.friction(this)), {
+            ($(this)).animate(PIC.physics.toss(this), {
               duration: 1000,
               step: PIC.events.step
+            }).imgAnimate($.extend({
+              scale: [U.xy(BOX.scale() * ($(this)).data('scale'))]
+            }, PIC.physics.friction(this)), {
+              duration: 1000,
+              queue: false
             });
             return _.delay(PIC.physics.shuffle, 500, this);
           }
@@ -430,12 +439,20 @@
     }
   });
   window.BOX = BOX = {
+    scale: function(recalculate) {
+      if (!(BOX.scale.saved != null) || (recalculate != null)) {
+        return BOX.scale.saved = U.fit(.75, $(window).width() * $(window).height() / 1.1e6, 2);
+      } else {
+        return BOX.scale.saved;
+      }
+    },
     setup: function() {
       this.sort.setup();
       BOX.resize();
-      return ($(window)).resize(BOX.resize).scroll(function() {
-        return ($(window)).scrollTop(0);
+      ($(window)).scroll(function() {
+        return ($(window)).scrollTop(0).scrollLeft(0);
       });
+      return ($(window)).resize(BOX.resize);
     },
     size: function() {
       ($('#shoebox .canvas-background')).css({
@@ -456,16 +473,27 @@
         width: ($('#canvas')).width(),
         height: ($('#canvas')).height()
       });
-      return ($('#chart')).css({
+      ($('#chart')).css({
         width: ($('#canvas')).width() * .80,
         height: ($('#canvas')).height() * .80,
         top: ($('#canvas')).height() * .10,
         left: ($('#canvas')).width() * .10
       });
+      return ($('.ear')).cssMultiply(['width', 'height'], U.fit(1, BOX.scale() * .8, 1.5)).find('img').cssMultiply(['margin-top', 'margin-bottom'], U.fit(1, BOX.scale() * 1.5, 3)).cssMultiply(['margin-right', 'margin-left'], U.fit(1, BOX.scale() * 1.1, 2));
     },
     resize: function() {
+      var sort;
       BOX.size();
-      return BOX.factor = $(window).width() * $(window).height() / 1e6;
+      BOX.scale(true);
+      (_($('.pic'))).each(function(pic) {
+        return $(pic).imgAnimate({
+          scale: [U.xy(BOX.scale() * $(pic).data('scale'))]
+        }, 600);
+      });
+      BOX.title.setup();
+      sort = ($('#sorts a.selected')).text().toLowerCase() || 'reset';
+      BOX.sort.clear();
+      return BOX.sort[sort]();
     },
     data: {
       fetch: function(set, size) {
@@ -555,8 +583,8 @@
           };
           concrete = U.point.multiply(cage, relative);
           return pic.position = {
-            left: cage.left + U.line.constrain(0, concrete.x - pic.$html.outerWidth(), cage.x),
-            top: (cage.height - U.line.constrain(0, concrete.y - pic.$html.outerHeight() / 2, cage.height)) / 1.25
+            left: cage.left + U.fit(0, concrete.x - pic.$html.outerWidth(), cage.x),
+            top: cage.height - U.fit(50, concrete.y - pic.$html.outerHeight() / 2, cage.height - 50)
           };
         });
         BOX.sort.reposition();
@@ -576,17 +604,21 @@
         (_ref = $('#axis').html('')).append.apply(_ref, spans);
         cage = BOX.tools.cage();
         (_(BOX.tools.visible(DATA.pics))).map(function(pic, i, list) {
-          var concrete, group, relative, y;
+          var concrete, group, index, offcenter, relative;
           group = grouped[pic.date];
-          y = (((_(group)).indexOf(pic)) + 1) / group.length;
+          index = {
+            dates: _(dates).indexOf(pic.date + ''),
+            date: (((_(group)).indexOf(pic)) + 1) / group.length
+          };
+          offcenter = index.date === 0 ? 0 : index.date * (cage.height / 5) * (1 + (index.date % 2) * -2);
           relative = {
-            x: _(dates).indexOf(pic.date + '') / dates.length,
-            y: group.length === 1 ? y - .5 : y - .25
+            x: index.dates / dates.length,
+            y: .5
           };
           concrete = U.point.multiply(cage, relative);
           return pic.position = {
-            left: cage.left + U.line.constrain(0, concrete.x, cage.x),
-            top: cage.height - (U.line.constrain(0, concrete.y - pic.$html.outerHeight() / 2, cage.height))
+            left: cage.left + U.fit(0, concrete.x, cage.x),
+            top: cage.height - (U.fit(0, concrete.y - pic.$html.outerHeight() / 2 - offcenter, cage.height))
           };
         });
         return BOX.sort.reposition();
@@ -598,7 +630,13 @@
         if (options.size) {
           PIC.pile.size = options.size;
         }
-        return (_(BOX.tools.visible(DATA.pics))).each(function(pic) {
+        return (_(BOX.tools.visible(DATA.pics))).each(function(pic, index, pics) {
+          /*
+                  fixes =
+                    rotate:(pic.$html.data('rotation')/(if PIC.pile.size > 1 then 1.5 else 1))+'deg'
+                    scale:BOX.scale()*pic.$html.data('scale')/(if pics.length > 5 then 1.5 else 1)
+                  pic.$html.imgAnimate fixes, duration:300, queue:false
+                  */
           var position, _ref;
           position = (_ref = options.sort) === 'location' || _ref === 'reset' ? PIC.pile.place(pic.$html, pic.location) : pic.position;
           return pic.$html.animate(position, 600);
@@ -650,8 +688,8 @@
           $('#canvas').append($html);
           top = BOX.labels.findTop(grouped[location]);
           return $html.css({
-            left: U.line.constrain(0, concrete.x - $html.outerWidth() / 2, limit.x),
-            top: U.line.constrain(0, top - 25 - $html.outerHeight() / 2, limit.y)
+            left: U.fit(0, concrete.x - $html.outerWidth() / 2, limit.x),
+            top: U.fit(0, top - (BOX.scale() * 30) - $html.outerHeight(), limit.y)
           });
         });
       }
@@ -659,8 +697,8 @@
     title: {
       setup: function(data) {
         var ta, title;
-        title = data.photoset.ownername + "'s Shoebox";
         ta = $('#toolbar textarea');
+        title = data ? data.photoset.ownername + "'s Shoebox" : ta.val();
         ta.val(title).focus(function() {
           return ta.addClass('focus');
         }).blur(function() {
@@ -690,8 +728,8 @@
         padding = 2 * U.float(ta.css('padding-top'));
         margin = 2 * U.float(ta.css('margin-top'));
         ta.css({
-          width: U.line.constrain(ta.data('width').min, shadow.width() + 50, ta.data('width').max),
-          height: U.line.constrain(ta.data('height').min, shadow.height(), 100)
+          width: U.fit(ta.data('width').min, shadow.width() + 50, ta.data('width').max),
+          height: U.fit(ta.data('height').min, shadow.height(), 100)
         });
         ($('#toolbar img.background')).css({
           width: ta.width() + padding + 2,
@@ -724,6 +762,9 @@
     xy: function(n) {
       return [n, n];
     },
+    fit: function(min, a, max) {
+      return Math.min(max, Math.max(min, a));
+    },
     line: {
       length: function(l) {
         return Math.sqrt(Math.pow(l[0].x - l[1].x, 2) + Math.pow(l[0].y - l[1].y, 2));
@@ -748,9 +789,6 @@
         c.lineWidth = 5;
         c.strokeStyle = 'red';
         return c.stroke();
-      },
-      constrain: function(min, a, max) {
-        return Math.min(max, Math.max(min, a));
       }
     },
     rect: {
@@ -842,4 +880,17 @@
   $(function() {
     return BOX.setup();
   });
+  $.fn.imgAnimate = function() {
+    var args, _ref;
+    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    (_ref = this.find('img')).animate.apply(_ref, args);
+    return this;
+  };
+  $.fn.cssMultiply = function(attrs, multiple) {
+    (_(attrs)).each(__bind(function(attr) {
+      this.data('premultiply-' + attr, U.float(this.data('premultiply-' + attr) || this.css(attr)));
+      return this.css(attr, this.data('premultiply-' + attr) * multiple);
+    }, this));
+    return this;
+  };
 }).call(this);

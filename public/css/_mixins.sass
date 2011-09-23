@@ -10,6 +10,11 @@
   -moz-box-shadow: $color $x $y $spread
   -webkit-box-shadow: $color $x $y $spread
   box-shadow: $color $x $y $spread
+
+@mixin NIE-shadows($color: #aaa, $x: 1px, $y: 2px, $spread: 2px)
+  -moz-box-shadow: $color $x $y $spread
+  -webkit-box-shadow: $color $x $y $spread
+  box-shadow: $color $x $y $spread
  
 @mixin inset-shadows($color: #aaa, $x: 1px, $y: 1px, $spread: 1px)
   @extend .pie
@@ -40,7 +45,7 @@
   -pie-background: linear-gradient(90deg, $start, $end)
 
 @mixin opacity($alpha:50)
-  @extend .pie
+  //@extend .pie
   -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=$alpha)
   filter: alpha(opacity=$alpha)
   -moz-opacity: $alpha/100

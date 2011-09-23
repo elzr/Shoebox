@@ -26,6 +26,9 @@ class Shoebox < Sinatra::Base
 	get '/css/style.css' do
 		scss :style, :views=>File.dirname(__FILE__)+'/public/css/'
 	end
+	get '/css/type/type.css' do
+		scss :type, :views=>File.dirname(__FILE__)+'/public/css/type/'
+	end
 	get '/js/code.js' do
 		coffee :code
 	end

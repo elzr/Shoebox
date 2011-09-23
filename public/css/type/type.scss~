@@ -1,0 +1,12 @@
+#toolbar textarea, #toolbar .shadow {font-family:'Dawning of a New Day', 'Brush Script MT', 'Lucida Handwriting', Mistral, 'Monotype Corsiva', 'Apple Chancery', cursive; }
+.flipped .text {font-family:'Waiting for the Sunrise', 'Brush Script MT', 'Lucida Handwriting', Mistral, 'Monotype Corsiva', 'Apple Chancery', cursive; }
+@font-face {
+	font-family:'museo-sans-1';
+	src:url('/css/museosans100.eot');
+	src:local("nil"),
+	url(/css/type/museosans100.ttf) format("truetype"),
+	url(/css/type/museosans100.svg) format("svg");
+	font-weight:100;
+	font-style:normal;
+}
+body {font-family:'museo-sans-1', Verdana, sans-serif}

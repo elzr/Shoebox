@@ -2,7 +2,9 @@ window.PIC = PIC =
   total:8
   count:0
   size:1
-  rotation:60
+  css:
+    rotation:45
+    scale:.75
   sets:
     abstract:'72157625438391339'
     obama:'72157626767345322'
@@ -48,8 +50,8 @@ window.PIC = PIC =
       [cage, concrete] = PIC.pile.position.concrete count
       [radius, spread] = [{x:200, y:200}, if PIC.pile.size is 1 then {x:2, y:2} else {x:1, y:0}]
       offset = U.point.multiply( radius, {x:U.rand(), y:U.rand()}, spread )
-      left: U.line.constrain( 0, concrete.x + offset.x - $(pic).outerWidth()/2, cage.x )
-      top: U.line.constrain( 0, concrete.y + offset.y - $(pic).outerHeight()/2, cage.y )
+      left: U.fit( 0, concrete.x + offset.x - $(pic).outerWidth()/2, cage.x )
+      top: U.fit( 0, concrete.y + offset.y - $(pic).outerHeight()/2, cage.y )
 
   stack:
     topmost: -> _( ~~($ pic).css('z-index') for pic in ($ '#pics .pic') ).max() + 1
@@ -78,12 +80,12 @@ window.PIC = PIC =
         clearInterval ($ pic).data 'dangle'
       _dangle: (pic)->
         if $('.ui-draggable-dragging').length > 0
-          r = (($ pic).data 'rotation')/(1.5+U.rand()) * -1
+          r = ($ pic).data('rotation')/(1.5+U.rand()) * -1
           if Math.abs(r) < 3
             r = 0
             @stop pic
-          ($ pic).data 'rotation', r
-          ($ pic).animate rotate: r+'deg', {duration:500, queue:false}
+          ($ pic).data('rotation', r).
+            imgAnimate rotate: r+'deg', {duration:500, queue:false}
         else
           @stop pic
     vector: (pic)->
@@ -92,7 +94,7 @@ window.PIC = PIC =
     friction: (pic)->
       [vector, damp] = [(@vector pic), 500]
       r = ($ pic).data('rotation')+(30*vector.x/damp)+(15*vector.y/damp)
-      r = U.line.constrain -PIC.rotation, r, PIC.rotation
+      r = U.fit -PIC.css.rotation, r, PIC.css.rotation
       ($ pic).data 'rotation', r
       rotate: r+'deg'
     toss: (pic)->
@@ -112,8 +114,8 @@ window.PIC = PIC =
     shuffle: (pic)->
       for below in PIC.stack.get('below', pic)
         below = $ below
-        below.data( rotation:below.data('rotation')+(PIC.rotation*U.rand()) ).
-          animate rotate:below.data('rotation'), {duration:500, queue:false}
+        below.data( rotation:below.data('rotation')+(PIC.css.rotation*U.rand()) ).
+          imgAnimate rotate:below.data('rotation'), {duration:500, queue:false}
 
   events: # EVENTS ---------------------------------------------------
     dblclick: ->
@@ -121,19 +123,20 @@ window.PIC = PIC =
       ($ @).rotate3Di 'toggle', 700, sideChange: =>
         ($ @).toggleClass('flipped')
         if ($ @).hasClass 'flipped'
-          ($ @).animate(scale:[U.xy 1.25], 300)
+          ($ @).find('.backside').animate(scale:[U.xy BOX.scale() * ($ @).data('scale')], 300)
     load: ->
       pic = ($ @).parents '.pic'
-      pic.add( pic.find '.backside' ).css( height: ($ @).outerHeight(), width:($ @).outerWidth() ).end().
-        data( rotation:PIC.rotation*U.rand(), scale: .75+0.25*U.rand() ).
-        transform(rotate:pic.data('rotation')+'deg', scale:U.xy 1.15).
-        animate(scale:[U.xy pic.data 'scale'], 600).
-        css( PIC.pile.place pic, PIC.count++ )
+      pic.css(visibility:'visible').
+        add( pic.find('.backside') ).css( height: ($ @).outerHeight(), width:($ @).outerWidth() ).end().
+        data( rotation:PIC.css.rotation*U.rand(), scale: (PIC.css.scale+0.25*U.rand()) ).
+        imgAnimate(scale:[U.xy BOX.scale() * pic.data('scale') * 1.2], 600)
+      pic.find('img').transform(rotate:pic.data('rotation')+'deg', scale:U.xy BOX.scale() * pic.data('scale'))
+      pic.css( PIC.pile.place pic, PIC.count++ )
       PIC.events.drag.setup()
     drag:
       start: ->
         PIC.stack.clear @
-        ($ @).animate(scale:[U.xy 1.5], 300).
+        ($ @).imgAnimate(scale:[U.xy BOX.scale() * ($ @).data('scale') * 1.2], 300).
           data 'position.before', ($ @).position()
       while: ->
         PIC.events.drag.whiles[0].call @
@@ -141,7 +144,7 @@ window.PIC = PIC =
       whiles: [
         _.throttle( ->
           if $('.ui-draggable-dragging').length > 0
-            ($ @).animate PIC.physics.friction(@), duration:200, queue:false
+            ($ @).imgAnimate PIC.physics.friction(@), duration:200, queue:false
             PIC.physics.dangle.start(@)
         , 250),
         _.throttle( ->
@@ -152,10 +155,8 @@ window.PIC = PIC =
       stop: ->
         PIC.physics.dangle.stop @
         unless ($ @).hasClass 'removed'
-          ($ @).animate $.extend(
-              scale: [U.xy ($ @).data 'scale'],
-              PIC.physics.toss(@), PIC.physics.friction(@)
-            ), duration:1000, step:PIC.events.step
+          ($ @).animate( PIC.physics.toss(@), duration:1000, step:PIC.events.step ).
+            imgAnimate( $.extend( {scale: [U.xy BOX.scale()*($ @).data 'scale']}, PIC.physics.friction(@)) , duration:1000, queue:false)
           _.delay PIC.physics.shuffle, 500, @
       setup: ->
         ($ '#pics .pic').draggable
@@ -212,11 +213,16 @@ window.PIC = PIC =
 )
 
 window.BOX = BOX =
+  scale: (recalculate)->
+    if not BOX.scale.saved? or recalculate?
+      BOX.scale.saved = U.fit .75, $(window).width()*$(window).height() / 1.1e6, 2
+    else
+      BOX.scale.saved
   setup: ->
     @sort.setup()
     BOX.resize()
-    ($ window).resize( BOX.resize ).
-      scroll -> ($ window).scrollTop 0
+    ($ window).scroll -> ($ window).scrollTop(0).scrollLeft(0)
+    ($ window).resize( BOX.resize )
   size: ->
     ($ '#shoebox .canvas-background').css height: $(window).height()
     ($ '#canvas' ).css height: $(window).height() - $('#shoebox #toolbar').height(), top:$('#shoebox #toolbar').height()
@@ -228,9 +234,22 @@ window.BOX = BOX =
       height: ($ '#canvas').height()*.80
       top: ($ '#canvas').height()*.10
       left: ($ '#canvas').width()*.10
+    ($ '.ear').cssMultiply(['width', 'height'], U.fit(1, BOX.scale()*.8, 1.5) ).
+        find('img').cssMultiply(['margin-top', 'margin-bottom'], U.fit(1, BOX.scale()*1.5, 3)).
+          cssMultiply ['margin-right', 'margin-left'], U.fit(1, BOX.scale()*1.1, 2)
+
   resize: ->
     BOX.size()
-    BOX.factor = $(window).width()*$(window).height() / 1e6
+    BOX.scale(on)
+
+    (_ $ '.pic').each (pic)->
+      $(pic).imgAnimate(scale:[U.xy BOX.scale() * $(pic).data 'scale'], 600)
+    
+    BOX.title.setup()
+    sort = ($ '#sorts a.selected').text().toLowerCase() or 'reset'
+    BOX.sort.clear()
+    BOX.sort[ sort ]()
+    
 
   data:
     fetch: (set, size) ->
@@ -291,8 +310,8 @@ window.BOX = BOX =
         relative = x: pop, y: pop
         concrete = U.point.multiply cage, relative
         pic.position =
-          left: cage.left + U.line.constrain 0, concrete.x - pic.$html.outerWidth(), cage.x
-          top: (cage.height - U.line.constrain 0, concrete.y - pic.$html.outerHeight()/2, cage.height )/1.25
+          left: cage.left + U.fit 0, concrete.x - pic.$html.outerWidth(), cage.x
+          top: cage.height - U.fit 50, concrete.y - pic.$html.outerHeight()/2, cage.height-50
 
       BOX.sort.reposition()
       $('#axis').html('').append(
@@ -310,18 +329,25 @@ window.BOX = BOX =
       cage = BOX.tools.cage()
       (_ BOX.tools.visible DATA.pics ).map (pic, i, list)->
         group = grouped[pic.date]
-        y = ( ((_ group).indexOf pic) + 1)/group.length
-        relative = x: _(dates).indexOf(pic.date+'')/dates.length, y: if group.length is 1 then y-.5 else y-.25
+        index = dates:_(dates).indexOf(pic.date+''), date: ( ((_ group).indexOf pic) + 1)/group.length
+        offcenter = if index.date is 0 then 0 else index.date*(cage.height/5)*(1+(index.date%2)*-2)
+        relative = x: index.dates/dates.length, y: .5
         concrete = U.point.multiply cage, relative
         pic.position =
-          left: cage.left + U.line.constrain 0, concrete.x, cage.x
-          top: cage.height - (U.line.constrain 0, concrete.y - pic.$html.outerHeight()/2, cage.height)
+          left: cage.left + U.fit 0, concrete.x, cage.x
+          top: cage.height - (U.fit 0, concrete.y - pic.$html.outerHeight()/2 - offcenter, cage.height)
 
       BOX.sort.reposition()
 
     reposition: (options = {})->
       PIC.pile.size = options.size if options.size
-      (_ BOX.tools.visible DATA.pics).each (pic)->
+      (_ BOX.tools.visible DATA.pics).each (pic, index, pics)->
+        ###
+        fixes =
+          rotate:(pic.$html.data('rotation')/(if PIC.pile.size > 1 then 1.5 else 1))+'deg'
+          scale:BOX.scale()*pic.$html.data('scale')/(if pics.length > 5 then 1.5 else 1)
+        pic.$html.imgAnimate fixes, duration:300, queue:false
+        ###
         position = if options.sort in ['location', 'reset'] then PIC.pile.place(pic.$html, pic.location) else pic.position
         pic.$html.animate position, 600
 
@@ -345,13 +371,13 @@ window.BOX = BOX =
         $('#canvas').append $html
         top = BOX.labels.findTop grouped[location]
         $html.css
-          left: U.line.constrain 0, concrete.x - $html.outerWidth()/2, limit.x
-          top: U.line.constrain 0, top - 25 - $html.outerHeight()/2, limit.y
+          left: U.fit 0, concrete.x - $html.outerWidth()/2, limit.x
+          top: U.fit 0, top - (BOX.scale()*30) - $html.outerHeight(), limit.y
 
   title:
     setup:(data)->
-      title = data.photoset.ownername+"'s Shoebox"
       ta = ($ '#toolbar textarea')
+      title = if data then (data.photoset.ownername) + "'s Shoebox" else ta.val()
       
       ta.val( title ).focus(-> ta.addClass 'focus').blur(-> ta.removeClass 'focus').
         keyup(@change).data
@@ -370,8 +396,8 @@ window.BOX = BOX =
       padding = 2*U.float ta.css('padding-top')
       margin = 2*U.float ta.css('margin-top')
       ta.css
-        width: U.line.constrain ta.data('width').min, shadow.width()+50, ta.data('width').max
-        height: U.line.constrain ta.data('height').min, shadow.height(), 100
+        width: U.fit ta.data('width').min, shadow.width()+50, ta.data('width').max
+        height: U.fit ta.data('height').min, shadow.height(), 100
       ($ '#toolbar img.background').css
         width: ta.width()+padding+2
         height: ta.height()+padding+2
@@ -389,6 +415,8 @@ window.U = U =
       else
         out
   xy: (n)->[n,n]
+  fit: (min, a, max)->
+    Math.min max, Math.max min, a
   line:
     length: (l)-> Math.sqrt Math.pow(l[0].x-l[1].x,2) + Math.pow(l[0].y-l[1].y, 2)
     flatten: (l)-> if l[0].x is l[1].x then [l[0].y, l[1].y] else [l[0].x, l[1].x]
@@ -402,8 +430,6 @@ window.U = U =
       c.lineWidth = 5
       c.strokeStyle = 'red'
       c.stroke()
-    constrain: (min, a, max)->
-      Math.min max, Math.max min, a
   rect:
     extract: (o)->
       o = $ o
@@ -438,3 +464,12 @@ window.U = U =
 
 $ ->
   BOX.setup()
+
+$.fn.imgAnimate = (args...) ->
+  this.find('img').animate args...
+  return this
+$.fn.cssMultiply = (attrs, multiple) ->
+  (_ attrs).each (attr)=>
+    this.data 'premultiply-'+attr, U.float( this.data('premultiply-'+attr) || this.css(attr))
+    this.css( attr, this.data('premultiply-'+attr)* multiple )
+  return this
