@@ -1,0 +1,1412 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+		<title>Teléfono Rojo: Bienvenido</title>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+		<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+		<link href="/stylesheets/global.css?1315992072" media="screen" rel="stylesheet" type="text/css" />
+<link href="/stylesheets/jquery-lightbox.css?1290022753" media="screen" rel="stylesheet" type="text/css" />
+		<link href="/stylesheets/print.css?1294709633" media="print" rel="stylesheet" type="text/css" />
+		<script src="/javascripts/jquery-lightbox.js?1296182181" type="text/javascript"></script>
+<script src="/javascripts/global.js?1314319841" type="text/javascript"></script>
+<script src="/javascripts/jquery-special-load.js?1296134995" type="text/javascript"></script>
+<script src="/javascripts/jquery-animate-css-rotate-scale.js?1295887765" type="text/javascript"></script>
+<script src="/javascripts/swfobject.js?1244751240" type="text/javascript"></script>
+		
+				
+			<script>
+				$(function() {
+					var RELOAD={
+						only:'global admin',
+						isOnly:function(url) {
+							return url && RELOAD.only.match(url.match(/([^\/]+)\.css/)[1])
+						},
+						mtimes:{},
+						css:function(){
+							var i,a,s;
+							a=document.getElementsByTagName('link');
+							for(i=0;i<a.length;i++){ s=a[i];
+								if((s.rel.toLowerCase().indexOf('stylesheet')>=0) && RELOAD.isOnly(s.href)) {
+									var memo = s; //this assignment makes s able to get in the closure
+									var url = RELOAD.forceReload(memo.href);
+									//console.log(url);
+									RELOAD.ping(url, function() {
+										memo.href = url;
+									});
+								};
+							};
+						},
+						forceReload:function(url) {
+							var url=url.replace(/(&|%5C?)forceReload=\d+/,'');
+							return url+(url.indexOf('?')>=0?'&':'?')+'forceReload='+(new Date().valueOf());
+						},
+						ping:function(url, isModified) { url=url.replace(/\?[^?]+$/,'');
+							$.ajax({
+								url:url, 
+								complete:function(xhr) {
+									var mtime = new Date(xhr.getResponseHeader('Last-Modified'));
+									var delta = mtime-(RELOAD.mtimes[url]||mtime);
+									//console.log(delta);
+									if(delta != 0) {
+										isModified();
+									};
+									RELOAD.mtimes[url] = mtime;
+								}
+							});
+						},
+						setup:function() {
+							RELOAD.interval = setInterval(RELOAD.css, 2000)
+						}
+					};
+					RELOAD.setup()
+				})
+			</script>
+		
+
+	</head>
+	<body>
+			
+			<div id="header">
+				<div id="welcomebar">
+					<table class="center" cellspacing="0" cellpadding="0">
+						<tr>
+							<td class="welcome" >
+								<b>Jos&eacute; Ureña</b> presenta 
+							</td>
+							
+							<td class="date">
+								
+									<b>Miercoles 14 de Septiembre del 2011</b>
+								
+							</td>
+						</tr>
+					</table>
+				</div>
+				
+
+				<table cellspacing="0" cellpadding="0">
+					<tr>
+						<td class="logo" rowspan="2">
+							<a href="/" title="Ir a la pagina principal" alt="Telefono Rojo"><img src="/images/logo/crop.gif" style="border:none" /></a>
+						</td>
+						<td class="weather">
+							&nbsp; 
+								<span id="weather"><a href="http://mx.clima.yahoo.com/m%C3%A9xico/distrito-federal/ciudad-de-m%C3%A9xico-116545/">&nbsp;</a></span>
+							
+						</td>
+					</tr>
+					<tr>
+						
+						<td class="timbrazo">
+							
+								<div>
+									<img src="/images/ui/timbrazo.png" />
+									Oración del SME: "Ebrard nos dio el Zócalo, Ebrard nos lo pidió. ¡Alabado sea!".
+								</div>
+							
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div id="topbar">
+				<a href="/" class="here">Portada</a>
+				
+					<a href="/nacionales/" 
+						>Nacionales</a>
+				
+					<a href="/df/" 
+						>D.F.</a>
+				
+					<a href="/internacionales/" 
+						>Internacionales</a>
+				
+					<a href="/politica/" 
+						>Política</a>
+				
+					<a href="/economia/" 
+						>Economía</a>
+				
+					<a href="/deportes/" 
+						>Deportes</a>
+				
+					<a href="/columnas/" 
+						>Columnas</a>
+				
+			</div>
+		<table class="main" cellpadding="0" cellspacing="0">
+			<tr>
+				<td class="main">
+					
+					
+<table class="columnas" cellpadding="0" cellspacing="0">
+	<tr>
+		<td class="label">
+			<a href="/seccion/columnas/"><img src="/images/columnas-vertical.png" /></a>
+		</td>
+		
+		<td class="urena column" onclick="location='/2011/9/13/Tel%C3%A9fono-Rojo'">
+			<div class="header">
+				<div class="title">
+					<a href="/2011/9/13/Tel%C3%A9fono-Rojo">
+						<img src="/images/jose-urena.jpg" class="portrait" />
+						Teléfono Rojo
+					</a>
+				</div>
+				<div class="author">
+					José Ureña
+				</div>
+			</div>
+			<div class="excerpt">
+				<ul>
+					
+						<li> Calderón y Gordillo recomponen de nuevo su relación
+<li> Yunes sin posición, SNTE sin presión y más protección
+<li> Córdova visita a Chertorivski y puntea en Guanajuato 
+					
+				</ul>
+			</div>
+		</td>
+		
+		<td class="cardona column" onclick="location='/2011/9/13/Los-pobres-periodistas'">
+			<div class="header">
+				<div class="title">
+					<a href="/2011/9/13/Los-pobres-periodistas">
+						<img src="/images/rafael-cardona.jpg" class="portrait" />
+						El Cristalazo
+					</a>
+				</div>
+				<div class="author">
+					Rafael Cardona
+				</div>
+			</div>
+			<div class="excerpt">
+				
+					<b>Los pobres periodistas</b><br>
+					Hace muchos años el carismático Adolfo López Mateos dijo de los periodistas  --y alguna vez me lo&hellip;
+				
+			</div>
+		</td>
+		<td class="subcolumns">
+			<table class="subcolumns" cellpadding="0" cellspacing="0">
+				<tr>
+				
+				<td class="column" onclick="location='/2011/9/13/Espacio-Electoral'">
+					<div class="header">
+						<div class="title">
+							<a href="/2011/9/13/Espacio-Electoral">
+								<img src="/images/eleazar-flores.jpg" class="portrait" />
+								Espacio Electoral
+							</a>
+						</div>
+						<div class="author">
+							Eleazar Flores
+						</div>
+					</div>
+				</td>
+			</tr>
+				
+				
+				
+				
+					<tr>
+					<td class="column" onclick="location='/2010/10/29/Equivocaciones-circulares'">
+						<div class="header">
+							<div class="title">
+								<a href="/2010/10/29/Equivocaciones-circulares">
+									<img src="/images/felipe-diaz-garza.jpg" class="portrait" />
+									Show Pol&iacute;tico
+								</a>
+							</div>
+							<div class="author">
+								Felipe D&iacute;az Garza
+							</div>
+						</div>
+					</td>
+				</tr>
+				
+			</table>
+		</td>
+		<td class="otros">
+			<form onsubmit="location = $('#otrasColumnas').val(); return false">
+				Otras columnas:<br>
+				<select id="otrasColumnas" size="4">
+					
+						<option value="http://www.reforma.com/editoriales/nacional/624/1247523/">
+							<span>Templo Mayor</span>
+						</option>
+					
+						<option value="http://www.milenio.com/cdb/doc/impreso/9025271">
+							<span>Trascendió</span>
+						</option>
+					
+						<option value="http://www.eluniversal.com.mx/noticias.html">
+							<span>Bajo Reserva</span>
+						</option>
+					
+						<option value="http://excelsior.com.mx/index.php?m=opinion_interior&cat=38">
+							<span>Frentes Políticos</span>
+						</option>
+					
+						<option value="http://www.razon.com.mx/spip.php?page=columnista&id_article=91589">
+							<span>Rozones</span>
+						</option>
+					
+						<option value="http://www.milenio.com/cdb/doc/impreso/9025262">
+							<span>En Privado</span>
+						</option>
+					
+						<option value="http://www.milenio.com/cdb/doc/impreso/9025251">
+							<span>El Asalto a la Razón</span>
+						</option>
+					
+						<option value="http://www.milenio.com/cdb/doc/impreso/9025253">
+							<span>Día a Día</span>
+						</option>
+					
+						<option value="http://www.eluniversal.com.mx/columnas/91606.html">
+							<span>Jacobo Zabludovksy</span>
+						</option>
+					
+						<option value="http://www.razon.com.mx/spip.php?page=columnista&id_article=91483">
+							<span>Estrictamente Personal</span>
+						</option>
+					
+				</select><br>
+				<input type="submit" value="Visitar &rarr;" />
+			</form>
+		</td>
+	</tr>
+</table>
+<script>
+	$("table.subcolumns td.column:even").addClass("alt");
+</script>
+
+
+					
+
+					<div id="content">
+						
+
+<table id="primeraPlana" cellpadding="0" cellspacing="0">
+	<tr>
+		<td class="notaa" colspan="2">
+			
+							<div style="margin:5px auto; width:730px; height:90px">
+				<object id="FlashID" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="728" height="90">
+					<param name="movie" value="/ads/imss/imss-big.swf">
+					<param name='allowscriptaccess' value='always'>
+					<embed src="/ads/imss/imss-big.swf" width="728" height="90" />
+					<a href="http://www.imss.gob.mx/" style="display:block; width:730px; height:90px; margin:5px auto; background:url(/ads/imss/imss-superior.jpg)"> </a>
+				</object>
+			</div>
+
+			
+						
+				<a class="noticia" href="/2011/9/14/Virtual-destape-presidencial-Pe%C3%B1a-Nieto-por-la-diputaci%C3%B3n-pri%C3%ADsta">
+					
+					
+						
+							<div class="img">
+								<img src="http://farm7.static.flickr.com/6160/6146421396_2da9c2899e_b.jpg" style="margin-top:-120px" />
+								<div class="credito">Teléfono Rojo</div>
+							</div>
+						
+						<div class="text">
+							<!--
+							<span class="section">Nacionales</span>
+							-->
+							<div class="title">Virtual destape presidencial Peña Nieto por la diputación priísta</div>
+							<div class="summary">Reunidos en el Piso 51, acusan a Calderón de desprestigiar la política y a los partidos, y de dividir al país</div>
+						</div>
+					
+				</a>
+			
+
+			
+
+			
+		</td>
+		<td class="minutero" rowspan="2">
+			
+			<h2>Minutero</h2>
+			<ul class="stripeMe trim">
+				
+					<li>
+						<a href="/2011/9/14/Virtual-destape-presidencial-Pe%C3%B1a-Nieto-por-la-diputaci%C3%B3n-pri%C3%ADsta">
+							<span class="time">
+								00:19
+							</span> Virtual destape presidencial Peña Nieto por la diputación priísta
+						</a>
+					</li>
+				
+					<li>
+						<a href="/2011/9/13/Torre%C3%B3n-va-a-EU-y-muestra-una-cara-victoriosa-ante-Colorado-Rapids%3A-4-1">
+							<span class="time">
+								22:28
+							</span> Torreón va a EU y muestra una cara victoriosa ante Colorado Rapids: 4-1
+						</a>
+					</li>
+				
+					<li>
+						<a href="/2011/9/13/Colaboraci%C3%B3n-M%C3%A9xico-EU-m%C3%A1s-all%C3%A1-de-la-seguridad%2C-plantea-el-embajador-Wayne">
+							<span class="time">
+								22:00
+							</span> Colaboración México-EU más allá de la seguridad, plantea el embajador Wayne
+						</a>
+					</li>
+				
+					<li>
+						<a href="/2011/9/13/El-Terrible-Morales-promete-ganar-y-celebrar-a-la-mexicana">
+							<span class="time">
+								21:21
+							</span> El Terrible Morales promete ganar y celebrar a la mexicana
+						</a>
+					</li>
+				
+					<li>
+						<a href="/2011/9/13/La-toma-de-nota-al-SME-se-hizo-por-ley-y-no-por-negociaci%C3%B3n%3A-Segob">
+							<span class="time">
+								21:17
+							</span> La toma de nota al SME se hizo por ley y no por negociación: Segob
+						</a>
+					</li>
+				
+					<li>
+						<a href="/2011/9/13/Volaris-inaugura-el-vuelo-M%C3%A9xico-Zacatecas-M%C3%A9xico-a-bajo-costo">
+							<span class="time">
+								21:06
+							</span> Volaris inaugura el vuelo México-Zacatecas-México a bajo costo
+						</a>
+					</li>
+				
+					<li>
+						<a href="/2011/9/13/Da-el-Senado-el-primer-paso-para-hacer-obligatorio-el-bachillerato">
+							<span class="time">
+								20:52
+							</span> Da el Senado el primer paso para hacer obligatorio el bachillerato
+						</a>
+					</li>
+				
+					<li>
+						<a href="/2011/9/13/Ma%C3%B1ana-analiza-el-Trife-las-impugnaciones-contra-Eruviel-Avila">
+							<span class="time">
+								20:49
+							</span> Mañana analiza el Trife las impugnaciones contra Eruviel Avila
+						</a>
+					</li>
+				
+					<li>
+						<a href="/2011/9/13/El-FBI-no-particip%C3%B3-en-el-env%C3%ADo-ilegal-de-armas-a-M%C3%A9xico%2C-afirma-su-director">
+							<span class="time">
+								20:45
+							</span> El FBI no participó en el envío ilegal de armas a México, afirma su director
+						</a>
+					</li>
+				
+					<li>
+						<a href="/2011/9/13/Comienza-la-protecci%C3%B3n-de-la-justicia-al-vende-quesos-Jon%C3%A1s-Larrazabal">
+							<span class="time">
+								20:23
+							</span> Comienza la protección de la justicia al vende quesos Jonás Larrazabal
+						</a>
+					</li>
+				
+					<li>
+						<a href="/2011/9/13/Avanza-la-reparaci%C3%B3n-del-Cutzamala-y-ma%C3%B1ana-podr%C3%ADan-reanudar-el-abasto-de-agua-al-DF">
+							<span class="time">
+								20:20
+							</span> Avanza la reparación del Cutzamala y mañana podrían reanudar el abasto de agua al DF
+						</a>
+					</li>
+				
+					<li>
+						<a href="/2011/9/13/El-Metro-ha-dado-servicio-a-48-mil-500-millones-de-usuarios">
+							<span class="time">
+								19:21
+							</span> El Metro ha dado servicio a 48 mil 500 millones de usuarios
+						</a>
+					</li>
+				
+					<li>
+						<a href="/2011/9/13/Ejecutan-extorsionadores-a-tres-federales%3B-cayeron">
+							<span class="time">
+								19:12
+							</span> Ejecutan extorsionadores a tres federales; cayeron
+						</a>
+					</li>
+				
+					<li>
+						<a href="/2011/9/13/Mata-barda-a-dos-trabajadores-en-la-Miguel-Hidalgo">
+							<span class="time">
+								19:08
+							</span> Mata barda a dos trabajadores en la Miguel Hidalgo
+						</a>
+					</li>
+				
+					<li>
+						<a href="/2011/9/13/Hallan-en-Acapulco-dos-cad%C3%A1veres-en-tina-de-ba%C3%B1o">
+							<span class="time">
+								19:06
+							</span> Hallan en Acapulco dos cadáveres en tina de baño
+						</a>
+					</li>
+				
+					<li>
+						<a href="/2011/9/13/Rescatar%C3%A1-Conagua-canales-de-Xochimilco">
+							<span class="time">
+								18:55
+							</span> Rescatará Conagua canales de Xochimilco
+						</a>
+					</li>
+				
+			</ul>
+			<div class="masNoticias">
+				<a href="/minutero">M&aacute;s noticias &raquo;</a>
+			</div>
+			<br>
+			<center><a href="http://www.liconsa.gob.mx/innovaportal/types/file/downloadfilecontent.jsp?contentid=1294">
+	
+		<img src="/ads/liconsa/200x151.jpg" />
+	
+</a><br></center>
+
+
+			<div class="videos">
+				<h2>Videos recientes:</h2>
+				
+					
+					
+						<a href="/2011/9/12/Otro-lunes-negro-para-bolsas-europeas" title="Otro lunes negro para bolsas europeas">
+							<img class="scale" src="http://img.youtube.com/vi/xiocT3S6V2k/default.jpg">
+						</a>
+					
+				
+					
+					
+						<a href="/2011/9/12/Fuerzas-de-Gadafi-atacan-una-refiner%C3%ADa" title="Fuerzas de Gadafi atacan una refinería ">
+							<img class="scale" src="http://img.youtube.com/vi/GiEWWfCmvMM/default.jpg">
+						</a>
+					
+				
+					
+					
+						<a href="/2011/9/12/Ximena-Navarrete-termina-su-reinado" title="Ximena Navarrete termina su reinado">
+							<img class="scale" src="http://img.youtube.com/vi/3MGHYfsdllY/default.jpg">
+						</a>
+					
+				
+					
+					
+						<a href="/2011/9/12/Esclavitud-moderna-en-el-Reino-Unido" title="Esclavitud moderna en el Reino Unido  ">
+							<img class="scale" src="http://img.youtube.com/vi/6MV4kgGeGFA/default.jpg">
+						</a>
+					
+				
+					
+					
+						<a href="/2011/9/12/Se-regularizar%C3%A1-el-servicio-de-agua-hasta-el-mi%C3%A9rcoles" title="Se regularizará el servicio de agua hasta el miércoles ">
+							<img class="scale" src="http://img.youtube.com/vi/4yqijjPfa1g/default.jpg">
+						</a>
+					
+				
+					
+					
+						<a href="/2011/9/11/Los-rebeldes-libios-van-por-la-ciudad-Gadafi" title="Los rebeldes libios van por la ciudad Gadafi">
+							<img class="scale" src="http://img.youtube.com/vi/1uwlXkxg2vM/default.jpg">
+						</a>
+					
+				
+					
+					
+						<a href="/2011/9/11/Las-favoritas-para-ganar-Miss-Universo-2011" title="Las favoritas para ganar Miss Universo 2011">
+							<img class="scale" src="http://img.youtube.com/vi/IccgVMBdm6s/default.jpg">
+						</a>
+					
+				
+					
+					
+						<a href="/2011/9/11/A-6-meses-del-terremoto-y-tsunami-en-Jap%C3%B3n" title="A 6 meses del terremoto y tsunami en Japón">
+							<img class="scale" src="http://img.youtube.com/vi/FLA-xDQ0e6k/default.jpg">
+						</a>
+					
+				
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="principales">
+			<div class="container">
+				
+				
+					
+						<div class="noticia">
+							<div class="title">
+								<a href="/2011/9/13/Colaboraci%C3%B3n-M%C3%A9xico-EU-m%C3%A1s-all%C3%A1-de-la-seguridad%2C-plantea-el-embajador-Wayne">
+									<img src="http://farm7.static.flickr.com/6181/6145800551_c07df2acbd_s.jpg" class="fright" title="" />
+									Colaboración México-EU más allá de la seguridad, plantea el embajador Wayne
+								</a>
+							</div>
+							<div class="meta">
+								<span class="section">
+									<a href="/nacionales/">Nacionales</a>
+								</span>
+								<a class="placeLink" href="/ciudad/mexico">Mexico, DF</a>
+							</div>
+							<div class="summary">
+								La cooperación la frontera a través de la Iniciativa Mérida es "foco central de nuestra agenda compartida", dijo al presentar sus cartas credenciales
+							</div>
+						</div>
+					
+				
+					
+						<div class="noticia">
+							<div class="title">
+								<a href="/2011/9/13/Da-el-Senado-el-primer-paso-para-hacer-obligatorio-el-bachillerato">
+									<img src="http://farm7.static.flickr.com/6156/6146124016_d828cf8b9e_s.jpg" class="fright" title="" />
+									Da el Senado el primer paso para hacer obligatorio el bachillerato
+								</a>
+							</div>
+							<div class="meta">
+								<span class="section">
+									<a href="/nacionales/">Nacionales</a>
+								</span>
+								<a class="placeLink" href="/ciudad/mexico">Mexico, DF</a>
+							</div>
+							<div class="summary">
+								Comenzará a instrumentarse en el ciclo 2012-2013 y deberá completarse hacia 2022
+							</div>
+						</div>
+					
+				
+					
+						<div class="noticia">
+							<div class="title">
+								<a href="/2011/9/13/El-FBI-no-particip%C3%B3-en-el-env%C3%ADo-ilegal-de-armas-a-M%C3%A9xico%2C-afirma-su-director">
+									
+									El FBI no participó en el envío ilegal de armas a México, afirma su director
+								</a>
+							</div>
+							<div class="meta">
+								<span class="section">
+									<a href="/internacionales/">Internacionales</a>
+								</span>
+								<a class="placeLink" href="/ciudad/washington">Washington</a>
+							</div>
+							<div class="summary">
+								El operativo Rápido y Furioso estuvo a cargo de la Oficina de alcohol, Tabaco, Armas de fuego y Explosivos, asegura
+							</div>
+						</div>
+					
+				
+					
+						<div class="noticia">
+							<div class="title">
+								<a href="/2011/9/13/Comienza-la-protecci%C3%B3n-de-la-justicia-al-vende-quesos-Jon%C3%A1s-Larrazabal">
+									
+									Comienza la protección de la justicia al vende quesos Jonás Larrazabal
+								</a>
+							</div>
+							<div class="meta">
+								<span class="section">
+									<a href="/nacionales/">Nacionales</a>
+								</span>
+								<a class="placeLink" href="/ciudad/mexico">Mexico, DF</a>
+							</div>
+							<div class="summary">
+								Suspensión definitiva para evitar su traslado desde su arraigo
+							</div>
+						</div>
+					
+				
+					
+						<div class="noticia">
+							<div class="title">
+								<a href="/2011/9/13/Avanza-la-reparaci%C3%B3n-del-Cutzamala-y-ma%C3%B1ana-podr%C3%ADan-reanudar-el-abasto-de-agua-al-DF">
+									
+									Avanza la reparación del Cutzamala y mañana podrían reanudar el abasto de agua al DF
+								</a>
+							</div>
+							<div class="meta">
+								<span class="section">
+									<a href="/nacionales/">Nacionales</a>
+								</span>
+								<a class="placeLink" href="/ciudad/mexico">Mexico, DF</a>
+							</div>
+							<div class="summary">
+								Lleva 90 por ciento de avance, asegura la Comisión Nacional del Agua
+							</div>
+						</div>
+					
+				
+			</div>
+			<br>
+							<div id="aldf" style="cursor:pointer">
+					<a href="/especiales/aldf/">
+						<img src="/ads/aldf/banner/escudo.gif" style="width:300px; height:250px" />
+					</a>
+				</div>
+				<div style="text-align:center; padding:0 20px; padding-bottom:10px; font-size:80%">
+					<a href="/especiales/aldf/">Ver m&aacute;s &rarr;</a>
+				</div>
+
+		</td>
+		<td class="secundarios">
+			<h2 id="fotosdeldia"><a href="fotos">Fotos del d&iacute;a &raquo;</a></h2>
+<div id="fotonotas">
+	<div class="fotos">
+		 
+			
+				
+				<div class="fotonota here" pos="0">
+					<div class="foto">
+						<div class="hideable anterior" title="&larr; Ir a imagen ANTERIOR"></div>
+						<div class="hideable siguiente" title="Ir a imagen SIGUIENTE &rarr;"></div>
+						<a href="http://farm7.static.flickr.com/6207/6145807209_b9a8ddbfe4_b.jpg" class="lightbox" title="Matan a tres policías federales">
+							<img src="http://farm7.static.flickr.com/6207/6145807209_b9a8ddbfe4.jpg" class="foto" onload="FOTONOTAS.load(this)" />
+							<span class="title">
+								<img src="/images/icons/ui/lupa.png" class="lupa" />
+								Matan a tres policías federales
+							</span>
+						</a>
+						<div class="credito">Luis Carbayo/Cuartoscuro</div>
+					</div>
+					<div class="summary">
+						IXTAPALUCA, Méx.- Tres elementos de la Policía Federal fueron ejecutados por presuntos extorsionadores cuando intentaban cobrar "la renta" en un local de Maderas ubicado en la carretera Federal México-Puebla, a la altura del kilómetro 27, en Ixtapaluca, Al lugar, arribaron agentes federales y del Ejercito Mexicano.
+					</div>
+				</div>
+			
+		 
+			
+				
+				<div class="fotonota" pos="1">
+					<div class="foto">
+						<div class="hideable anterior" title="&larr; Ir a imagen ANTERIOR"></div>
+						<div class="hideable siguiente" title="Ir a imagen SIGUIENTE &rarr;"></div>
+						<a href="http://farm7.static.flickr.com/6175/6146130154_ebf28e88db_b.jpg" class="lightbox" title="Arce ya es verde">
+							<img src="http://farm7.static.flickr.com/6175/6146130154_ebf28e88db.jpg" class="foto" onload="FOTONOTAS.load(this)" />
+							<span class="title">
+								<img src="/images/icons/ui/lupa.png" class="lupa" />
+								Arce ya es verde
+							</span>
+						</a>
+						<div class="credito">Notimex</div>
+					</div>
+					<div class="summary">
+						MEXICO, DF.- Los Senadores Arturo Escobar y Senador Rene Arce, en conferencia de prensa donde da a conocer su ingreso al Partido Verde Ecologista, en el Senado de la Republica. 
+					</div>
+				</div>
+			
+		 
+			
+				
+				<div class="fotonota" pos="2">
+					<div class="foto">
+						<div class="hideable anterior" title="&larr; Ir a imagen ANTERIOR"></div>
+						<div class="hideable siguiente" title="Ir a imagen SIGUIENTE &rarr;"></div>
+						<a href="http://farm7.static.flickr.com/6169/6145529683_40b1abb75c_b.jpg" class="lightbox" title="En recuerdo del Rock and Roll">
+							<img src="http://farm7.static.flickr.com/6169/6145529683_40b1abb75c.jpg" class="foto" onload="FOTONOTAS.load(this)" />
+							<span class="title">
+								<img src="/images/icons/ui/lupa.png" class="lupa" />
+								En recuerdo del Rock and Roll
+							</span>
+						</a>
+						<div class="credito">Francisco Rodríguez/Cuartoscuro</div>
+					</div>
+					<div class="summary">
+						MEXICO, DF.- Un grupo de artistas presentará los días 1 y 2 de octubre en el Auditorio Nacional La Caravana del Rock and Roll. Dos de ellos serán Angélica María y César Costa, quienes fueron fotografiados al momento de anunciar las presentaciones.
+					</div>
+				</div>
+			
+		 
+			
+				
+				<div class="fotonota" pos="3">
+					<div class="foto">
+						<div class="hideable anterior" title="&larr; Ir a imagen ANTERIOR"></div>
+						<div class="hideable siguiente" title="Ir a imagen SIGUIENTE &rarr;"></div>
+						<a href="http://farm7.static.flickr.com/6153/6146071936_f6e075f172_b.jpg" class="lightbox" title="Un embajador muy sonriente">
+							<img src="http://farm7.static.flickr.com/6153/6146071936_f6e075f172.jpg" class="foto" onload="FOTONOTAS.load(this)" />
+							<span class="title">
+								<img src="/images/icons/ui/lupa.png" class="lupa" />
+								Un embajador muy sonriente
+							</span>
+						</a>
+						<div class="credito"></div>
+					</div>
+					<div class="summary">
+						
+					</div>
+				</div>
+			
+		 
+			
+				
+				<div class="fotonota" pos="4">
+					<div class="foto">
+						<div class="hideable anterior" title="&larr; Ir a imagen ANTERIOR"></div>
+						<div class="hideable siguiente" title="Ir a imagen SIGUIENTE &rarr;"></div>
+						<a href="http://farm7.static.flickr.com/6194/6145621106_7d79eba9d9_b.jpg" class="lightbox" title="Ciudad transparente">
+							<img src="http://farm7.static.flickr.com/6194/6145621106_7d79eba9d9.jpg" class="foto" onload="FOTONOTAS.load(this)" />
+							<span class="title">
+								<img src="/images/icons/ui/lupa.png" class="lupa" />
+								Ciudad transparente
+							</span>
+						</a>
+						<div class="credito">Notimes</div>
+					</div>
+					<div class="summary">
+						MEXICO, DF.- Aspecto de un día limpio y despejado desde el piso 14 del Senado de la Republica. Los vientos han sido favorables aunque no anuncian lluvia.
+					</div>
+				</div>
+			
+		
+	</div>
+	<div class="thumbs">
+		<a href="#" class="here" pos="0"><img src="http://farm7.static.flickr.com/6207/6145807209_b9a8ddbfe4_s.jpg" class="scale" /></a><a href="#"  pos="1"><img src="http://farm7.static.flickr.com/6175/6146130154_ebf28e88db_s.jpg" class="scale" /></a><a href="#"  pos="2"><img src="http://farm7.static.flickr.com/6169/6145529683_40b1abb75c_s.jpg" class="scale" /></a><a href="#"  pos="3"><img src="http://farm7.static.flickr.com/6153/6146071936_f6e075f172_s.jpg" class="scale" /></a><a href="#"  pos="4"><img src="http://farm7.static.flickr.com/6194/6145621106_7d79eba9d9_s.jpg" class="scale" /></a>
+	</div>
+	<div id="summary"></div>
+</div>
+<br>
+
+			<div class="container trim">
+				
+					
+						<div class="noticia">
+							<div class="noticia-container">
+								<div class="title">
+									<a href="/2011/9/13/Torre%C3%B3n-va-a-EU-y-muestra-una-cara-victoriosa-ante-Colorado-Rapids%3A-4-1">
+										
+										Torreón va a EU y muestra una cara victoriosa ante Colorado Rapids: 4-1
+									</a>
+								</div>
+								<div class="summary">
+									Morelia apenas gana 2-1 como local a Los Angeles Galaxy
+									
+										<br clear="both" />
+									
+								</div>
+							</div>
+						</div>
+					
+				
+					
+						<div class="noticia">
+							<div class="noticia-container">
+								<div class="title">
+									<a href="/2011/9/13/La-toma-de-nota-al-SME-se-hizo-por-ley-y-no-por-negociaci%C3%B3n%3A-Segob">
+										<img src="http://farm7.static.flickr.com/6152/6145418678_4644f5849c_s.jpg" class="fleft" title="" />
+										La toma de nota al SME se hizo por ley y no por negociación: Segob
+									</a>
+								</div>
+								<div class="summary">
+									
+									
+										<br clear="both" />
+									
+								</div>
+							</div>
+						</div>
+					
+				
+					
+						<div class="noticia">
+							<div class="noticia-container">
+								<div class="title">
+									<a href="/2011/9/13/Volaris-inaugura-el-vuelo-M%C3%A9xico-Zacatecas-M%C3%A9xico-a-bajo-costo">
+										
+										Volaris inaugura el vuelo México-Zacatecas-México a bajo costo
+									</a>
+								</div>
+								<div class="summary">
+									Cobrará 800 pesos el boleto sencillo y mil 600 el redondo, contra cinco mil de Aeroméxico
+									
+								</div>
+							</div>
+						</div>
+					
+				
+					
+						<div class="noticia">
+							<div class="noticia-container">
+								<div class="title">
+									<a href="/2011/9/13/Ma%C3%B1ana-analiza-el-Trife-las-impugnaciones-contra-Eruviel-Avila">
+										
+										Mañana analiza el Trife las impugnaciones contra Eruviel Avila
+									</a>
+								</div>
+								<div class="summary">
+									Asimismo, determinará si el IFE tiene facultades legislativas y las impugnaciones de los radiodifusores en su contra
+									
+								</div>
+							</div>
+						</div>
+					
+				
+					
+						<div class="noticia">
+							<div class="noticia-container">
+								<div class="title">
+									<a href="/2011/9/13/El-Metro-ha-dado-servicio-a-48-mil-500-millones-de-usuarios">
+										
+										El Metro ha dado servicio a 48 mil 500 millones de usuarios
+									</a>
+								</div>
+								<div class="summary">
+									Regalan electrodomésticos a la usuaria que completa esa cifra
+									
+								</div>
+							</div>
+						</div>
+					
+				
+			
+				<center style="margin-bottom:15px">
+					<a href="http://www.fga.org.mx/">
+						<img src="/ads/cna/banner300x160.gif" style="width:300px; height:160px" />
+					</a>
+				</center>
+			
+			</div>
+		</td>
+	</tr>
+</table>
+	
+		<center>
+	<object width="490" height="90">
+		<param name="movie" value="/ads/imss/imss-490x90.swf">
+		<embed src="/ads/imss/imss-490x90.swf" width="490" height="90"></embed>
+		<a href="http://www.imss.gob.mx/" style="display:block; width:490px; height:90px; margin:0 auto; margin-bottom:10px; text-align:center; background:url(/ads/imss/imss-central.jpg)"></a>
+	</object>
+</center>
+
+	
+	
+	
+
+<table id="segundaPlana" cellspacing="0" cellpadding="0">
+	<tr>
+		
+			
+			
+		
+			
+				<td class="section" >
+					<div class="container" style="background-image:url(/images/fondos/nacionales.jpg)">
+						<h2><a href="/nacionales/">Nacionales &raquo;</a></h2>
+						
+						<ul class="trim">
+							
+							<li class="noticia principal">
+								<a href="/2011/9/13/Ejecutan-extorsionadores-a-tres-federales%3B-cayeron">
+									
+									Ejecutan extorsionadores a tres federales; cayeron
+									<br clear="both" />
+								</a>
+							</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/13/Hallan-en-Acapulco-dos-cad%C3%A1veres-en-tina-de-ba%C3%B1o">
+										Hallan en Acapulco dos cadáveres en tina de baño
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia segunda">
+									<a href="/2011/9/13/Levantan-maestros-de-Guerrero-bloqueo-en-Autopista-del-Sol">
+										Levantan maestros de Guerrero bloqueo en Autopista del Sol
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/13/Avalan-senadores-en-comisiones-obligatoriedad-de-bachillerato">
+										Avalan senadores en comisiones obligatoriedad de bachillerato
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/13/Deslinda-director-de-FBI-a-su-gente-de-R%C3%A1pido-y-Furioso">
+										Deslinda director de FBI a su gente de Rápido y Furioso
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/13/Interesa-m%C3%A1s-a-mujeres-dejar-de-ser-analfabetas%3A-INEA">
+										Interesa más a mujeres dejar de ser analfabetas: INEA
+									</a>
+									<br clear="both" />
+								</li>
+							
+							<li class="fotos-seccion">
+								
+									<a href="/2011/9/13/Aumentar%C3%A1-18-por-ciento-el-gasto-corriente-del-gobierno-para-2012%2C-confirma-Hacienda" title="Aumentará 18 por ciento el gasto corriente del gobierno para 2012, confirma Hacienda"><img class="scale" src="http://farm7.static.flickr.com/6179/6145510883_87cf65a61a_s.jpg" /></a>
+								
+									<a href="/2011/9/13/Bloquean-coce%C3%ADstas-e-impiden-la-entrada-de-la-Caravana-del-Sur-a-Juchit%C3%A1n" title="Bloquean coceístas e impiden la entrada de la Caravana del Sur a Juchitán"><img class="scale" src="http://farm7.static.flickr.com/6189/6145049805_c01d27f727_s.jpg" /></a>
+								
+									<a href="/2011/9/13/M%C3%A9xico-reduce-la-pobreza-a-pesar-de-las-crisis%2C-asegura-Calder%C3%B3n" title="México reduce la pobreza a pesar de las crisis, asegura Calderón"><img class="scale" src="http://farm7.static.flickr.com/6207/6145283798_456185b159_s.jpg" /></a>
+								
+									<a href="/2011/9/13/Definitivo%3A-no-habr%C3%A1-reelecci%C3%B3n-de-diputados-y-senadores" title="Definitivo: no habrá reelección de diputados y senadores"><img class="scale" src="http://farm7.static.flickr.com/6072/6144838819_2ab891f128_s.jpg" /></a>
+								
+								<br clear="both" />
+							</li>
+							
+						</ul>
+					</div>
+				</td>
+			
+			
+		
+			
+				<td class="section" >
+					<div class="container" style="background-image:url(/images/fondos/internacionales.jpg)">
+						<h2><a href="/internacionales/">Internacionales &raquo;</a></h2>
+						
+						<ul class="trim">
+							
+							<li class="noticia principal">
+								<a href="/2011/9/13/Adelantar%C3%A1n-elecciones-presidenciales-en-Venezuela">
+									
+									Adelantarán elecciones presidenciales en Venezuela 
+									<br clear="both" />
+								</a>
+							</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/13/Desatan-cacer%C3%ADa-en-busca-de-afroamericano-homicida-en-LA">
+										Desatan cacería en busca de afroamericano homicida en LA
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia segunda">
+									<a href="/2011/9/13/Ahora-propone-Sarkozy-disciplina-militar-para-j%C3%B3venes-delincuentes">
+										Ahora propone Sarkozy disciplina militar para jóvenes delincuentes 
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/13/Pierde-Texas-por-incendios-forestales-250-millones">
+										Pierde Texas por incendios forestales 250 millones
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/13/Elige-Academia-del-Grammy-a-McCartney-como-personalidad-del-a%C3%B1o">
+										Elige Academia del Grammy a McCartney como personalidad del año
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/13/Ejecutan-rebeldes-libios-a-10-mercenarios-colombianos">
+										Ejecutan rebeldes libios a 10 mercenarios colombianos
+									</a>
+									<br clear="both" />
+								</li>
+							
+							<li class="fotos-seccion">
+								
+									<a href="/2011/9/12/Rechaza-Obama-pactos-con-narcos-para-alcanzar-paz-en-M%C3%A9xico" title="Rechaza Obama pactos con narcos para alcanzar paz en México  "><img class="scale" src="http://farm7.static.flickr.com/6193/6142248066_38451e38d5_s.jpg" /></a>
+								
+									<a href="/2011/9/12/Italia-apoyar%C3%A1-a-M%C3%A9xico-en-su-combate-contra-el-narcotr%C3%A1fico" title="Italia apoyará a México en su combate contra el narcotráfico"><img class="scale" src="http://farm7.static.flickr.com/6179/6141727592_e610d76de7_s.jpg" /></a>
+								
+									<a href="/2011/9/11/EU-nunca-har%C3%A1-guerra-contra-el-Islam-ni-ninguna-religi%C3%B3n%3A-Obama" title="EU nunca hará guerra contra el Islam ni ninguna religión: Obama  "><img class="scale" src="http://farm7.static.flickr.com/6159/6139043918_2515a499a1_s.jpg" /></a>
+								
+									<a href="/2011/9/11/Rinde-consulado-mexicano-homenaje-a-v%C3%ADctimas-del-11-S" title="Rinde consulado mexicano homenaje a víctimas del 11-S  "><img class="scale" src="http://farm7.static.flickr.com/6155/6138733578_0e4046daf6_s.jpg" /></a>
+								
+								<br clear="both" />
+							</li>
+							
+						</ul>
+					</div>
+				</td>
+			
+			
+		
+			
+				<td class="section" >
+					<div class="container" style="background-image:url(/images/fondos/politica.jpg)">
+						<h2><a href="/politica/">Política &raquo;</a></h2>
+						
+						<ul class="trim">
+							
+							<li class="noticia principal">
+								<a href="/2011/9/13/Presupuesto-2012-requiere-de-cirug%C3%ADa-mayor%2C-seg%C3%BAn-PRD">
+									
+									Presupuesto 2012 requiere de cirugía mayor, según PRD
+									<br clear="both" />
+								</a>
+							</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/13/Discute-Madero-en-un-casino-la-suerte-del-alcalde-rebelde">
+										Discute Madero en un casino la suerte del alcalde rebelde
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia segunda">
+									<a href="/2011/9/13/Ni-loco-debatir%C3%ADa-con-L%C3%B3pez-Obrador%2C-responde-Carlos-Salinas">
+										Ni loco debatiría con López Obrador, responde Carlos Salinas
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/12/Debe-PRI-garantizar-proceso-democr%C3%A1tico-en-elecci%C3%B3n-de-candidato%3A-Beltrones">
+										Debe PRI garantizar proceso democrático en elección de candidato: Beltrones
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/12/Prometen-diputados%2C-%C2%A1ooootra-vez%21%2C-elegir-consejeros-del-IFE">
+										Prometen diputados, ¡ooootra vez!, elegir consejeros del IFE  
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/12/Hagan-su-partido-pol%C3%ADtico%2C-propone-Calder%C3%B3n-a-los-300-l%C3%ADderes-m%C3%A1s-influyentes">
+										Hagan su partido político, propone Calderón a los 300 líderes más influyentes
+									</a>
+									<br clear="both" />
+								</li>
+							
+							<li class="fotos-seccion">
+								
+									<a href="/2011/9/13/Ni-loco-debatir%C3%ADa-con-L%C3%B3pez-Obrador%2C-responde-Carlos-Salinas" title="Ni loco debatiría con López Obrador, responde Carlos Salinas"><img class="scale" src="http://farm7.static.flickr.com/6184/6142840777_a7b1e53633_s.jpg" /></a>
+								
+									<a href="/2011/9/12/Hagan-su-partido-pol%C3%ADtico%2C-propone-Calder%C3%B3n-a-los-300-l%C3%ADderes-m%C3%A1s-influyentes" title="Hagan su partido político, propone Calderón a los 300 líderes más influyentes"><img class="scale" src="http://farm7.static.flickr.com/6185/6142191787_4749ec43cc_s.jpg" /></a>
+								
+									<a href="/2011/9/12/Trabaja-Cordero-en-estrategia-rumbo-a-precampa%C3%B1a-presidencial" title="Trabaja Cordero en estrategia rumbo a precampaña presidencial  "><img class="scale" src="http://farm7.static.flickr.com/6159/6142130111_df161dfcb1_s.jpg" /></a>
+								
+									<a href="/2011/9/12/El-que-no-d%C3%A9-el-ancho%2C-que-se-vaya%2C-demandan-empresarios" title="El que no dé el ancho, que se vaya, demandan empresarios "><img class="scale" src="http://farm7.static.flickr.com/6200/6142565402_cc049eda0a_s.jpg" /></a>
+								
+								<br clear="both" />
+							</li>
+							
+						</ul>
+					</div>
+				</td>
+			
+			</tr><tr><td class="breakTop" colspan="3">&nbsp;</td></tr><tr>
+		
+			
+				<td class="section" >
+					<div class="container" style="background-image:url(/images/fondos/economia.jpg)">
+						<h2><a href="/economia/">Economía &raquo;</a></h2>
+						
+						<ul class="trim">
+							
+							<li class="noticia principal">
+								<a href="/2011/9/13/Contin%C3%BAa-el-d%C3%B3lar-por-encima-de-los-13.00-pesos">
+									
+									Continúa el dólar por encima de los 13.00 pesos 
+									<br clear="both" />
+								</a>
+							</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/13/Recomienda-CEESP-eliminar-subsidios-a-gasolinas">
+										Recomienda CEESP eliminar subsidios a gasolinas
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia segunda">
+									<a href="/2011/9/13/Sube-Bolsa-Mexicana-0.36%25-a-media-jornada">
+										Sube Bolsa Mexicana 0.36% a media jornada
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/13/Suben-Cetes-a-28-d%C3%ADas-4.25-por-ciento">
+										Suben Cetes a 28 días 4.25 por ciento 
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/13/Pierde-Obama-terreno-entre-electores-indecisos">
+										Pierde Obama terreno entre electores indecisos
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/13/Disminuyen-reservas-internacionales-de-M%C3%A9xico-583-millones">
+										Disminuyen reservas internacionales de México 583 millones
+									</a>
+									<br clear="both" />
+								</li>
+							
+							<li class="fotos-seccion">
+								
+									<a href="/2011/9/12/Pobreza-en-M%C3%A9xico-afecta-al-40-por-ciento-de-la-poblaci%C3%B3n%3A-Krauze" title="Pobreza en México afecta al 40 por ciento de la población: Krauze"><img class="scale" src="http://farm7.static.flickr.com/6154/6141984302_186e06aa3c_s.jpg" /></a>
+								
+									<a href="/2011/9/12/Impone-marca-el-d%C3%B3lar-en-el-a%C3%B1o-y-llega-a-13.08-pesos" title="Impone marca el dólar en el año y llega a 13.08 pesos"><img class="scale" src="http://farm7.static.flickr.com/6152/6141065403_4d12d2ea09_s.jpg" /></a>
+								
+									<a href="/2011/9/12/Lunes-negro-en-bolsas-europeas-por-temor-a-quiebra-griega" title="Lunes negro en bolsas europeas por temor a quiebra griega "><img class="scale" src="http://farm7.static.flickr.com/6167/6141071693_6bcf22aae7_s.jpg" /></a>
+								
+									<a href="/2011/9/10/Podr%C3%ADa-Alemania-hundir-a-la-Zona-Euro" title="Podría Alemania hundir a la Zona Euro"><img class="scale" src="http://farm7.static.flickr.com/6151/6133849722_e87af90921_s.jpg" /></a>
+								
+								<br clear="both" />
+							</li>
+							
+						</ul>
+					</div>
+				</td>
+			
+			
+		
+			
+				<td class="section" >
+					<div class="container" style="background-image:url(/images/fondos/deportes.jpg)">
+						<h2><a href="/deportes/">Deportes &raquo;</a></h2>
+						
+						<ul class="trim">
+							
+							<li class="noticia principal">
+								<a href="/2011/9/13/El-Terrible-Morales-promete-ganar-y-celebrar-a-la-mexicana">
+									
+									El Terrible Morales promete ganar y celebrar a la mexicana
+									<br clear="both" />
+								</a>
+							</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/13/No-hay-ultim%C3%A1tum%3B-el-plazo-me-lo-pongo-yo%3A-Carlos-Reinoso">
+										No hay ultimátum; el plazo me lo pongo yo: Carlos Reinoso
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia segunda">
+									<a href="/2011/9/13/Se-impone-Bolt-en-la-prueba-de-100-metros-en-Zagreb">
+										Se impone Bolt en la prueba de 100 metros en Zagreb
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/13/Cierra-M%C3%A9xico-a-la-cabeza-en-el-Panamericano-de-Clavados">
+										Cierra México a la cabeza en el Panamericano de Clavados
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/12/Brady-lanza-para-511-yardas-y-Patriotas-apalea-38-24-a-Miami-en-la-NFL">
+										Brady lanza para 511 yardas y Patriotas apalea 38-24 a Miami en la NFL 
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/12/Falta-de-arreglo-con-alg%C3%BAn-t%C3%A9cnico-ech%C3%B3-atr%C3%A1s-cese-de-Romano">
+										Falta de arreglo con algún técnico echó atrás cese de Romano  
+									</a>
+									<br clear="both" />
+								</li>
+							
+							<li class="fotos-seccion">
+								
+									<a href="/2011/9/12/Brady-lanza-para-511-yardas-y-Patriotas-apalea-38-24-a-Miami-en-la-NFL" title="Brady lanza para 511 yardas y Patriotas apalea 38-24 a Miami en la NFL "><img class="scale" src="http://farm7.static.flickr.com/6081/6142154513_cf15f9b2ba_s.jpg" /></a>
+								
+									<a href="/2011/9/12/Djokovic-se-agiganta-m%C3%A1s-ante-Nadal-y-se-corona-en-el-Abierto-de-Estados-Unidos" title="Djokovic se agiganta más ante Nadal y se corona en el Abierto de Estados Unidos  "><img class="scale" src="http://farm7.static.flickr.com/6199/6142543494_f02fd3ca68_s.jpg" /></a>
+								
+									<a href="/2011/9/12/Multan-a-Michael-Jordan-con-100-mil-d%C3%B3lares" title="Multan a Michael Jordan con 100 mil dólares  "><img class="scale" src="http://farm7.static.flickr.com/6181/6141545943_9c6974a8d9_s.jpg" /></a>
+								
+									<a href="/2011/9/12/Visita-Chicharito-a-j%C3%B3venes-con-c%C3%A1ncer-en-Inglaterra" title="Visita Chicharito a jóvenes con cáncer en Inglaterra"><img class="scale" src="http://farm7.static.flickr.com/6194/6141333723_c3dc637c61_s.jpg" /></a>
+								
+								<br clear="both" />
+							</li>
+							
+						</ul>
+					</div>
+				</td>
+			
+			
+		
+			
+				<td class="section" >
+					<div class="container" style="background-image:url(/images/fondos/df.jpg)">
+						<h2><a href="/df/">D.F. &raquo;</a></h2>
+						
+						<ul class="trim">
+							
+							<li class="noticia principal">
+								<a href="/2011/9/13/Mata-barda-a-dos-trabajadores-en-la-Miguel-Hidalgo">
+									
+									Mata barda a dos trabajadores en la Miguel Hidalgo
+									<br clear="both" />
+								</a>
+							</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/13/Rescatar%C3%A1-Conagua-canales-de-Xochimilco">
+										Rescatará Conagua canales de Xochimilco
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia segunda">
+									<a href="/2011/9/13/Dicen-que-va-en-serio-limpiar-de-tragamonedas-zonas-aleda%C3%B1as-a-escuelas">
+										Dicen que va en serio limpiar de tragamonedas zonas aledañas a escuelas 
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/13/Educaci%C3%B3n%2C-seguridad-y-agua%2C-demandas-del-Parlamento-Infantil-en-ALDF">
+										Educación, seguridad y agua, demandas del Parlamento Infantil en ALDF
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/13/Chatarrizar%C3%A1n-m%C3%A1s-de-3-mil-unidades-del-transporte-p%C3%BAblico-capitalino">
+										Chatarrizarán más de 3 mil unidades del transporte público capitalino
+									</a>
+									<br clear="both" />
+								</li>
+							
+								<li class="noticia ">
+									<a href="/2011/9/13/Destaca-Consejo-Ciudadano-baja-delincuencial-en-la-Condesa">
+										Destaca Consejo Ciudadano baja delincuencial en la Condesa  
+									</a>
+									<br clear="both" />
+								</li>
+							
+							<li class="fotos-seccion">
+								
+									<a href="/2011/9/12/Crisis-de-agua-en-la-capital%3A-hasta-el-s%C3%A1bado-se-normalizar%C3%A1-el-abasto" title="Crisis de agua en la capital: hasta el sábado se normalizará el abasto"><img class="scale" src="http://farm7.static.flickr.com/6195/6141476095_6c9b0a763e_s.jpg" /></a>
+								
+									<a href="/2011/9/11/Seguir%C3%A1-la-escasez-de-agua-en-el-DF-hasta-el-17-de-septiembre" title="Seguirá la escasez de agua en el DF hasta el 17 de septiembre"><img class="scale" src="http://farm7.static.flickr.com/6188/6137745375_340149cb72_s.jpg" /></a>
+								
+									<a href="/2011/9/11/Ordena-Esparza-el-retiro-de-electricistas-del-Z%C3%B3calo" title="Ordena Esparza el retiro de electricistas del Zócalo"><img class="scale" src="http://farm7.static.flickr.com/6172/6137406577_40fcb3de5c_s.jpg" /></a>
+								
+									<a href="/2011/9/10/Marchan-fan%C3%A1ticos-de-Star-Wars-al-Monumento-a-la-Revoluci%C3%B3n" title="Marchan fanáticos de Star Wars al Monumento a la Revolución  "><img class="scale" src="http://farm7.static.flickr.com/6086/6133608216_982da7bd6d_s.jpg" /></a>
+								
+								<br clear="both" />
+							</li>
+							
+						</ul>
+					</div>
+				</td>
+			
+			</tr><tr><td class="breakTop" colspan="3">&nbsp;</td></tr><tr>
+		
+			
+			
+		
+	</tr>
+</table>
+
+
+					</div>
+				</td>
+				
+
+			</tr>
+		</table>
+		<div id="cola">
+						
+				<div>
+						<form method="post" action="/articles/archive" class="archive-bottom">
+							Consultar el <strong>archivo hist&oacute;rico</strong>: 
+								<a href="/2011/9/13">Ayer</a>,
+								<a href="/2011/9/12">antier</a>,
+								o saltar al
+								<select id="date_day" name="date[day]">
+<option value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+<option value="6">6</option>
+<option value="7">7</option>
+<option value="8">8</option>
+<option value="9">9</option>
+<option value="10">10</option>
+<option selected="selected" value="11">11</option>
+<option value="12">12</option>
+<option value="13">13</option>
+<option value="14">14</option>
+<option value="15">15</option>
+<option value="16">16</option>
+<option value="17">17</option>
+<option value="18">18</option>
+<option value="19">19</option>
+<option value="20">20</option>
+<option value="21">21</option>
+<option value="22">22</option>
+<option value="23">23</option>
+<option value="24">24</option>
+<option value="25">25</option>
+<option value="26">26</option>
+<option value="27">27</option>
+<option value="28">28</option>
+<option value="29">29</option>
+<option value="30">30</option>
+<option value="31">31</option>
+</select>
+<select id="date_month" name="date[month]">
+<option value="1">Enero</option>
+<option value="2">Febrero</option>
+<option value="3">Marzo</option>
+<option value="4">Abril</option>
+<option value="5">Mayo</option>
+<option value="6">Junio</option>
+<option value="7">Julio</option>
+<option value="8">Agosto</option>
+<option selected="selected" value="9">Septiembre</option>
+<option value="10">Octubre</option>
+<option value="11">Noviembre</option>
+<option value="12">Diciembre</option>
+</select>
+<select id="date_year" name="date[year]">
+<option value="2006">2006</option>
+<option value="2007">2007</option>
+<option value="2008">2008</option>
+<option value="2009">2009</option>
+<option value="2010">2010</option>
+<option selected="selected" value="2011">2011</option>
+<option value="2012">2012</option>
+<option value="2013">2013</option>
+<option value="2014">2014</option>
+<option value="2015">2015</option>
+<option value="2016">2016</option>
+</select>
+
+								<input type="submit" value="Ir" />
+						</form>
+				</div>
+			
+
+						<div id="busqueda">
+				<form method="get" action="/buscar" class="search-bottom">
+						<strong>Búsqueda:</strong>
+						<input type="text" value="" id="query" name="q" />
+						<input type="submit" value="Buscar" />
+				</form>
+			</div>
+
+		</div>
+		<div id="footer">
+			<strong style="color:#000">Teléfono <span style="color:#AF5335">Rojo</span></strong> &copy; 2011.<br><br>
+			<img src="/images/df.png" class="ico" /> Ciudad de México<br>
+			<a href="mailto:contacto@telefonorojo.com.mx"><img src="/images/email.png" class="ico" /> Contacto</a><br>
+			
+				<a href="/admin" title="Entrar!"><img src="/images/icons/ui/enter.png" id="enter" class="ico" /></a>
+			
+		</div>
+		<br><br>
+

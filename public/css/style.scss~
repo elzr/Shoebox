@@ -31,7 +31,7 @@ body {margin:0; padding:0; font-family:Verdana, sans-serif; overflow:hidden}
 		#pics {position:absolute; top:0; left:0;
 			div.pic { position:absolute; display:inline-block; visibility:hidden; color:#000; text-decoration:none; background:transparent; cursor:pointer;
 				img {position:absolute; border:7px solid #fff; top:0; left:0; background:transparent; @include NIE-shadows(#888, 2px, 2px, 4px)}
-				.backside {position:absolute; visibility:hidden; text-align:center; background-color:#ddd; @include NIE-vertical-gradient(#f0f0f0, #bbb);
+				.backside {position:absolute; visibility:hidden; text-align:center; background-color:#fff; @include NIE-vertical-gradient(#f0f0f0, #bbb); overflow:hidden;
 					.text { padding:20px; font-size:18px; line-height:16px; color:#000;
 						.author {font-weight:bold; text-align:right; margin-bottom:15px; margin-top:5px}
 					}

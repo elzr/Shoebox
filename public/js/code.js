@@ -1,4 +1,4 @@
-/* DO NOT MODIFY. This file was compiled Mon, 26 Sep 2011 19:04:15 GMT from
+/* DO NOT MODIFY. This file was compiled Mon, 26 Sep 2011 20:53:25 GMT from
  * /Dropbox/prjcts/sinatra/shoebox/public/js/code.coffee
  */
 
@@ -296,17 +296,45 @@
     },
     events: {
       dblclick: function() {
+        var pic;
         PIC.stack.clear(this);
-        return ($(this)).rotate3Di('toggle', 700, {
-          sideChange: __bind(function() {
-            ($(this)).toggleClass('flipped');
-            if (($(this)).hasClass('flipped')) {
-              return ($(this)).find('.backside').animate({
-                scale: [U.xy(BOX.scale() * ($(this)).data('scale'))]
-              }, 300).jScrollPane();
-            }
-          }, this)
-        });
+        if (!BOX.goodIE) {
+          pic = $(this);
+          return ($(this)).find('img:visible, .backside:visible').first().flip({
+            direction: 'lr',
+            onEnd: PIC.events.flipIE
+          });
+        } else {
+          return ($(this)).rotate3Di('toggle', 700, {
+            sideChange: PIC.events.flip
+          });
+        }
+      },
+      flipIE: function(clone, pic) {
+        pic = pic || ($(this));
+        pic = pic.hasClass('.pic') ? pic : pic.parents('.pic');
+        pic.toggleClass('flipped');
+        if (pic.hasClass('flipped')) {
+          pic.find('img').hide().end().find('.backside').show();
+          return pic.find('.backside').transform({
+            rotate: pic.data('rotation') + 'deg',
+            scale: [U.xy(BOX.scale() * pic.data('scale'))]
+          }).css('background', '#fff');
+        } else {
+          return pic.find('.backside').hide().end().find('img').show();
+        }
+      },
+      flip: function() {
+        var pic;
+        pic = $(this);
+        pic.toggleClass('flipped');
+        if (pic.hasClass('flipped')) {
+          return pic.find('.backside').animate({
+            scale: [U.xy(BOX.scale() * pic.data('scale'))]
+          }, 300).jScrollPane();
+        } else {
+
+        }
       },
       load: function() {
         var pic;
@@ -442,6 +470,7 @@
     }
   });
   window.BOX = BOX = {
+    goodIE: $.browser.msie && $.browser.version >= 9,
     scale: function(recalculate) {
       if (!(BOX.scale.saved != null) || (recalculate != null)) {
         return BOX.scale.saved = U.fit(.75, $(window).width() * $(window).height() / 1.1e6, 2);
@@ -515,7 +544,7 @@
         comments = U.shuffle(DATA.comments);
         pics = _(pics).map(function(pic, i) {
           var c;
-          c = U.shuffle([1, 2, 3, 4])[0];
+          c = U.shuffle(BOX.goodIE ? [1, 2, 3, 4] : [1])[0];
           pics[i] = _(pic).extend({
             order: i,
             comments: _(comments).first(c),

@@ -34,9 +34,7 @@
 	<!--
 	<script  type="text/javascript" src="/js/jquery-animate-css-rotate-scale.js"></script>
 	-->
-	<!--
 	<script  type="text/javascript" src="/js/jquery.flip.min.js"></script>
-	-->
 
 	<title>SHOEBOX: <%=@query||@title%></title>
 </head>

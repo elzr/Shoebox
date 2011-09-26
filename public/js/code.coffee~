@@ -122,10 +122,27 @@ window.PIC = PIC =
   events: # EVENTS ---------------------------------------------------
     dblclick: ->
       PIC.stack.clear @
-      ($ @).rotate3Di 'toggle', 700, sideChange: =>
-        ($ @).toggleClass('flipped')
-        if ($ @).hasClass 'flipped'
-          ($ @).find('.backside').animate(scale:[U.xy BOX.scale() * ($ @).data('scale')], 300).jScrollPane()
+      if not BOX.goodIE
+        pic = ($ @)
+        #pic.toggleClass('flipped').find('.backside').jScrollPane()
+        ($ @).find('img:visible, .backside:visible').first().flip direction:'lr', onEnd: PIC.events.flipIE
+      else
+        ($ @).rotate3Di 'toggle', 700, sideChange: PIC.events.flip
+    flipIE: (clone, pic)->
+        pic = pic or ($ @)
+        pic = if pic.hasClass('.pic') then pic else pic.parents('.pic')
+        pic.toggleClass('flipped')
+        if pic.hasClass 'flipped'
+          pic.find('img').hide().end().find('.backside').show()
+          pic.find('.backside').transform(rotate:pic.data('rotation')+'deg', scale:[U.xy BOX.scale() * pic.data('scale')]).css('background','#fff')#.jScrollPane()
+        else
+          pic.find('.backside').hide().end().find('img').show()
+    flip: ()->
+        pic = ($ @)
+        pic.toggleClass('flipped')
+        if pic.hasClass 'flipped'
+          pic.find('.backside').animate(scale:[U.xy BOX.scale() * pic.data('scale')], 300).jScrollPane()
+        else
     load: ->
       pic = ($ @).parents '.pic'
       pic.css(visibility:'visible').
@@ -215,6 +232,7 @@ window.PIC = PIC =
 )
 
 window.BOX = BOX =
+  goodIE: $.browser.msie and $.browser.version >= 9
   scale: (recalculate)->
     if not BOX.scale.saved? or recalculate?
       BOX.scale.saved = U.fit .75, $(window).width()*$(window).height() / 1.1e6, 2
@@ -264,7 +282,7 @@ window.BOX = BOX =
       pics = U.shuffle( data.photoset.photo ).slice(0, PIC.total)
       comments = U.shuffle( DATA.comments )
       pics = _(pics).map (pic, i)->
-        c = U.shuffle([1,2,3,4])[0]
+        c = U.shuffle(if BOX.goodIE then [1,2,3,4] else [1])[0]
         pics[i] = _(pic).extend
           order: i
           comments: _(comments).first(c)
