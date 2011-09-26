@@ -31,15 +31,15 @@ body {margin:0; padding:0; font-family:Verdana, sans-serif; overflow:hidden}
 		#pics {position:absolute; top:0; left:0;
 			div.pic { position:absolute; display:inline-block; visibility:hidden; color:#000; text-decoration:none; background:transparent; cursor:pointer;
 				img {position:absolute; border:7px solid #fff; top:0; left:0; background:transparent; @include NIE-shadows(#888, 2px, 2px, 4px)}
-				.backside {position:absolute; visibility:hidden; text-align:center; @include vertical-gradient(#f0f0f0, #bbb);
-					.text { padding:20px; font-size:16px; color:#000;
+				.backside {position:absolute; visibility:hidden; text-align:center; background-color:#ddd; @include NIE-vertical-gradient(#f0f0f0, #bbb);
+					.text { padding:20px; font-size:18px; line-height:16px; color:#000;
 						.author {font-weight:bold; text-align:right; margin-bottom:15px; margin-top:5px}
 					}
 				}
 			}
-			div.flipped { z-index:2; @include NIE-shadows(#888, 2px, 2px, 4px);
+			div.flipped { z-index:2;
 				img {visibility:hidden}
-				.backside {visibility:visible; overflow:hidden}
+				.backside {visibility:visible; overflow:hidden; @include NIE-shadows(#888, 2px, 2px, 4px)}
 			}
 			div.ui-draggable-dragging img {z-index:3; @include NIE-shadows(#555, 8px, 8px, 16px)}
 		}
@@ -47,19 +47,22 @@ body {margin:0; padding:0; font-family:Verdana, sans-serif; overflow:hidden}
 		/* sorts */
 		.location {color:#fff; font-weight:bold; position:absolute; left:0; top:0}
 		#chart { position:absolute; display:none; 
-			#axis {border-top:1px solid #fff; color:#fff; position:absolute; bottom:0; left:0; height:30px; width:100%; font-weight:bold;
+			#axis {border-top:1px solid #fff; color:#fff; position:absolute; bottom:10px; left:0; height:30px; width:100%; font-weight:bold;
 				span {position:absolute; left:0; top:0; display:inline-block; padding:5px 10px}
 			}
 		}
 
 		/* extras */
 		.logo-mom {position:absolute; bottom:50px; left:5px; z-index:2}
+		.rect {background:red; position:absolute; }
+
 		.ear {position:absolute; top:30%; background-color:#866d59; @include corners(0, 5px, 5px, 0); @include shadows(#333, 2px, 2px, 4px); color:#fff; text-align:center; width:130px; height:150px; text-decoration:none; font-size:14px; font-weight:bold}
 			.ear img {display:block; margin:20px 10px 10px 35px}
 			.ear:hover {background-color:#6e4e3e}
 		.ear.left {left:0}
 		.ear.right {right:0; background-color:#3b5997; @include corners(5px, 0, 0, 5px);}
 			.ear.right:hover {background-color:#2b416f}
+
 		#trash {position:absolute; bottom:0; left:0; width:100%; height:50px; z-index:1000; cursor:pointer; 
 			.text {position:absolute; z-index:2; top:0; left:0; margin-top:10px; color:#fff; font-size:90%; width:100%; height:40px; font-weight:bold}
 				span.full {display:none; color:#ddd; font-size:90%; font-weight:normal}

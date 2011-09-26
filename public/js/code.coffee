@@ -58,7 +58,7 @@ window.PIC = PIC =
     index: (obj)-> $(obj).css('z-index')||0
     get: (atopBelow, from)->
       flip = {atop:1, below:-1}[atopBelow]
-      pic for pic in ($ '#pics .pic').removeClass('topStack') when flip*@index(from) < flip*@index(pic) and U.rect.intersect from, pic
+      pic for pic in ($ '#pics .pic').removeClass('topStack') when flip*@index(from) < flip*@index(pic) and U.rect.intersect $(from).find('img'), $(pic).find('img')
     _clear: (stack, from)->
       [flip, delta, from] = [{'-=':'+=', '+=':'-='}, '75px', ($ from)]
       for pic in stack
@@ -369,10 +369,14 @@ window.BOX = BOX =
         [limit, concrete] = PIC.pile.position.concrete location
         $html = $ '<div class="location">'+location+'</div>'
         $('#canvas').append $html
-        top = BOX.labels.findTop grouped[location]
-        $html.css
-          left: U.fit 0, concrete.x - $html.outerWidth()/2, limit.x
-          top: U.fit 0, top - (BOX.scale()*30) - $html.outerHeight(), limit.y
+        group = grouped[location]
+        if group.length > 0
+          top = BOX.labels.findTop group
+          $html.show().css
+            left: U.fit 0, concrete.x - $html.outerWidth()/2, limit.x
+            top: U.fit 0, top - (BOX.scale()*30) - $html.outerHeight(), limit.y
+        else
+          $html.hide()
 
   title:
     setup:(data)->
@@ -433,12 +437,18 @@ window.U = U =
   rect:
     extract: (o)->
       o = $ o
-      [left, width, height, top] = [(U.float o.css 'left'), o.outerWidth(), o.outerHeight(), (U.float o.css 'top')]
+      # we go to such lengths to get the offset because the image parent (.pic) has it's left and top erased by the rotate plugin
+      [left, top] = [o.offset().left - o.parents('#pics').offset().left, o.offset().top - o.parents('#pics').offset().top]
+      [width, height] = [o.outerWidth(), o.outerHeight()]
       a: {x:left, y:top}, b: {x:left+width, y:top}
       c: {x:left, y:top+height}, d: {x:left+width, y:top+height}
+    draw: (r, color='red')->
+      ($ '<div class="rect"/>').appendTo('#canvas').css(top:r.a.y, left:r.a.x, width:r.b.x-r.a.x, height:r.c.y-r.a.y, background:color)
     intersect: (rect1, rect2)->
       [rect1, rect2] = [(@extract rect1), (@extract rect2)]
-      U.line.intersect([rect1.a, rect1.b], [rect2.a, rect2.b]) and
+      # U.rect.draw rect1
+      # U.rect.draw rect2, 'blue'
+      out = U.line.intersect([rect1.a, rect1.b], [rect2.a, rect2.b]) and
         U.line.intersect([rect1.a, rect1.c], [rect2.a, rect2.c])
   rand: -> .5-Math.random()
   shuffle: (array) -> (array.sort -> U.rand() )

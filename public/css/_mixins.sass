@@ -37,6 +37,12 @@
   -webkit-border-bottom-right-radius: $br
   border-radius: $tl $tr $br $bl
  
+@mixin NIE-vertical-gradient($start: #000, $end: #ccc)
+  background: $end
+  background: -webkit-gradient( linear, left top, left bottom, color-stop(0, $start), color-stop(1, $end) )
+  background: -moz-linear-gradient(center top, $start 0%, $end 100%)
+  -pie-background: linear-gradient(90deg, $start, $end)
+
 @mixin vertical-gradient($start: #000, $end: #ccc)
   @extend .pie
   background: $end

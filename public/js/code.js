@@ -1,5 +1,5 @@
-/* DO NOT MODIFY. This file was compiled Fri, 23 Sep 2011 05:35:11 GMT from
- * /Users/sam/projects/sinatra/shoebox/public/js/code.coffee
+/* DO NOT MODIFY. This file was compiled Mon, 26 Sep 2011 15:39:32 GMT from
+ * /Dropbox/prjcts/sinatra/shoebox/public/js/code.coffee
  */
 
 (function() {
@@ -160,7 +160,7 @@
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           pic = _ref[_i];
-          if (flip * this.index(from) < flip * this.index(pic) && U.rect.intersect(from, pic)) {
+          if (flip * this.index(from) < flip * this.index(pic) && U.rect.intersect($(from).find('img'), $(pic).find('img'))) {
             _results.push(pic);
           }
         }
@@ -682,15 +682,20 @@
       },
       place: function(grouped, locations) {
         return (_(locations)).each(function(location) {
-          var $html, concrete, limit, top, _ref;
+          var $html, concrete, group, limit, top, _ref;
           _ref = PIC.pile.position.concrete(location), limit = _ref[0], concrete = _ref[1];
           $html = $('<div class="location">' + location + '</div>');
           $('#canvas').append($html);
-          top = BOX.labels.findTop(grouped[location]);
-          return $html.css({
-            left: U.fit(0, concrete.x - $html.outerWidth() / 2, limit.x),
-            top: U.fit(0, top - (BOX.scale() * 30) - $html.outerHeight(), limit.y)
-          });
+          group = grouped[location];
+          if (group.length > 0) {
+            top = BOX.labels.findTop(group);
+            return $html.show().css({
+              left: U.fit(0, concrete.x - $html.outerWidth() / 2, limit.x),
+              top: U.fit(0, top - (BOX.scale() * 30) - $html.outerHeight(), limit.y)
+            });
+          } else {
+            return $html.hide();
+          }
         });
       }
     },
@@ -793,9 +798,10 @@
     },
     rect: {
       extract: function(o) {
-        var height, left, top, width, _ref;
+        var height, left, top, width, _ref, _ref2;
         o = $(o);
-        _ref = [U.float(o.css('left')), o.outerWidth(), o.outerHeight(), U.float(o.css('top'))], left = _ref[0], width = _ref[1], height = _ref[2], top = _ref[3];
+        _ref = [o.offset().left - o.parents('#pics').offset().left, o.offset().top - o.parents('#pics').offset().top], left = _ref[0], top = _ref[1];
+        _ref2 = [o.outerWidth(), o.outerHeight()], width = _ref2[0], height = _ref2[1];
         return {
           a: {
             x: left,
@@ -815,10 +821,22 @@
           }
         };
       },
+      draw: function(r, color) {
+        if (color == null) {
+          color = 'red';
+        }
+        return ($('<div class="rect"/>')).appendTo('#canvas').css({
+          top: r.a.y,
+          left: r.a.x,
+          width: r.b.x - r.a.x,
+          height: r.c.y - r.a.y,
+          background: color
+        });
+      },
       intersect: function(rect1, rect2) {
-        var _ref;
+        var out, _ref;
         _ref = [this.extract(rect1), this.extract(rect2)], rect1 = _ref[0], rect2 = _ref[1];
-        return U.line.intersect([rect1.a, rect1.b], [rect2.a, rect2.b]) && U.line.intersect([rect1.a, rect1.c], [rect2.a, rect2.c]);
+        return out = U.line.intersect([rect1.a, rect1.b], [rect2.a, rect2.b]) && U.line.intersect([rect1.a, rect1.c], [rect2.a, rect2.c]);
       }
     },
     rand: function() {
