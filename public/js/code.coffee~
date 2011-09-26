@@ -55,10 +55,12 @@ window.PIC = PIC =
 
   stack:
     topmost: -> _( ~~($ pic).css('z-index') for pic in ($ '#pics .pic') ).max() + 1
-    index: (obj)-> $(obj).css('z-index')||0
-    get: (atopBelow, from)->
+    index: (obj)-> ~~$(obj).css('z-index')||0
+    get: (atopBelow, from, pics)->
       flip = {atop:1, below:-1}[atopBelow]
-      pic for pic in ($ '#pics .pic').removeClass('topStack') when flip*@index(from) < flip*@index(pic) and U.rect.intersect $(from).find('img'), $(pic).find('img')
+      pics ?= $('#pics .pic').removeClass('topStack')
+      fromRect = if $(from).hasClass('pic') then $(from).find('img') else $(from)
+      pic for pic in pics when flip*@index(from) < flip*@index(pic) and U.rect.intersect fromRect, $(pic).find('img')
     _clear: (stack, from)->
       [flip, delta, from] = [{'-=':'+=', '+=':'-='}, '75px', ($ from)]
       for pic in stack
@@ -123,14 +125,14 @@ window.PIC = PIC =
       ($ @).rotate3Di 'toggle', 700, sideChange: =>
         ($ @).toggleClass('flipped')
         if ($ @).hasClass 'flipped'
-          ($ @).find('.backside').animate(scale:[U.xy BOX.scale() * ($ @).data('scale')], 300)
+          ($ @).find('.backside').animate(scale:[U.xy BOX.scale() * ($ @).data('scale')], 300).jScrollPane()
     load: ->
       pic = ($ @).parents '.pic'
       pic.css(visibility:'visible').
         add( pic.find('.backside') ).css( height: ($ @).outerHeight(), width:($ @).outerWidth() ).end().
         data( rotation:PIC.css.rotation*U.rand(), scale: (PIC.css.scale+0.25*U.rand()) ).
-        imgAnimate(scale:[U.xy BOX.scale() * pic.data('scale') * 1.2], 600)
-      pic.find('img').transform(rotate:pic.data('rotation')+'deg', scale:U.xy BOX.scale() * pic.data('scale'))
+        find('img').transform(rotate:pic.data('rotation')+'deg', scale:U.xy BOX.scale() * pic.data('scale') * 1.4)
+      pic.imgAnimate(scale:[U.xy BOX.scale() * pic.data('scale')], 600)
       pic.css( PIC.pile.place pic, PIC.count++ )
       PIC.events.drag.setup()
     drag:
@@ -222,7 +224,7 @@ window.BOX = BOX =
     @sort.setup()
     BOX.resize()
     ($ window).scroll -> ($ window).scrollTop(0).scrollLeft(0)
-    ($ window).resize( BOX.resize )
+    ($ window).resize( _.debounce(BOX.resize, 500) )
   size: ->
     ($ '#shoebox .canvas-background').css height: $(window).height()
     ($ '#canvas' ).css height: $(window).height() - $('#shoebox #toolbar').height(), top:$('#shoebox #toolbar').height()
@@ -249,7 +251,6 @@ window.BOX = BOX =
     sort = ($ '#sorts a.selected').text().toLowerCase() or 'reset'
     BOX.sort.clear()
     BOX.sort[ sort ]()
-    
 
   data:
     fetch: (set, size) ->
@@ -299,13 +300,13 @@ window.BOX = BOX =
     location: ->
       grouped = (_ DATA.pics).groupBy (pic) -> pic.location
       DATA.locations.present = locations = (_ grouped).keys()
-      BOX.sort.reposition size:locations.length, sort:'location'
-      _.delay (-> (BOX.labels.place grouped, locations)), 600
+      @reposition size:locations.length, sort:'location'
+      _.delay (=> (@label.location grouped, locations)), 600
     popularity: ->
-      cage = BOX.tools.cage()
-      pops = BOX.tools.popularity()
+      cage = @get.cage()
+      pops = @get.popularity()
 
-      (_ BOX.tools.visible DATA.pics ).map (pic)->
+      (_ @get.visible DATA.pics ).map (pic)->
         pop = (pic.popularity - pops.min) / (pops.max - pops.min)
         relative = x: pop, y: pop
         concrete = U.point.multiply cage, relative
@@ -313,21 +314,15 @@ window.BOX = BOX =
           left: cage.left + U.fit 0, concrete.x - pic.$html.outerWidth(), cage.x
           top: cage.height - U.fit 50, concrete.y - pic.$html.outerHeight()/2, cage.height-50
 
-      BOX.sort.reposition()
-      $('#axis').html('').append(
-        '<span>- LEAST Popular</span>',
-        '<span style="left:auto; right:0">+ MOST Popular</span>')
+      @reposition()
+      @label.popularity
     date: ->
       grouped = (_ DATA.pics).groupBy (pic) -> pic.date
       DATA.dates.present = dates = (_ grouped).keys().sort()
-      $('#chart').fadeIn('slow')
+      @label.date dates
 
-      length = U.float(($ '#axis').width()) / U.float(dates.length)
-      spans= (_ dates ).map (date, i)-> "<span style=\"left:#{length*(i+.3)}px\">#{date}</span>"
-      $('#axis').html('').append( spans... )
-
-      cage = BOX.tools.cage()
-      (_ BOX.tools.visible DATA.pics ).map (pic, i, list)->
+      cage = @get.cage()
+      (_ @get.visible DATA.pics ).map (pic, i, list)->
         group = grouped[pic.date]
         index = dates:_(dates).indexOf(pic.date+''), date: ( ((_ group).indexOf pic) + 1)/group.length
         offcenter = if index.date is 0 then 0 else index.date*(cage.height/5)*(1+(index.date%2)*-2)
@@ -337,11 +332,11 @@ window.BOX = BOX =
           left: cage.left + U.fit 0, concrete.x, cage.x
           top: cage.height - (U.fit 0, concrete.y - pic.$html.outerHeight()/2 - offcenter, cage.height)
 
-      BOX.sort.reposition()
+      @reposition()
 
     reposition: (options = {})->
       PIC.pile.size = options.size if options.size
-      (_ BOX.tools.visible DATA.pics).each (pic, index, pics)->
+      (_ @get.visible DATA.pics).each (pic, index, pics)->
         ###
         fixes =
           rotate:(pic.$html.data('rotation')/(if PIC.pile.size > 1 then 1.5 else 1))+'deg'
@@ -351,32 +346,42 @@ window.BOX = BOX =
         position = if options.sort in ['location', 'reset'] then PIC.pile.place(pic.$html, pic.location) else pic.position
         pic.$html.animate position, 600
 
-  tools:
-    visible: (pics) ->
-      _(pics).filter (pic)-> pic.$html.is(':visible')
-    cage: ->
-      (chart = $('#chart')).fadeIn('slow')
-      x:chart.width(), y:chart.height(), left:chart.position().left, top:chart.position().top, height:chart.height()-$('#axis').height()-150
-    popularity: ->
-      all = (_ BOX.tools.visible DATA.pics ).chain().map( (pic)-> pic.popularity)
-      all:all, max:all.max().value(), min:all.min().value()
-  labels:
-    findTop: (group)->
-      _(group).chain().map((pic)-> pic.$html.position().top).
-        reduce( ((memo, top)-> Math.min memo, top)).value()
-    place: (grouped, locations)->
-      (_ locations).each (location)->
-        [limit, concrete] = PIC.pile.position.concrete location
-        $html = $ '<div class="location">'+location+'</div>'
-        $('#canvas').append $html
-        group = grouped[location]
-        if group.length > 0
-          top = BOX.labels.findTop group
-          $html.show().css
-            left: U.fit 0, concrete.x - $html.outerWidth()/2, limit.x
-            top: U.fit 0, top - (BOX.scale()*30) - $html.outerHeight(), limit.y
-        else
-          $html.hide()
+    label:
+      findTop: (group)->
+        _(group).chain().map((pic)-> U.rect.extract( pic.$html.find 'img' ).tl.y).
+          reduce( ((memo, top)-> Math.min memo, top)).value()
+      location: (grouped, locations)->
+        (_ locations).each (location)=>
+          [limit, concrete] = PIC.pile.position.concrete location
+          $label = $('<div class="location">'+location+'</div>').appendTo '#canvas'
+          group = grouped[location]
+          if group.length > 0
+            top = @findTop group
+            $label.show().css
+              left: U.fit 0, concrete.x - $label.outerWidth()/2, limit.x
+              top: U.fit 0, top - BOX.scale()*20 - $label.outerHeight(), limit.y
+          else
+            $label.hide()
+      date: (dates)->
+        $('#chart').fadeIn('slow')
+        length = U.float(($ '#axis').width()) / U.float(dates.length)
+        spans = (_ dates ).map (date, i)-> "<span style=\"left:#{length*(i+.3)}px\">#{date}</span>"
+        $('#axis').html('').append( spans... )
+      popularity: ()->
+        $('#chart').fadeIn('slow')
+        $('#axis').html('').append(
+          '<span>- LEAST Popular</span>',
+          '<span style="left:auto; right:0">+ MOST Popular</span>')
+
+    get:
+      visible: (pics) ->
+        _(pics).filter (pic)-> pic.$html.is(':visible')
+      cage: ->
+        (chart = $('#chart')).fadeIn('slow')
+        out = x:chart.width(), y:chart.height(), left:chart.position().left, top:chart.position().top, height:chart.height()-$('#axis').height()-150
+      popularity: ->
+        all = (_ @visible DATA.pics ).chain().map( (pic)-> pic.popularity)
+        all:all, max:all.max().value(), min:all.min().value()
 
   title:
     setup:(data)->
@@ -419,8 +424,8 @@ window.U = U =
       else
         out
   xy: (n)->[n,n]
-  fit: (min, a, max)->
-    Math.min max, Math.max min, a
+  fit: (min, between, max)->
+    Math.min max, Math.max min, between
   line:
     length: (l)-> Math.sqrt Math.pow(l[0].x-l[1].x,2) + Math.pow(l[0].y-l[1].y, 2)
     flatten: (l)-> if l[0].x is l[1].x then [l[0].y, l[1].y] else [l[0].x, l[1].x]
@@ -437,19 +442,20 @@ window.U = U =
   rect:
     extract: (o)->
       o = $ o
+      parent = o.parents('#pics, #canvas').first()
       # we go to such lengths to get the offset because the image parent (.pic) has it's left and top erased by the rotate plugin
-      [left, top] = [o.offset().left - o.parents('#pics').offset().left, o.offset().top - o.parents('#pics').offset().top]
+      [left, top] = [o.offset().left - parent.offset().left, o.offset().top - parent.offset().top]
       [width, height] = [o.outerWidth(), o.outerHeight()]
-      a: {x:left, y:top}, b: {x:left+width, y:top}
-      c: {x:left, y:top+height}, d: {x:left+width, y:top+height}
+      tl: {x:left, y:top}, tr: {x:left+width, y:top}
+      bl: {x:left, y:top+height}, br: {x:left+width, y:top+height}
     draw: (r, color='red')->
-      ($ '<div class="rect"/>').appendTo('#canvas').css(top:r.a.y, left:r.a.x, width:r.b.x-r.a.x, height:r.c.y-r.a.y, background:color)
-    intersect: (rect1, rect2)->
-      [rect1, rect2] = [(@extract rect1), (@extract rect2)]
-      # U.rect.draw rect1
-      # U.rect.draw rect2, 'blue'
-      out = U.line.intersect([rect1.a, rect1.b], [rect2.a, rect2.b]) and
-        U.line.intersect([rect1.a, rect1.c], [rect2.a, rect2.c])
+      ($ '<div class="rect"/>').appendTo('#canvas').css(top:r.tl.y, left:r.tl.x, width:r.tr.x-r.tl.x, height:r.bl.y-r.tl.y, background:color)
+    intersect: (a, b)->
+      [a, b] = [(@extract a), (@extract b)]
+      #U.rect.draw a
+      #U.rect.draw b, 'blue'
+      out = U.line.intersect([a.tl, a.tr], [b.tl, b.tr]) and
+        U.line.intersect([a.tl, a.bl], [b.tl, b.bl])
   rand: -> .5-Math.random()
   shuffle: (array) -> (array.sort -> U.rand() )
   float: (str)-> parseFloat str

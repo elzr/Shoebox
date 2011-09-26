@@ -1,5 +1,4 @@
 <%@title = 'Welcome'%>
-
 <div id="shoebox">
 	<canvas id="overlay" height="800"></canvas>
 	<div id="toolbar">

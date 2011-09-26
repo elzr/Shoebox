@@ -1,4 +1,4 @@
-/* DO NOT MODIFY. This file was compiled Mon, 26 Sep 2011 15:39:32 GMT from
+/* DO NOT MODIFY. This file was compiled Mon, 26 Sep 2011 19:04:15 GMT from
  * /Dropbox/prjcts/sinatra/shoebox/public/js/code.coffee
  */
 
@@ -148,19 +148,22 @@
         })()).max() + 1;
       },
       index: function(obj) {
-        return $(obj).css('z-index') || 0;
+        return ~~$(obj).css('z-index') || 0;
       },
-      get: function(atopBelow, from) {
-        var flip, pic, _i, _len, _ref, _results;
+      get: function(atopBelow, from, pics) {
+        var flip, fromRect, pic, _i, _len, _results;
         flip = {
           atop: 1,
           below: -1
         }[atopBelow];
-        _ref = ($('#pics .pic')).removeClass('topStack');
+        if (pics == null) {
+          pics = $('#pics .pic').removeClass('topStack');
+        }
+        fromRect = $(from).hasClass('pic') ? $(from).find('img') : $(from);
         _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          pic = _ref[_i];
-          if (flip * this.index(from) < flip * this.index(pic) && U.rect.intersect($(from).find('img'), $(pic).find('img'))) {
+        for (_i = 0, _len = pics.length; _i < _len; _i++) {
+          pic = pics[_i];
+          if (flip * this.index(from) < flip * this.index(pic) && U.rect.intersect(fromRect, $(pic).find('img'))) {
             _results.push(pic);
           }
         }
@@ -300,7 +303,7 @@
             if (($(this)).hasClass('flipped')) {
               return ($(this)).find('.backside').animate({
                 scale: [U.xy(BOX.scale() * ($(this)).data('scale'))]
-              }, 300);
+              }, 300).jScrollPane();
             }
           }, this)
         });
@@ -316,13 +319,13 @@
         }).end().data({
           rotation: PIC.css.rotation * U.rand(),
           scale: PIC.css.scale + 0.25 * U.rand()
-        }).imgAnimate({
-          scale: [U.xy(BOX.scale() * pic.data('scale') * 1.2)]
-        }, 600);
-        pic.find('img').transform({
+        }).find('img').transform({
           rotate: pic.data('rotation') + 'deg',
-          scale: U.xy(BOX.scale() * pic.data('scale'))
+          scale: U.xy(BOX.scale() * pic.data('scale') * 1.4)
         });
+        pic.imgAnimate({
+          scale: [U.xy(BOX.scale() * pic.data('scale'))]
+        }, 600);
         pic.css(PIC.pile.place(pic, PIC.count++));
         return PIC.events.drag.setup();
       },
@@ -452,7 +455,7 @@
       ($(window)).scroll(function() {
         return ($(window)).scrollTop(0).scrollLeft(0);
       });
-      return ($(window)).resize(BOX.resize);
+      return ($(window)).resize(_.debounce(BOX.resize, 500));
     },
     size: function() {
       ($('#shoebox .canvas-background')).css({
@@ -562,19 +565,19 @@
           return pic.location;
         });
         DATA.locations.present = locations = (_(grouped)).keys();
-        BOX.sort.reposition({
+        this.reposition({
           size: locations.length,
           sort: 'location'
         });
-        return _.delay((function() {
-          return BOX.labels.place(grouped, locations);
-        }), 600);
+        return _.delay((__bind(function() {
+          return this.label.location(grouped, locations);
+        }, this)), 600);
       },
       popularity: function() {
         var cage, pops;
-        cage = BOX.tools.cage();
-        pops = BOX.tools.popularity();
-        (_(BOX.tools.visible(DATA.pics))).map(function(pic) {
+        cage = this.get.cage();
+        pops = this.get.popularity();
+        (_(this.get.visible(DATA.pics))).map(function(pic) {
           var concrete, pop, relative;
           pop = (pic.popularity - pops.min) / (pops.max - pops.min);
           relative = {
@@ -587,23 +590,18 @@
             top: cage.height - U.fit(50, concrete.y - pic.$html.outerHeight() / 2, cage.height - 50)
           };
         });
-        BOX.sort.reposition();
-        return $('#axis').html('').append('<span>- LEAST Popular</span>', '<span style="left:auto; right:0">+ MOST Popular</span>');
+        this.reposition();
+        return this.label.popularity;
       },
       date: function() {
-        var cage, dates, grouped, length, spans, _ref;
+        var cage, dates, grouped;
         grouped = (_(DATA.pics)).groupBy(function(pic) {
           return pic.date;
         });
         DATA.dates.present = dates = (_(grouped)).keys().sort();
-        $('#chart').fadeIn('slow');
-        length = U.float(($('#axis')).width()) / U.float(dates.length);
-        spans = (_(dates)).map(function(date, i) {
-          return "<span style=\"left:" + (length * (i + .3)) + "px\">" + date + "</span>";
-        });
-        (_ref = $('#axis').html('')).append.apply(_ref, spans);
-        cage = BOX.tools.cage();
-        (_(BOX.tools.visible(DATA.pics))).map(function(pic, i, list) {
+        this.label.date(dates);
+        cage = this.get.cage();
+        (_(this.get.visible(DATA.pics))).map(function(pic, i, list) {
           var concrete, group, index, offcenter, relative;
           group = grouped[pic.date];
           index = {
@@ -621,7 +619,7 @@
             top: cage.height - (U.fit(0, concrete.y - pic.$html.outerHeight() / 2 - offcenter, cage.height))
           };
         });
-        return BOX.sort.reposition();
+        return this.reposition();
       },
       reposition: function(options) {
         if (options == null) {
@@ -630,7 +628,7 @@
         if (options.size) {
           PIC.pile.size = options.size;
         }
-        return (_(BOX.tools.visible(DATA.pics))).each(function(pic, index, pics) {
+        return (_(this.get.visible(DATA.pics))).each(function(pic, index, pics) {
           /*
                   fixes =
                     rotate:(pic.$html.data('rotation')/(if PIC.pile.size > 1 then 1.5 else 1))+'deg'
@@ -641,62 +639,74 @@
           position = (_ref = options.sort) === 'location' || _ref === 'reset' ? PIC.pile.place(pic.$html, pic.location) : pic.position;
           return pic.$html.animate(position, 600);
         });
-      }
-    },
-    tools: {
-      visible: function(pics) {
-        return _(pics).filter(function(pic) {
-          return pic.$html.is(':visible');
-        });
       },
-      cage: function() {
-        var chart;
-        (chart = $('#chart')).fadeIn('slow');
-        return {
-          x: chart.width(),
-          y: chart.height(),
-          left: chart.position().left,
-          top: chart.position().top,
-          height: chart.height() - $('#axis').height() - 150
-        };
+      label: {
+        findTop: function(group) {
+          return _(group).chain().map(function(pic) {
+            return U.rect.extract(pic.$html.find('img')).tl.y;
+          }).reduce((function(memo, top) {
+            return Math.min(memo, top);
+          })).value();
+        },
+        location: function(grouped, locations) {
+          return (_(locations)).each(__bind(function(location) {
+            var $label, concrete, group, limit, top, _ref;
+            _ref = PIC.pile.position.concrete(location), limit = _ref[0], concrete = _ref[1];
+            $label = $('<div class="location">' + location + '</div>').appendTo('#canvas');
+            group = grouped[location];
+            if (group.length > 0) {
+              top = this.findTop(group);
+              return $label.show().css({
+                left: U.fit(0, concrete.x - $label.outerWidth() / 2, limit.x),
+                top: U.fit(0, top - BOX.scale() * 20 - $label.outerHeight(), limit.y)
+              });
+            } else {
+              return $label.hide();
+            }
+          }, this));
+        },
+        date: function(dates) {
+          var length, spans, _ref;
+          $('#chart').fadeIn('slow');
+          length = U.float(($('#axis')).width()) / U.float(dates.length);
+          spans = (_(dates)).map(function(date, i) {
+            return "<span style=\"left:" + (length * (i + .3)) + "px\">" + date + "</span>";
+          });
+          return (_ref = $('#axis').html('')).append.apply(_ref, spans);
+        },
+        popularity: function() {
+          $('#chart').fadeIn('slow');
+          return $('#axis').html('').append('<span>- LEAST Popular</span>', '<span style="left:auto; right:0">+ MOST Popular</span>');
+        }
       },
-      popularity: function() {
-        var all;
-        all = (_(BOX.tools.visible(DATA.pics))).chain().map(function(pic) {
-          return pic.popularity;
-        });
-        return {
-          all: all,
-          max: all.max().value(),
-          min: all.min().value()
-        };
-      }
-    },
-    labels: {
-      findTop: function(group) {
-        return _(group).chain().map(function(pic) {
-          return pic.$html.position().top;
-        }).reduce((function(memo, top) {
-          return Math.min(memo, top);
-        })).value();
-      },
-      place: function(grouped, locations) {
-        return (_(locations)).each(function(location) {
-          var $html, concrete, group, limit, top, _ref;
-          _ref = PIC.pile.position.concrete(location), limit = _ref[0], concrete = _ref[1];
-          $html = $('<div class="location">' + location + '</div>');
-          $('#canvas').append($html);
-          group = grouped[location];
-          if (group.length > 0) {
-            top = BOX.labels.findTop(group);
-            return $html.show().css({
-              left: U.fit(0, concrete.x - $html.outerWidth() / 2, limit.x),
-              top: U.fit(0, top - (BOX.scale() * 30) - $html.outerHeight(), limit.y)
-            });
-          } else {
-            return $html.hide();
-          }
-        });
+      get: {
+        visible: function(pics) {
+          return _(pics).filter(function(pic) {
+            return pic.$html.is(':visible');
+          });
+        },
+        cage: function() {
+          var chart, out;
+          (chart = $('#chart')).fadeIn('slow');
+          return out = {
+            x: chart.width(),
+            y: chart.height(),
+            left: chart.position().left,
+            top: chart.position().top,
+            height: chart.height() - $('#axis').height() - 150
+          };
+        },
+        popularity: function() {
+          var all;
+          all = (_(this.visible(DATA.pics))).chain().map(function(pic) {
+            return pic.popularity;
+          });
+          return {
+            all: all,
+            max: all.max().value(),
+            min: all.min().value()
+          };
+        }
       }
     },
     title: {
@@ -767,8 +777,8 @@
     xy: function(n) {
       return [n, n];
     },
-    fit: function(min, a, max) {
-      return Math.min(max, Math.max(min, a));
+    fit: function(min, between, max) {
+      return Math.min(max, Math.max(min, between));
     },
     line: {
       length: function(l) {
@@ -798,24 +808,25 @@
     },
     rect: {
       extract: function(o) {
-        var height, left, top, width, _ref, _ref2;
+        var height, left, parent, top, width, _ref, _ref2;
         o = $(o);
-        _ref = [o.offset().left - o.parents('#pics').offset().left, o.offset().top - o.parents('#pics').offset().top], left = _ref[0], top = _ref[1];
+        parent = o.parents('#pics, #canvas').first();
+        _ref = [o.offset().left - parent.offset().left, o.offset().top - parent.offset().top], left = _ref[0], top = _ref[1];
         _ref2 = [o.outerWidth(), o.outerHeight()], width = _ref2[0], height = _ref2[1];
         return {
-          a: {
+          tl: {
             x: left,
             y: top
           },
-          b: {
+          tr: {
             x: left + width,
             y: top
           },
-          c: {
+          bl: {
             x: left,
             y: top + height
           },
-          d: {
+          br: {
             x: left + width,
             y: top + height
           }
@@ -826,17 +837,17 @@
           color = 'red';
         }
         return ($('<div class="rect"/>')).appendTo('#canvas').css({
-          top: r.a.y,
-          left: r.a.x,
-          width: r.b.x - r.a.x,
-          height: r.c.y - r.a.y,
+          top: r.tl.y,
+          left: r.tl.x,
+          width: r.tr.x - r.tl.x,
+          height: r.bl.y - r.tl.y,
           background: color
         });
       },
-      intersect: function(rect1, rect2) {
+      intersect: function(a, b) {
         var out, _ref;
-        _ref = [this.extract(rect1), this.extract(rect2)], rect1 = _ref[0], rect2 = _ref[1];
-        return out = U.line.intersect([rect1.a, rect1.b], [rect2.a, rect2.b]) && U.line.intersect([rect1.a, rect1.c], [rect2.a, rect2.c]);
+        _ref = [this.extract(a), this.extract(b)], a = _ref[0], b = _ref[1];
+        return out = U.line.intersect([a.tl, a.tr], [b.tl, b.tr]) && U.line.intersect([a.tl, a.bl], [b.tl, b.bl]);
       }
     },
     rand: function() {
