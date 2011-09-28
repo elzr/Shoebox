@@ -65,9 +65,11 @@
         $(fx.elem).data('rotate3Di.degrees', direction * degrees);
         $(fx.elem).transform( {
 			skewY: direction * degrees + 'deg',
-			rotate: ( $(fx.elem).data('rotation') * Math.abs((degrees-90)/90) )+'deg',
 			scaleX: scale
 		});
+        $(fx.elem).find('img,.backside').css( {
+			rotate: ( $(fx.elem).data('rotation') * Math.abs((degrees-90)/90) )+'deg'
+		})
     }
     
     // fx.cur() must be monkey patched because otherwise it would always

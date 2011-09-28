@@ -1,4 +1,4 @@
-/* DO NOT MODIFY. This file was compiled Mon, 26 Sep 2011 20:53:25 GMT from
+/* DO NOT MODIFY. This file was compiled Wed, 28 Sep 2011 02:39:54 GMT from
  * /Dropbox/prjcts/sinatra/shoebox/public/js/code.coffee
  */
 
@@ -298,12 +298,9 @@
       dblclick: function() {
         var pic;
         PIC.stack.clear(this);
-        if (!BOX.goodIE) {
+        if (!BOX.goodBrowser) {
           pic = $(this);
-          return ($(this)).find('img:visible, .backside:visible').first().flip({
-            direction: 'lr',
-            onEnd: PIC.events.flipIE
-          });
+          return pic.toggleClass('flipped').find('.backside');
         } else {
           return ($(this)).rotate3Di('toggle', 700, {
             sideChange: PIC.events.flip
@@ -319,7 +316,7 @@
           return pic.find('.backside').transform({
             rotate: pic.data('rotation') + 'deg',
             scale: [U.xy(BOX.scale() * pic.data('scale'))]
-          }).css('background', '#fff');
+          });
         } else {
           return pic.find('.backside').hide().end().find('img').show();
         }
@@ -331,7 +328,7 @@
         if (pic.hasClass('flipped')) {
           return pic.find('.backside').animate({
             scale: [U.xy(BOX.scale() * pic.data('scale'))]
-          }, 300).jScrollPane();
+          }, 300);
         } else {
 
         }
@@ -347,7 +344,7 @@
         }).end().data({
           rotation: PIC.css.rotation * U.rand(),
           scale: PIC.css.scale + 0.25 * U.rand()
-        }).find('img').transform({
+        }).find('img, .backside').transform({
           rotate: pic.data('rotation') + 'deg',
           scale: U.xy(BOX.scale() * pic.data('scale') * 1.4)
         });
@@ -355,7 +352,8 @@
           scale: [U.xy(BOX.scale() * pic.data('scale'))]
         }, 600);
         pic.css(PIC.pile.place(pic, PIC.count++));
-        return PIC.events.drag.setup();
+        PIC.events.drag.setup();
+        return PIC.display.paginate.setup(DATA.pics[pic.data('order')]);
       },
       drag: {
         start: function() {
@@ -455,22 +453,75 @@
       e = PIC.events;
       return ($('#pics .pic')).dblclick(e.dblclick).click(e.click).find('img').load(e.load);
     },
-    display: function(pics) {
-      var comment;
-      ($('#shoebox')).find('.loading').remove();
-      PIC.events.trash.setup();
-      comment = function(c) {
-        return "<div class=\"comment\">" + c.comment + "</div><div class=\"author\">" + c.author + "</div>";
-      };
-      (_(pics)).each(function(pic, i) {
-        var _ref;
-        return (_ref = ($('#pics')).append(DATA.pics[i].$html = $('<div class="pic" />').html('<img src="' + pic.url_s + '" /><div class="backside"><div class="text"></div></div>')).find('.pic:last').css('z-index', PIC.stack.topmost()).find('.text')).append.apply(_ref, _(pic.comments).map(comment));
-      });
-      return PIC.setup();
+    display: {
+      setup: function(pics) {
+        ($('#shoebox')).find('.loading').remove();
+        PIC.events.trash.setup();
+        (_(pics)).each(function(pic, i) {
+          return ($('#pics')).append(DATA.pics[i].$html = $('<div class="pic" />').data({
+            order: i
+          }).html('<img src="' + pic.url_s + '" /><div class="backside"><div class="text"></div><div class="pages">&nbsp;</div></div>')).find('.pic:last').css('z-index', PIC.stack.topmost());
+        });
+        return PIC.setup();
+      },
+      paginate: {
+        setup: function(pic) {
+          var comments, grouped, _ref;
+          comments = _(pic.comments).map(PIC.display.comment);
+          this.text = pic.$html.find('.text');
+          this.backside = pic.$html.find('.backside');
+          this.pages = pic.$html.find('.pages');
+          pic.comments.grouped = grouped = BOX.goodBrowser ? this.group(1, comments) : _(comments).map(function(c) {
+            return [c];
+          });
+          (_ref = this.text.data('grouped', grouped).html('')).append.apply(_ref, grouped[0]);
+          if (grouped.length > 1) {
+            this.number(grouped);
+          }
+          if (!BOX.goodBrowser) {
+            return this.backside.addClass('badBrowser');
+          }
+        },
+        number: function(grouped) {
+          var page, _ref;
+          for (page = 1, _ref = grouped.length; 1 <= _ref ? page <= _ref : page >= _ref; 1 <= _ref ? page++ : page--) {
+            this.pages.append('<a href="javascript:void(0)">' + page + '</a>');
+          }
+          this.pages.find('a').click(this.page).first().addClass('selected');
+          return this.text.addClass('paged');
+        },
+        page: function() {
+          var text, _ref;
+          text = $(this).parents('.backside').find('.text');
+          (_ref = text.html('')).append.apply(_ref, text.data('grouped')[U.float($(this).text()) - 1]);
+          return $(this).siblings().removeClass('selected').end().addClass('selected');
+        },
+        group: function(perpage, comments, grouped) {
+          var first, rest, _ref, _ref2, _ref3, _ref4;
+          if (grouped == null) {
+            grouped = [];
+          }
+          _ref = U.split(comments, perpage), first = _ref[0], rest = _ref[1];
+          (_ref2 = this.text.html('')).append.apply(_ref2, first);
+          if (rest.length > 0) {
+            grouped = perpage === 1 || this.text.height() <= this.backside.height() ? this.group(perpage + 1, comments, grouped) : ((_ref3 = U.split(comments, perpage - 1), first = _ref3[0], rest = _ref3[1], _ref3), grouped[grouped.length] = first, this.group(1, rest, grouped));
+          } else {
+            if (perpage !== 1 && this.text.height() >= this.backside.height()) {
+              _ref4 = U.split(comments, perpage - 1), grouped[grouped.length] = _ref4[0], grouped[grouped.length] = _ref4[1];
+            } else {
+              grouped[grouped.length] = comments;
+            }
+          }
+          return grouped;
+        }
+      },
+      comment: function(c) {
+        return "<div class=\"comment\">" + c.comment + "</div><div class=\"author\">- " + c.author + "</div>";
+      }
     }
   });
   window.BOX = BOX = {
-    goodIE: $.browser.msie && $.browser.version >= 9,
+    goodBrowser: (!$.browser.msie) || ((!$.browser.msie) && $.browser.version >= 8),
     scale: function(recalculate) {
       if (!(BOX.scale.saved != null) || (recalculate != null)) {
         return BOX.scale.saved = U.fit(.75, $(window).width() * $(window).height() / 1.1e6, 2);
@@ -536,7 +587,7 @@
         var pics;
         BOX.title.setup(flickr);
         pics = BOX.data.mix(flickr);
-        return PIC.display(pics);
+        return PIC.display.setup(pics);
       },
       mix: function(data) {
         var comments, pics;
@@ -544,7 +595,7 @@
         comments = U.shuffle(DATA.comments);
         pics = _(pics).map(function(pic, i) {
           var c;
-          c = U.shuffle(BOX.goodIE ? [1, 2, 3, 4] : [1])[0];
+          c = U.shuffle([3, 4, 5])[0];
           pics[i] = _(pic).extend({
             order: i,
             comments: _(comments).first(c),
@@ -683,7 +734,7 @@
             _ref = PIC.pile.position.concrete(location), limit = _ref[0], concrete = _ref[1];
             $label = $('<div class="location">' + location + '</div>').appendTo('#canvas');
             group = grouped[location];
-            if (group.length > 0) {
+            if (BOX.sort.get.visible(group).length > 0) {
               top = this.findTop(group);
               return $label.show().css({
                 left: U.fit(0, concrete.x - $label.outerWidth() / 2, limit.x),
@@ -808,6 +859,9 @@
     },
     fit: function(min, between, max) {
       return Math.min(max, Math.max(min, between));
+    },
+    split: function(array, half) {
+      return [_(array).first(half), _(array).rest(half)];
     },
     line: {
       length: function(l) {
@@ -941,7 +995,7 @@
   $.fn.imgAnimate = function() {
     var args, _ref;
     args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    (_ref = this.find('img')).animate.apply(_ref, args);
+    (_ref = this.find('img, .backside')).animate.apply(_ref, args);
     return this;
   };
   $.fn.cssMultiply = function(attrs, multiple) {

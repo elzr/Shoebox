@@ -122,10 +122,10 @@ window.PIC = PIC =
   events: # EVENTS ---------------------------------------------------
     dblclick: ->
       PIC.stack.clear @
-      if not BOX.goodIE
+      if not BOX.goodBrowser
         pic = ($ @)
-        #pic.toggleClass('flipped').find('.backside').jScrollPane()
-        ($ @).find('img:visible, .backside:visible').first().flip direction:'lr', onEnd: PIC.events.flipIE
+        pic.toggleClass('flipped').find('.backside')#.jScrollPane()
+        #($ @).find('img:visible, .backside:visible').first().flip direction:'lr', onEnd: PIC.events.flipIE
       else
         ($ @).rotate3Di 'toggle', 700, sideChange: PIC.events.flip
     flipIE: (clone, pic)->
@@ -134,24 +134,27 @@ window.PIC = PIC =
         pic.toggleClass('flipped')
         if pic.hasClass 'flipped'
           pic.find('img').hide().end().find('.backside').show()
-          pic.find('.backside').transform(rotate:pic.data('rotation')+'deg', scale:[U.xy BOX.scale() * pic.data('scale')]).css('background','#fff')#.jScrollPane()
+          pic.find('.backside').transform(rotate:pic.data('rotation')+'deg', scale:[U.xy BOX.scale() * pic.data('scale')])#.jScrollPane()
         else
           pic.find('.backside').hide().end().find('img').show()
     flip: ()->
         pic = ($ @)
         pic.toggleClass('flipped')
         if pic.hasClass 'flipped'
-          pic.find('.backside').animate(scale:[U.xy BOX.scale() * pic.data('scale')], 300).jScrollPane()
+          pic.find('.backside').animate(scale:[U.xy BOX.scale() * pic.data('scale')], 300)#.jScrollPane()
         else
     load: ->
       pic = ($ @).parents '.pic'
       pic.css(visibility:'visible').
         add( pic.find('.backside') ).css( height: ($ @).outerHeight(), width:($ @).outerWidth() ).end().
         data( rotation:PIC.css.rotation*U.rand(), scale: (PIC.css.scale+0.25*U.rand()) ).
-        find('img').transform(rotate:pic.data('rotation')+'deg', scale:U.xy BOX.scale() * pic.data('scale') * 1.4)
+        find('img, .backside').transform(rotate:pic.data('rotation')+'deg', scale:U.xy BOX.scale() * pic.data('scale') * 1.4)
       pic.imgAnimate(scale:[U.xy BOX.scale() * pic.data('scale')], 600)
+      #[h, w] = [pic.height(), pic.width()]
+      #pic.css( PIC.pile.place pic, PIC.count++ ).find('img').unbind('load').attr('src', '/img/test.jpg').css(height:h, width:w)
       pic.css( PIC.pile.place pic, PIC.count++ )
       PIC.events.drag.setup()
+      PIC.display.paginate.setup DATA.pics[pic.data 'order']
     drag:
       start: ->
         PIC.stack.clear @
@@ -219,20 +222,57 @@ window.PIC = PIC =
     e = PIC.events
     ($ '#pics .pic').dblclick(e.dblclick).click(e.click).find('img').load(e.load)
 
-  display: (pics)->
-    ($ '#shoebox').find('.loading').remove()
-    PIC.events.trash.setup()
+  display:
+    setup:(pics)->
+      ($ '#shoebox').find('.loading').remove()
+      PIC.events.trash.setup()
 
-    comment = (c)-> "<div class=\"comment\">#{c.comment}</div><div class=\"author\">#{c.author}</div>"
-    (_ pics).each (pic, i)->
-      ($ '#pics').append( DATA.pics[i].$html = $('<div class="pic" />').
-        html('<img src="'+pic.url_s+'" /><div class="backside"><div class="text"></div></div>') ).
-        find('.pic:last').css('z-index', PIC.stack.topmost()).find('.text').append( _(pic.comments).map(comment)...  )
-    PIC.setup()
+      (_ pics).each (pic, i)->
+        ($ '#pics').append( DATA.pics[i].$html = $('<div class="pic" />').data(order:i).
+          html('<img src="'+pic.url_s+'" /><div class="backside"><div class="text"></div><div class="pages">&nbsp;</div></div>') ).
+          find('.pic:last').css('z-index', PIC.stack.topmost())
+      PIC.setup()
+    paginate:
+      setup: (pic)->
+        comments = _(pic.comments).map(PIC.display.comment)
+        @text = pic.$html.find('.text')
+        @backside = pic.$html.find('.backside')
+        @pages = pic.$html.find('.pages')
+        pic.comments.grouped = grouped = if BOX.goodBrowser then @group(1, comments) else _(comments).map((c)->[c])
+        @text.data('grouped', grouped).html('').append grouped[0]...
+        @number(grouped) if grouped.length > 1
+        @backside.addClass('badBrowser') if not BOX.goodBrowser
+      number: (grouped)->
+          @pages.append('<a href="javascript:void(0)">'+page+'</a>') for page in [1..grouped.length]
+          @pages.find('a').click(@page).first().addClass('selected')
+          @text.addClass('paged')
+      page: ->
+        text = $(this).parents('.backside').find('.text')
+        text.html('').append text.data('grouped')[U.float($(this).text()) - 1]...
+        $(this).siblings().removeClass('selected').end().addClass('selected')
+      group: (perpage, comments, grouped=[])->
+        [first, rest] = U.split comments, perpage
+        @text.html('').append first...
+        if rest.length > 0
+          grouped =
+            if perpage is 1 or @text.height() <= @backside.height()
+              @group perpage+1, comments, grouped
+            else
+              [first, rest] = U.split comments, perpage-1
+              grouped[grouped.length] = first
+              @group 1, rest, grouped
+        else
+          if perpage isnt 1 and @text.height() >= @backside.height()
+            [grouped[grouped.length], grouped[grouped.length]] = U.split comments, perpage-1
+          else
+            grouped[grouped.length] = comments
+        grouped
+    comment: (c)->
+      "<div class=\"comment\">#{c.comment}</div><div class=\"author\">- #{c.author}</div>"
 )
 
 window.BOX = BOX =
-  goodIE: $.browser.msie and $.browser.version >= 9
+  goodBrowser: (not $.browser.msie) or ( (not $.browser.msie) and $.browser.version >= 8 )
   scale: (recalculate)->
     if not BOX.scale.saved? or recalculate?
       BOX.scale.saved = U.fit .75, $(window).width()*$(window).height() / 1.1e6, 2
@@ -277,12 +317,12 @@ window.BOX = BOX =
     render: (flickr) ->
       BOX.title.setup flickr
       pics = BOX.data.mix flickr
-      PIC.display pics
+      PIC.display.setup pics
     mix: (data) ->
       pics = U.shuffle( data.photoset.photo ).slice(0, PIC.total)
       comments = U.shuffle( DATA.comments )
       pics = _(pics).map (pic, i)->
-        c = U.shuffle(if BOX.goodIE then [1,2,3,4] else [1])[0]
+        c = U.shuffle([3,4,5])[0]
         pics[i] = _(pic).extend
           order: i
           comments: _(comments).first(c)
@@ -373,7 +413,7 @@ window.BOX = BOX =
           [limit, concrete] = PIC.pile.position.concrete location
           $label = $('<div class="location">'+location+'</div>').appendTo '#canvas'
           group = grouped[location]
-          if group.length > 0
+          if BOX.sort.get.visible(group).length > 0
             top = @findTop group
             $label.show().css
               left: U.fit 0, concrete.x - $label.outerWidth()/2, limit.x
@@ -444,6 +484,7 @@ window.U = U =
   xy: (n)->[n,n]
   fit: (min, between, max)->
     Math.min max, Math.max min, between
+  split: (array, half)-> [_(array).first(half), _(array).rest(half)]
   line:
     length: (l)-> Math.sqrt Math.pow(l[0].x-l[1].x,2) + Math.pow(l[0].y-l[1].y, 2)
     flatten: (l)-> if l[0].x is l[1].x then [l[0].y, l[1].y] else [l[0].x, l[1].x]
@@ -500,7 +541,7 @@ $ ->
   BOX.setup()
 
 $.fn.imgAnimate = (args...) ->
-  this.find('img').animate args...
+  this.find('img, .backside').animate args...
   return this
 $.fn.cssMultiply = (attrs, multiple) ->
   (_ attrs).each (attr)=>

@@ -34,8 +34,8 @@
 	bottom: 0;
 	left: 0;
 	width: 100%;
-	height: 16px;
-	background: red;
+	height: 10px;
+	background: transparent;
 }
 
 .jspVerticalBar *,
@@ -76,7 +76,7 @@
 .jspHorizontalBar .jspDrag
 {
 	float: left;
-	height: 100%;
+	height: 80%;
 }
 
 .jspArrow
@@ -112,7 +112,8 @@
 
 .jspCorner
 {
-	background: #eeeef4;
+	/*background: #eeeef4;*/
+	background: transparent;
 	float: left;
 	height: 100%;
 }
