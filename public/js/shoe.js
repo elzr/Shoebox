@@ -1,5 +1,5 @@
-/* DO NOT MODIFY. This file was compiled Thu, 29 Sep 2011 18:40:37 GMT from
- * /Dropbox/prjcts/sinatra/shoebox/public/js/code.coffee
+/* DO NOT MODIFY. This file was compiled Thu, 29 Sep 2011 18:41:22 GMT from
+ * /Dropbox/prjcts/sinatra/shoebox/public/js/shoe.coffee
  */
 
 (function() {
@@ -7,8 +7,6 @@
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
   window.PIC = PIC = {
     total: 8,
-    count: 0,
-    size: 1,
     css: {
       rotation: 45,
       scale: .75

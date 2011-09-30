@@ -12,7 +12,7 @@
 	<script  type="text/javascript" src="/js/underscore-min.js"></script>
 
 	<script  type="text/javascript" src="/js/data.js"></script>
-	<script  type="text/javascript" src="/js/code.js"></script>
+	<script  type="text/javascript" src="/js/shoebox.js"></script>
 
 	<!--
 	<script  type="text/javascript" src="/js/jQueryRotateCompressed.2.1.js"></script>

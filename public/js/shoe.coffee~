@@ -1,12 +1,20 @@
-# *SHOE*
-# Coded in September 2011 by Eli Parra in Mexico City
-
+# ***SHOEBOX*** is a photo manager. 
+# It works best in Chrome, Safari, Firefox & IE9.
+# Interaction
+#
+# Coded in September 2011 by [Eli Parra](http://elzr.com/) in Mexico City
+#
+# Made for [Momentus Media](http://momentusmedia.com/)
+#
+#### PIC class:
+#One of the 2 global classes that make it all work.
 window.PIC = PIC =
+  #Total number of pictures that we want to display.
   total:8
-  count:0
-  size:1
   css:
+    #Maximum rotation degrees allowed.
     rotation:45
+    #Initial base scaling of all pics.
     scale:.75
   sets:
     family:'72157594183166324'
@@ -492,7 +500,8 @@ window.U = U =
     extract: (o)->
       o = $ o
       parent = o.parents('#pics, #canvas').first()
-      # we go to such lengths to get the offset because the image parent (.pic) has it's left and top erased by the rotate plugin
+      # We go to such lengths here to get the offset because the image parent (.pic) 
+      # has it's left and top erased by [the rotate plugin]([https://github.com/heygrady/transform]) in IE8-.
       [left, top] = [o.offset().left - parent.offset().left, o.offset().top - parent.offset().top]
       [width, height] = [o.outerWidth(), o.outerHeight()]
       tl: {x:left, y:top}, tr: {x:left+width, y:top}
@@ -501,8 +510,9 @@ window.U = U =
       ($ '<div class="rect"/>').appendTo('#canvas').css(top:r.tl.y, left:r.tl.x, width:r.tr.x-r.tl.x, height:r.bl.y-r.tl.y, background:color)
     intersect: (a, b)->
       [a, b] = [(@extract a), (@extract b)]
-      #U.rect.draw a
-      #U.rect.draw b, 'blue'
+      # To see this beautifully uncomment:
+      # `U.rect.draw a`
+      # `U.rect.draw b, 'blue'`
       out = U.line.intersect([a.tl, a.tr], [b.tl, b.tr]) and
         U.line.intersect([a.tl, a.bl], [b.tl, b.bl])
   rand: -> .5-Math.random()
