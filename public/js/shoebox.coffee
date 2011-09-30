@@ -25,21 +25,13 @@
 #     * 2 button `.ear`s at each side
 #     * a `#trash` bar at the bottom
 window.BOX = BOX =
-  # Are you not IE or if you are, are you at least IE9+?
-  goodBrowser: (not $.browser.msie) or ( (not $.browser.msie) and $.browser.version >= 8 )
-  # Calculate (or just retrieve) a **scale** appropriate to the current window dimensions.
-  scale: (recalculate)->
-    if not BOX.scale.saved? or recalculate?
-      BOX.scale.saved = H.fit .75, $(window).width()*$(window).height() / 1.1e6, 2
-    else
-      BOX.scale.saved
   # Setup sort, initial & automatic resizing, and autoscrolling back to 0.
   setup: ->
     @sort.setup()
     BOX.resize()
     ($ window).resize( _.debounce(BOX.resize, 500) )
     ($ window).scroll -> ($ window).scrollTop(0).scrollLeft(0)
-  # Set lots of appropriate sizings. For one reason or another, the chore falls on us.
+  # Set the **size** of many stage members, proportional to window dimensions. For one reason or another, the chore falls on us.
   size: ->
     ($ '#shoebox .canvas-background').css height: $(window).height()
     ($ '#canvas' ).css height: $(window).height() - $('#shoebox #toolbar').height(), top:$('#shoebox #toolbar').height()
@@ -51,12 +43,12 @@ window.BOX = BOX =
       height: ($ '#canvas').height()*.80
       top: ($ '#canvas').height()*.10
       left: ($ '#canvas').width()*.10
-    # Overly smart ear sizing appropriate to window dimensions.
+    # Overly smart ear sizing.
     ($ '.ear').cssMultiply(['width', 'height'], H.fit(1, BOX.scale()*.8, 1.5) ).
         find('img').cssMultiply(['margin-top', 'margin-bottom'], H.fit(1, BOX.scale()*1.5, 3)).
           cssMultiply ['margin-right', 'margin-left'], H.fit(1, BOX.scale()*1.1, 2)
 
-  # Trigger size recalculations & pic repositions on window resizing.
+  # Trigger size recalculations & pic repositions on window **resizing**.
   resize: ->
     BOX.size()
     BOX.scale('recalculate')
@@ -68,6 +60,15 @@ window.BOX = BOX =
     sort = ($ '#sorts a.selected').text().toLowerCase() or 'reset'
     BOX.sort.clear()
     BOX.sort[ sort ]()
+
+  # Are you not IE or if you are, are you at least IE9+?
+  goodBrowser: (not $.browser.msie) or ( (not $.browser.msie) and $.browser.version >= 8 )
+  # Calculate (or just retrieve) a **scale** appropriate to the current window dimensions.
+  scale: (recalculate)->
+    if not BOX.scale.saved? or recalculate?
+      BOX.scale.saved = H.fit .75, $(window).width()*$(window).height() / 1.1e6, 2
+    else
+      BOX.scale.saved
 
   #### DATA
   # Interact with external data.

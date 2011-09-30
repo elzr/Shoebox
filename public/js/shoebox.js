@@ -1,4 +1,4 @@
-/* DO NOT MODIFY. This file was compiled Fri, 30 Sep 2011 03:48:41 GMT from
+/* DO NOT MODIFY. This file was compiled Fri, 30 Sep 2011 15:35:36 GMT from
  * /Dropbox/prjcts/sinatra/shoebox/public/js/shoebox.coffee
  */
 
@@ -6,14 +6,6 @@
   var BOX, H, PIC;
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
   window.BOX = BOX = {
-    goodBrowser: (!$.browser.msie) || ((!$.browser.msie) && $.browser.version >= 8),
-    scale: function(recalculate) {
-      if (!(BOX.scale.saved != null) || (recalculate != null)) {
-        return BOX.scale.saved = H.fit(.75, $(window).width() * $(window).height() / 1.1e6, 2);
-      } else {
-        return BOX.scale.saved;
-      }
-    },
     setup: function() {
       this.sort.setup();
       BOX.resize();
@@ -62,6 +54,14 @@
       sort = ($('#sorts a.selected')).text().toLowerCase() || 'reset';
       BOX.sort.clear();
       return BOX.sort[sort]();
+    },
+    goodBrowser: (!$.browser.msie) || ((!$.browser.msie) && $.browser.version >= 8),
+    scale: function(recalculate) {
+      if (!(BOX.scale.saved != null) || (recalculate != null)) {
+        return BOX.scale.saved = H.fit(.75, $(window).width() * $(window).height() / 1.1e6, 2);
+      } else {
+        return BOX.scale.saved;
+      }
     },
     data: {
       fetch: function(set, size) {
