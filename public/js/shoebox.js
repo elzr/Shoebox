@@ -1,4 +1,4 @@
-/* DO NOT MODIFY. This file was compiled Fri, 30 Sep 2011 15:35:36 GMT from
+/* DO NOT MODIFY. This file was compiled Fri, 30 Sep 2011 20:11:49 GMT from
  * /Dropbox/prjcts/sinatra/shoebox/public/js/shoebox.coffee
  */
 
