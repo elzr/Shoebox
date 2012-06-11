@@ -1,0 +1,5 @@
+*.pxm
+*~
+public/img/texture/*
+public/img/title*
+.sass-cache*
