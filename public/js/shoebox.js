@@ -1,5 +1,5 @@
-/* DO NOT MODIFY. This file was compiled Fri, 30 Sep 2011 20:11:49 GMT from
- * /Dropbox/prjcts/sinatra/shoebox/public/js/shoebox.coffee
+/* DO NOT MODIFY. This file was compiled Mon, 24 Oct 2011 02:06:25 GMT from
+ * /Users/bex/Dropbox/prjcts/mom/shoebox/public/js/shoebox.coffee
  */
 
 (function() {
@@ -887,6 +887,10 @@
       intersect: function(a, b) {
         var out, _ref;
         _ref = [this.extract(a), this.extract(b)], a = _ref[0], b = _ref[1];
+        H.rect.draw(a);
+        H.rect.draw(b, 'blue');
+        H.rect.draw(a);
+        H.rect.draw(b, 'blue');
         return out = H.line.intersect([a.tl, a.tr], [b.tl, b.tr]) && H.line.intersect([a.tl, a.bl], [b.tl, b.bl]);
       }
     },

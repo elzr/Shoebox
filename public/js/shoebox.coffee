@@ -486,6 +486,7 @@ window.PIC = PIC =
         _.throttle( ->
           # To visualize a pic's vector: 
           # `H.line.draw(($ @).data('position.before'), ($ @).position())`
+          # H.line.draw(($ @).data('position.before'), ($ @).position())
           ($ @).data 'position.before', ($ @).position()
         , 500)
       ]
@@ -633,8 +634,10 @@ window.H = H =
     intersect: (a, b)->
       [a, b] = [(@extract a), (@extract b)]
       # To visualize this beautifully, activate here:
-      # `H.rect.draw a`
-      # `H.rect.draw b, 'blue'`
+      H.rect.draw a
+      H.rect.draw b, 'blue'
+      H.rect.draw a
+      H.rect.draw b, 'blue'
       out = H.line.intersect([a.tl, a.tr], [b.tl, b.tr]) and
         H.line.intersect([a.tl, a.bl], [b.tl, b.bl])
   # Convenience positive/negative <.5 randomness.

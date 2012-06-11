@@ -29,10 +29,10 @@ body {margin:0; padding:0; font-family:Verdana, sans-serif; overflow:hidden}
 	img.canvas-background {position:absolute; z-index:1; top:0; left:0; width:100%; height:800px}
 	.loading {text-align:center; position:absolute; top:250px; left:45%; z-index:2; margin:20px; padding:20px; background:#eee; font-style:italic; }
 	.overlay {position:absolute; top:0; left:0; z-index:3; width:100%; height:800px}
-	#canvas {position:absolute; width:100%; height:100%; z-index:4; top:0%; left:0;
+	#canvas {position:absolute; width:100%; height:100%; z-index:4; top:0; left:0;
 		#pics {position:absolute; top:0; left:0;
 			div.pic { position:absolute; display:inline-block; visibility:hidden; color:#000; text-decoration:none; background:transparent; cursor:pointer;
-				img {position:absolute; border:7px solid #fff; top:0; left:0; background:transparent; @include NIE-shadows(#888, 2px, 2px, 4px)}
+				img {position:absolute; border:0 solid #fff; top:0; left:0; background:transparent; @include NIE-shadows(#888, 2px, 2px, 4px)}
 				.backside {position:absolute; visibility:hidden; text-align:left; background-color:#fff; @include NIE-vertical-gradient(#f0f0f0, #bbb); overflow:hidden;
 					.text { padding:15px; padding-bottom:20px; font-size:18px; line-height:16px; color:#000;
 						.author {font-weight:bold; text-align:right; margin-bottom:15px; margin-top:5px}
